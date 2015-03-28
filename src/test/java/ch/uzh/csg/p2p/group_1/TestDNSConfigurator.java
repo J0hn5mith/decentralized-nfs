@@ -1,6 +1,5 @@
 package ch.uzh.csg.p2p.group_1;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
@@ -16,7 +15,7 @@ public class TestDNSConfigurator extends TestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        this.configurator = new DNFSConfigurator("./conf/settings.xml");
+        this.configurator = new DNFSConfigurator("./conf/settings.xml", null);
     }
 
     @Test
