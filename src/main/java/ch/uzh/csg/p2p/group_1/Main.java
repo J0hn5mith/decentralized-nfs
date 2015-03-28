@@ -12,20 +12,28 @@ public class Main {
     private static Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
-        PropertyConfigurator.configure("src/log4j.properties");
+        loadConfiguration();
+
+
         MDC.put("User", "test user 22");
         MDC.put("OS", "Linux");
 
-//        logger.info("Info die 2.");
+        logger.info("Info die 2.");
         try{
             throw new Exception("Exception_1");
         }
         catch (Exception e){
             logger.error("Error_2", e);
         }
-//        logger.debug("DEBUG");
+        logger.error("New Error");
+        logger.debug("DEBUG");
 //        logger.warn("Warn");
 //        System.out.print("Done");
     }
 
+    public static void loadConfiguration(){
+        PropertyConfigurator.configure("src/base.properties");
+        PropertyConfigurator.configure("src/local.properties");
+        PropertyConfigurator.configure("conf/log4j.properties");
+    }
 }

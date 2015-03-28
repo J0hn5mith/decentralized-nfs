@@ -9,12 +9,12 @@ import org.junit.Test;
 
 public class TestMain {
 
-//    @Test
-//    public void failingTest() {
-//
-//        Assert.assertEquals(0, 1);
-//
-//    }
+    @Test
+    public void failingTest() {
+
+        Assert.assertEquals(0, 1);
+
+    }
 
     @Test
     public void succeedingTest() {
