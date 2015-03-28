@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+        <SSN>555121211</SSN>
+        <Name>John Doe</Name>
+        <DateOfBirth>1975-05-15</DateOfBirth>
+        <EmployeeType>Exempt</EmployeeType>
+        <Salary>100000</Salary>
+</web-app>

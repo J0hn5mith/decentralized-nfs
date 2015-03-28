@@ -9,31 +9,11 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.PropertyConfigurator;
 
 public class Main {
-    private static Logger logger = Logger.getLogger(Main.class);
+    private static final Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
-        loadConfiguration();
 
+        LOGGER.info("Main method has started");
 
-        MDC.put("User", "test user 22");
-        MDC.put("OS", "Linux");
-
-        logger.info("Info die 2.");
-        try{
-            throw new Exception("Exception_1");
-        }
-        catch (Exception e){
-            logger.error("Error_2", e);
-        }
-        logger.error("New Error");
-        logger.debug("DEBUG");
-//        logger.warn("Warn");
-//        System.out.print("Done");
-    }
-
-    public static void loadConfiguration(){
-        PropertyConfigurator.configure("src/base.properties");
-        PropertyConfigurator.configure("src/local.properties");
-        PropertyConfigurator.configure("conf/log4j.properties");
     }
 }
