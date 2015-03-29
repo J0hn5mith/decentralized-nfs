@@ -14,8 +14,9 @@
             <url>http://tomp2p.net/dev/mvn/</url>
         </repository>
         <repository>
-            <id>net.nja.fuse</id>
-            <url>file://${project.basedir}/lib/fuse-jna-1.0.3.jar</url>
+            <id>project.local</id>
+            <name>project</name>
+            <url>file:${project.basedir}/repo</url>
         </repository>
     </repositories>
 
@@ -46,10 +47,11 @@
             <artifactId>jna</artifactId>
             <version>3.5.1</version>
         </dependency>
+        <!--Sorry for the typos-->
         <dependency>
-            <groupId>net.nja.fuse</groupId>
-            <artifactId>fuse-nja</artifactId>
-            <version>0.1</version>
+            <groupId>net.jna.fuse</groupId>
+            <artifactId>nja-fuse</artifactId>
+            <version>1.0</version>
         </dependency>
 
     </dependencies>
