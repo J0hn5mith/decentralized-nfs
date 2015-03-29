@@ -7,7 +7,7 @@ public interface IDecentralizedNetFileSystem {
 
 
     public void setUp();
-    public void loadConfig();
+    public void loadConfig(String configFile);
     public void start();
     public void pause();
     public void resume();

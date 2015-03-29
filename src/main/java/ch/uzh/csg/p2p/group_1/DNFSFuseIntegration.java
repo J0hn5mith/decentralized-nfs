@@ -17,9 +17,11 @@ import org.apache.log4j.lf5.LogLevel;
 public class DNFSFuseIntegration extends FuseFilesystem {
     private final Logger LOGGER = Logger.getLogger(this.getClass());
 
+    private final String fileName = "test_file.txt";
+    String contents = "ps aux";
+
     public DNFSFuseIntegration() {
         super();
-        LOGGER.setLevel(Level.DEBUG);
     }
 
     @Override
@@ -102,13 +104,17 @@ public class DNFSFuseIntegration extends FuseFilesystem {
     @Override
     public int getattr(String path, StructStat.StatWrapper stat) {
         LOGGER.debug("getattr was called");
+        if (path.equals(fileName)) { // psaux.txt
+            stat.setMode(TypeMode.NodeType.FILE).size(contents.length());
+            return 0;
+        }
         return 0;
     }
 
     @Override
     protected String getName() {
         LOGGER.debug("getName was called");
-        return null;
+        return "Fuse HD";
     }
 
     @Override
@@ -180,6 +186,7 @@ public class DNFSFuseIntegration extends FuseFilesystem {
     @Override
     public int readdir(String path, DirectoryFiller filler) {
         LOGGER.debug("readdir was called");
+        filler.add("/psaux.txt");
         return 0;
     }
 

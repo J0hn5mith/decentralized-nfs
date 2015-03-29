@@ -12,6 +12,8 @@ public class Main {
 
         LOGGER.setLevel(Level.DEBUG);
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
+        dnfs.loadConfig("./conf/settings.xml");
+        dnfs.setUp();
         dnfs.start();
 
         while(true){

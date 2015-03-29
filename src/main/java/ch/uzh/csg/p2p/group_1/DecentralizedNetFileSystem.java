@@ -5,32 +5,47 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
 public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
     private final Logger LOGGER = Logger.getLogger(this.getClass());
-    private DNFSFuseIntegration  fuseIntegration;
+    private DNFSFuseIntegration fuseIntegration;
+    private DNFSConnection connection;
+    private DNFSConfigurator conf;
 
-    public DecentralizedNetFileSystem(){
-        LOGGER.debug("DEBUG");
+    public DecentralizedNetFileSystem() {
         this.fuseIntegration = new DNFSFuseIntegration();
+        LOGGER.debug("DEBUG");
+    }
+    public void loadConfig(String configFile) {
+        LOGGER.debug("DNFS has loaded the configuration.");
+        this.conf = new DNFSConfigurator(configFile);
+        try {
+            this.conf.setUp();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+            LOGGER.error("Could not load the configuration.");
+        }
     }
 
-    public void setUp(){
+    public void setUp() {
+        this.connection = new DNFSConnection(this.conf);
+        this.connection.setUp();
+
         LOGGER.debug("DNFS has been set up.");
     }
 
-    public void loadConfig(){
-        LOGGER.debug("DNFS has loaded the configuration.");
-    }
 
-    public void start(){
+    public void start() {
         LOGGER.debug("DNFS has started.");
 
         try {
-            this.fuseIntegration.mount("testfs");
+            String mountPoint = this.conf.getConfig().getString("MountPoint");
+            this.fuseIntegration.mount(mountPoint);
         } catch (FuseException e) {
             e.printStackTrace();
             LOGGER.error("Failed to mount the fuse file system.");
@@ -38,15 +53,15 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.info("The DNFS started successful.");
     }
 
-    public void pause(){
+    public void pause() {
         LOGGER.debug("DNFS has paused.");
     }
 
-    public void resume(){
+    public void resume() {
         LOGGER.debug("DNFS has resumed.");
     }
 
-    public void shutDown(){
+    public void shutDown() {
         LOGGER.debug("DNFS has shut down.");
     }
 }

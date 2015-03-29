@@ -13,12 +13,10 @@ public class DNFSConfigurator {
 
     private String file_path;
     private XMLConfiguration config;
-    private DecentralizedNetFileSystem dnfs;
 
-    public DNFSConfigurator(String config_file, DecentralizedNetFileSystem dnfs){
+    public DNFSConfigurator(String config_file){
         this.file_path = config_file;
         this.config = new XMLConfiguration();
-        this.dnfs = dnfs;
     }
 
     public void setUp() throws ConfigurationException {
@@ -27,8 +25,13 @@ public class DNFSConfigurator {
         this.config.load();
     }
 
-    private void apply(){
+    private void apply(DecentralizedNetFileSystem dnfs){
         LOGGER.info("Apply settings to dnfs.");
+
+    }
+
+    public Configuration getConfig(){
+        return this.config;
 
     }
 

@@ -15,7 +15,7 @@ public class TestDNSConfigurator extends TestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        this.configurator = new DNFSConfigurator("./conf/settings.xml", null);
+        this.configurator = new DNFSConfigurator("./conf/settings.xml");
     }
 
     @Test
