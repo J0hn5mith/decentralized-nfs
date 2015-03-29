@@ -28,6 +28,8 @@ public class TestDecentralizedNetFileSystem {
 
     @Test
     public void testBasicFunctionality() {
+
+        this.decentralizedNetFileSystem.loadConfig("./conf/settings.xml");
         this.decentralizedNetFileSystem.setUp();
         this.decentralizedNetFileSystem.start();
         this.decentralizedNetFileSystem.pause();
