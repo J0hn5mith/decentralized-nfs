@@ -6,10 +6,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 
 
@@ -26,6 +23,7 @@ public class TestDecentralizedNetFileSystem {
     public void tearDown() throws Exception {
     }
 
+    @Ignore
     @Test
     public void testBasicFunctionality() {
 

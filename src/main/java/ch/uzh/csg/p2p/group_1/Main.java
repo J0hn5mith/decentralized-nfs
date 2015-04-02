@@ -8,7 +8,7 @@ import org.apache.log4j.*;
 public class Main {
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         LOGGER.setLevel(Level.DEBUG);
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
@@ -17,10 +17,10 @@ public class Main {
         dnfs.start();
 
         while(true){
+            Thread.sleep(500);
 
         }
 
-//        LOGGER.info("Main method has started");
 
     }
 }

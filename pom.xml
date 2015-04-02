@@ -19,7 +19,6 @@
             <url>file:${project.basedir}/repo</url>
         </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>net.tomp2p</groupId>
