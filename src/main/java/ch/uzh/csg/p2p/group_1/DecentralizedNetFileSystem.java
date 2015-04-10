@@ -5,7 +5,6 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -17,10 +16,17 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private DNFSConnection connection;
     private DNFSConfigurator conf;
 
+    /**
+     * 
+     */
     public DecentralizedNetFileSystem() {
         this.fuseIntegration = new DNFSFuseIntegration();
         LOGGER.debug("DEBUG");
     }
+    
+    /**
+     * 
+     */
     public void loadConfig(String configFile) {
         LOGGER.debug("DNFS has loaded the configuration.");
         this.conf = new DNFSConfigurator(configFile);
@@ -32,6 +38,9 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
     }
 
+    /**
+     * 
+     */
     public void setUp() {
         this.connection = new DNFSConnection(this.conf);
         this.connection.setUp();
@@ -40,7 +49,9 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.debug("DNFS has been set up.");
     }
 
-
+    /**
+     * 
+     */
     public void start() {
         LOGGER.debug("DNFS has started.");
 
@@ -54,14 +65,23 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.info("The DNFS started successful.");
     }
 
+    /**
+     * 
+     */
     public void pause() {
         LOGGER.debug("DNFS has paused.");
     }
 
+    /**
+     * 
+     */
     public void resume() {
         LOGGER.debug("DNFS has resumed.");
     }
 
+    /**
+     * 
+     */
     public void shutDown() {
         LOGGER.debug("DNFS has shut down.");
     }
