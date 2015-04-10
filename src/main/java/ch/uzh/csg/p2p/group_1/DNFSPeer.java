@@ -25,6 +25,15 @@ public class DNFSPeer {
         this.peer = new PeerBuilderDHT(new PeerBuilder(new Number160(RND)).ports(6111988).start()).start();
     }
 
+    public DNFSiNode getRootINode() throws DNFSException {
+        return new DNFSiNode();
+    }
+
+    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
+        return new DNFSiNode();
+
+    }
+
     public FuturePut putFile(String path, String file) throws IOException {
 
         DNFSData<String> data = new DNFSData<String>(path, file);
@@ -48,4 +57,8 @@ public class DNFSPeer {
      * getNewInodeID
      *
      */
+
+    public class INodeNotFoundException extends Exception{
+
+    }
 }

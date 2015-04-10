@@ -10,6 +10,7 @@ public class DNFSFile extends DNFSAbstractFile{
 
     DNFSFile(DNFSiNode iNode, DNFSPathResolver pathResolver){
         super(iNode, pathResolver);
+        //TODO: Check if iNode is File!
     }
 
     public String getData(){

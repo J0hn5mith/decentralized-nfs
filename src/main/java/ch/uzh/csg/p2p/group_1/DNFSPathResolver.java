@@ -40,19 +40,19 @@ public class DNFSPathResolver {
         LOGGER.info("Successfully set up connection");
     }
 
-    public void bootStrap(){
-
-    }
-
     public DNFSFolder getFolder(String path){
         DNFSiNode iNode = new DNFSiNode();
         iNode.setDir(true);
-        return new DNFSFolder(iNode);
+        return new DNFSFolder(iNode, this);
     }
 
     public DNFSFile getFile(String path){
         DNFSiNode iNode = new DNFSiNode();
-        return new DNFSFile(iNode);
+        return new DNFSFile(iNode, this);
+    }
+
+    public DNFSiNode getINodeByID(Number160 nodeID) throws DNFSException{
+        return peer.getINode(nodeID);
     }
 
     public DNFSiNode getINode(String path){
@@ -62,6 +62,25 @@ public class DNFSPathResolver {
             iNode.setDir(true);
         }
         return iNode;
+    }
+
+    public DNFSiNode resolve(String path) throws DNFSException {
+        String[] parts = path.split(File.separator);
+        DNFSFolder currentFolder = this.getRootFolder();
+
+        for (int i = 0; i < parts.length - 1; i++) {
+            String part = parts[i];
+            currentFolder = currentFolder.getChildFolder(part);
+        }
+
+        return currentFolder.getChildINode(parts[parts.length-1]);
+
+    }
+
+    private DNFSFolder getRootFolder() throws DNFSException{
+
+        return new DNFSFolder(peer.getRootINode(), this);
+
     }
 }
 
