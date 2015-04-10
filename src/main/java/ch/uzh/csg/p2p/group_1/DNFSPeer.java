@@ -35,16 +35,34 @@ public class DNFSPeer {
 
     /**
      * 
+     * @return
+     * @throws DNFSException
+     */
+    public DNFSiNode getRootINode() throws DNFSException {
+        return new DNFSiNode();
+    }
+
+    /**
+     * 
+     * @param iNodeID
+     * @return
+     * @throws DNFSException
+     */
+    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
+        return new DNFSiNode();
+
+    }
+
+    /**
+     * 
      * @param path
      * @param file
      * @return
      * @throws IOException
      */
     public FuturePut putFile(String path, String file) throws IOException {
-
         DNFSData<String> data = new DNFSData<String>(path, file);
         return peer.put(this.createKey(path)).data(new Data(data)).start();
-
     }
 
     /**
@@ -62,15 +80,7 @@ public class DNFSPeer {
      * @return
      */
     private Number160 createKey(String key) {
-
         return Number160.createHash(key);
     }
 
-
-    /**
-     * getInode
-     * getFile
-     * getNewInodeID
-     *
-     */
 }

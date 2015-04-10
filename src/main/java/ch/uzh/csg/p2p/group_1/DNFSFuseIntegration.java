@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import net.fusejna.util.FuseFilesystemAdapterFull;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
@@ -44,11 +43,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
-            DNFSFile file = new DNFSFile(iNode);
+            DNFSFile file = new DNFSFile(iNode, this.pathResolver);
             stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
             return 0;
         }
-//        return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
+        //return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
     }
     
     /**
@@ -67,7 +66,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
         DNFSFolder folder = pathResolver.getFolder(path);
-        for (DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
+        for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
             filler.add(o.getName());
         }
 

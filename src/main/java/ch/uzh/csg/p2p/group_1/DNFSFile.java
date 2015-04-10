@@ -13,8 +13,9 @@ public class DNFSFile extends DNFSAbstractFile {
      * 
      * @param iNode
      */
-    public DNFSFile(DNFSiNode iNode) {
-        this.setiNode(iNode);
+    DNFSFile(DNFSiNode iNode, DNFSPathResolver pathResolver){
+        super(iNode, pathResolver);
+        //TODO: Check if iNode is File!
     }
     
     /**

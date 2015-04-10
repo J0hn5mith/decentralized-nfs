@@ -13,8 +13,9 @@ public class DNFSFolder extends DNFSAbstractFile {
 	 * 
 	 * @param iNode
 	 */
-    public DNFSFolder(DNFSiNode iNode) {
-        this.setiNode(iNode);
+    DNFSFolder(DNFSiNode iNode, DNFSPathResolver pathResolver){
+        super(iNode, pathResolver);
+        //TODO: Check if iNode is Folder!
     }
 
     /**
@@ -28,9 +29,24 @@ public class DNFSFolder extends DNFSAbstractFile {
         return list;
     }
 
+    public DNFSFolder getChildFolder(String name) throws DNFSException{
+        return new DNFSFolder(this.getChildINode(name), this.getPathResolver());
+    }
+
+    public DNFSFile getChildFile(String name) throws DNFSException{
+        return new DNFSFile(this.getChildINode(name), this.getPathResolver());
+    }
+
+    public DNFSiNode getChildINode(String name) throws DNFSException{
+        return this.getPathResolver().getINodeByID(this.getIDOfChild(name));
+    }
+
+    private Number160 getIDOfChild(String name) throws DNFSException{
+        return Number160.createHash(10);
+    }
+
     /**
      * 
-     *
      */
     public class DNFSFolderEntry {
 

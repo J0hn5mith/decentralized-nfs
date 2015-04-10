@@ -6,8 +6,6 @@ package ch.uzh.csg.p2p.group_1;
 import org.apache.commons.configuration.*;
 import org.apache.log4j.Logger;
 
-import java.net.URL;
-
 public class DNFSConfigurator {
 	
     private final Logger LOGGER = Logger.getLogger(this.getClass());
@@ -40,7 +38,6 @@ public class DNFSConfigurator {
      */
     private void apply(DecentralizedNetFileSystem dnfs){
         LOGGER.info("Apply settings to dnfs.");
-
     }
     
     /**

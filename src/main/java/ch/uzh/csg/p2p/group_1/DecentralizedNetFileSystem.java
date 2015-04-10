@@ -6,7 +6,6 @@ package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
 
 
 public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
@@ -44,7 +43,6 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         this.pathResolver = new DNFSPathResolver(this.conf);
         this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
-
         Main.LOGGER.debug("DNFS has been set up.");
     }
 

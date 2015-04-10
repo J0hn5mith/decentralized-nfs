@@ -3,20 +3,11 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
-import net.tomp2p.dht.FuturePut;
-import net.tomp2p.dht.PeerBuilderDHT;
-import net.tomp2p.dht.PeerDHT;
-import net.tomp2p.p2p.Peer;
-import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
-
-import net.tomp2p.storage.Data;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 public class DNFSPathResolver {
 
@@ -63,7 +54,7 @@ public class DNFSPathResolver {
     public DNFSFolder getFolder(String path){
         DNFSiNode iNode = new DNFSiNode();
         iNode.setDir(true);
-        return new DNFSFolder(iNode);
+        return new DNFSFolder(iNode, this);
     }
 
     /**
@@ -73,7 +64,17 @@ public class DNFSPathResolver {
      */
     public DNFSFile getFile(String path){
         DNFSiNode iNode = new DNFSiNode();
-        return new DNFSFile(iNode);
+        return new DNFSFile(iNode, this);
+    }
+
+    /**
+     * 
+     * @param nodeID
+     * @return
+     * @throws DNFSException
+     */
+    public DNFSiNode getINodeByID(Number160 nodeID) throws DNFSException{
+        return peer.getINode(nodeID);
     }
 
     /**
@@ -91,12 +92,21 @@ public class DNFSPathResolver {
     }
 
     /**
-     *
-     * @param targetPath
-     * @param dirName
+     * 
+     * @param path
+     * @return
+     * @throws DNFSException
      */
-    public void mkdir(String targetPath, String dirName){
-//        File file = peer.getFile(targetPath).awaitUninterruptibly();
+    public DNFSiNode resolve(String path) throws DNFSException {
+        String[] parts = path.split(File.separator);
+        DNFSFolder currentFolder = this.getRootFolder();
+
+        for(int i = 0; i < parts.length - 1; i++) {
+            String part = parts[i];
+            currentFolder = currentFolder.getChildFolder(part);
+        }
+
+        return currentFolder.getChildINode(parts[parts.length - 1]);
     }
 
     /**
@@ -105,18 +115,9 @@ public class DNFSPathResolver {
      * @param file
      * @throws IOException
      */
-    public void write_file(String path, String file) throws IOException {
-        peer.putFile(path, file).awaitUninterruptibly();
-
+    private DNFSFolder getRootFolder() throws DNFSException{
+        return new DNFSFolder(peer.getRootINode(), this);
     }
-
-    /**
-     * 
-     * @param path
-     * @throws IOException
-     */
-    public void read_file(String path) throws IOException {
-        this.peer.getFile(path).awaitUninterruptibly();
-    }
+    
 }
 
