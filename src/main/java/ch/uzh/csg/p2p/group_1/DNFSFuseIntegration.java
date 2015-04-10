@@ -36,43 +36,6 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         this.pathResolver = pathResolver;
     }
 
-    @Override
-    public int getattr(final String path, final StructStat.StatWrapper stat) {
-        DNFSiNode iNode = this.pathResolver.getINode(path);
-        if(iNode.isDir()) { // Root directory
-            stat.setMode(TypeMode.NodeType.DIRECTORY);
-            return 0;
-        } else {
-            DNFSFile file = new DNFSFile(iNode, this.pathResolver);
-            stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
-            return 0;
-        }
-        //return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
-    }
-    
-    /**
-     * 
-     */
-    @Override
-    public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
-        // Compute substring that we are being asked to read
-        String content = this.pathResolver.getFile(path).getData();
-        final String s = content.substring((int) offset,
-                (int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
-        buffer.put(s.getBytes());
-        return s.getBytes().length;
-    }
-
-    @Override
-    public int readdir(final String path, final DirectoryFiller filler) {
-        DNFSFolder folder = pathResolver.getFolder(path);
-        for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
-            filler.add(o.getName());
-        }
-
-        return 0;
-    }
-
     /**
      * Change the permission bits of a file.
      */
@@ -93,6 +56,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     /**
      * From FUSE API:
+     * OPTIONAL!
      * Create and open a file
      * If the file does not exist, first create it with the specified mode, and then open it.
      * If this method is not implemented or under Linux kernel versions earlier than 2.6.15, the mknod() and open() methods will be called instead.
@@ -102,48 +66,25 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         Main.LOGGER.debug("create() was called");
         return 0;
     }
-
+    
     /**
      * From FUSE API:
-     * Clean up file system.
-     * Called on file system exit.
+     * Get file attributes.
+     * Similar to stat(). The 'st_dev' and 'st_blksize' fields are ignored. The 'st_ino' field is ignored except if the 'use_ino' mount option is given.
      */
     @Override
-    public void destroy() {
-        Main.LOGGER.debug("destory() was called");
-
+    public int getattr(final String path, final StructStat.StatWrapper stat) {
+        DNFSiNode iNode = this.pathResolver.getINode(path);
+        if(iNode.isDir()) { // Root directory
+            stat.setMode(TypeMode.NodeType.DIRECTORY);
+            return 0;
+        } else {
+            DNFSFile file = new DNFSFile(iNode, this.pathResolver);
+            stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
+            return 0;
+        }
+        //return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
     }
-
-    @Override
-    public int fgetattr(String path, StructStat.StatWrapper stat, StructFuseFileInfo.FileInfoWrapper info) {
-        Main.LOGGER.debug("fgetattr was called");
-        return 0;
-    }
-
-    @Override
-    public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        Main.LOGGER.debug("flush was called");
-        return 0;
-    }
-
-    @Override
-    public int fsync(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
-        Main.LOGGER.debug("fsync was called");
-        return 0;
-    }
-
-    @Override
-    public int fsyncdir(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
-        Main.LOGGER.debug("fsyncdir was called");
-        return 0;
-    }
-
-    @Override
-    public int ftruncate(String path, long offset, StructFuseFileInfo.FileInfoWrapper info) {
-        Main.LOGGER.debug("ftruncate was called");
-        return 0;
-    }
-
 
     @Override
     protected String getName() {
@@ -181,6 +122,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         return 0;
     }
 
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     */
     @Override
     public int lock(String path, StructFuseFileInfo.FileInfoWrapper info, FlockCommand command, StructFlock.FlockWrapper flock) {
         Main.LOGGER.debug("lock was called");
@@ -199,31 +144,68 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         return 0;
     }
 
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     */
     @Override
     public int open(String path, StructFuseFileInfo.FileInfoWrapper info) {
         Main.LOGGER.debug("open was called");
         return 0;
     }
 
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     */
     @Override
     public int opendir(String path, StructFuseFileInfo.FileInfoWrapper info) {
         Main.LOGGER.debug("opedir was called");
         return 0;
     }
 
+    /**
+     * 
+     */
+    @Override
+    public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
+        // Compute substring that we are being asked to read
+        String content = this.pathResolver.getFile(path).getData();
+        final String s = content.substring((int) offset,
+                (int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
+        buffer.put(s.getBytes());
+        return s.getBytes().length;
+    }
 
+    @Override
+    public int readdir(final String path, final DirectoryFiller filler) {
+        DNFSFolder folder = pathResolver.getFolder(path);
+        for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
+            filler.add(o.getName());
+        }
 
+        return 0;
+    }
+    
     @Override
     public int readlink(String path, ByteBuffer buffer, long size) {
         Main.LOGGER.debug("readlink was called");
         return 0;
     }
 
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     */
     @Override
     public int release(String path, StructFuseFileInfo.FileInfoWrapper info) {
         return 0;
     }
 
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     */
     @Override
     public int releasedir(String path, StructFuseFileInfo.FileInfoWrapper info) {
         Main.LOGGER.debug("relasedir was called");
@@ -298,6 +280,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     
     /**
      * From FUSE API:
+     * OPTIONAL!
      * Check file access permissions
      * This will be called for the access() system call. If the 'default_permissions' mount option is given, this method is not called.
      */
@@ -334,4 +317,80 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         return 0;
     }
     
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Clean up file system.
+     * Called on file system exit.
+     */
+    @Override
+    public void destroy() {
+        Main.LOGGER.debug("destory() was called");
+    }
+    
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Get attributes from an open file
+     * This method is called instead of the getattr() method if the file information is available.
+     * Currently this is only called after the create() method if that is implemented (see above). Later it may be called for invocations of fstat() too.
+     */
+    @Override
+    public int fgetattr(String path, StructStat.StatWrapper stat, StructFuseFileInfo.FileInfoWrapper info) {
+        Main.LOGGER.debug("fgetattr() was called");
+        return 0;
+    }
+    
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Possibly flush cached data.
+     * BIG NOTE: This is not equivalent to fsync(). It's not a request to sync dirty data.
+     * Flush is called on each close() of a file descriptor. So if a filesystem wants to return write errors in close() and the file has cached dirty data, this is a good place to write back data and return any errors. Since many applications ignore close() errors this is not always useful.
+     * NOTE: The flush() method may be called more than once for each open(). This happens if more than one file descriptor refers to an opened file due to dup(), dup2() or fork() calls. It is not possible to determine if a flush is final, so each flush should be treated equally. Multiple write-flush sequences are relatively rare, so this shouldn't be a problem.
+     * Filesystems shouldn't assume that flush will always be called after some writes, or that if will be called at all.
+     */
+    @Override
+    public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
+        Main.LOGGER.debug("flush() was called");
+        return 0;
+    }
+    
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Synchronize file contents
+     * If the datasync parameter is non-zero, then only the user data should be flushed, not the meta data.
+     */
+    @Override
+    public int fsync(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
+        Main.LOGGER.debug("fsync() was called");
+        return 0;
+    }
+    
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Synchronize directory contents
+     * If the datasync parameter is non-zero, then only the user data should be flushed, not the meta data.
+     */
+    @Override
+    public int fsyncdir(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
+        Main.LOGGER.debug("fsyncdir() was called");
+        return 0;
+    }
+    
+    /**
+     * From FUSE API:
+     * OPTIONAL!
+     * Change the size of an open file
+     * This method is called instead of the truncate() method if the truncation was invoked from an ftruncate() system call.
+     * If this method is not implemented or under Linux kernel versions earlier than 2.6.15, the truncate() method will be called instead.
+     */
+    @Override
+    public int ftruncate(String path, long offset, StructFuseFileInfo.FileInfoWrapper info) {
+        Main.LOGGER.debug("ftruncate() was called");
+        return 0;
+    }
+
 }
