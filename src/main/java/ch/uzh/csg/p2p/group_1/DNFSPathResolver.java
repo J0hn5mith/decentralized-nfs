@@ -18,13 +18,13 @@ import net.tomp2p.storage.Data;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-public class DNFSConnection {
+public class DNFSPathResolver {
     private final Logger LOGGER = Logger.getLogger(this.getClass());
 
     private DNFSConfigurator config;
     private DNFSPeer peer;
 
-    public DNFSConnection(DNFSConfigurator config) {
+    public DNFSPathResolver(DNFSConfigurator config) {
         this.config = config;
         LOGGER.setLevel(Level.INFO);
     }

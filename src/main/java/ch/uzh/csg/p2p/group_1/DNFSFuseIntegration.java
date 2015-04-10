@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 	
     private Logger LOGGER = Logger.getLogger(this.getClass());
-    private DNFSConnection connection;
+    private DNFSPathResolver connection;
 
     //    For testing
     private final String fileName = "/test.txt";
@@ -30,7 +30,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         this.LOGGER.setLevel(Level.DEBUG);
     }
 
-    public void setConnection(DNFSConnection connection) {
+    public void setConnection(DNFSPathResolver connection) {
         this.connection = connection;
     }
 

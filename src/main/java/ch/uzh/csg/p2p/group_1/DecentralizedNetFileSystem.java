@@ -13,7 +13,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
     private final Logger LOGGER = Logger.getLogger(this.getClass());
     private DNFSFuseIntegration fuseIntegration;
-    private DNFSConnection connection;
+    private DNFSPathResolver pathResolver;
     private DNFSConfigurator conf;
 
     /**
@@ -42,9 +42,9 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      * 
      */
     public void setUp() {
-        this.connection = new DNFSConnection(this.conf);
-        this.connection.setUp();
-        this.fuseIntegration.setConnection(this.connection);
+        this.pathResolver = new DNFSPathResolver(this.conf);
+        this.pathResolver.setUp();
+        this.fuseIntegration.setConnection(this.pathResolver);
 
         LOGGER.debug("DNFS has been set up.");
     }
