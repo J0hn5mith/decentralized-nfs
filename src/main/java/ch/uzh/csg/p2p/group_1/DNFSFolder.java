@@ -36,8 +36,14 @@ public class DNFSFolder extends DNFSAbstractFile{
     }
 
     private Number160 getIDOfChild(String name) throws DNFSException{
+        for (DNFSFolderEntry dnfsFolderEntry : this.getEntries()) {
+            if (dnfsFolderEntry.getName().equals(name)){
+                return dnfsFolderEntry.getKey();
+            }
+        }
         return Number160.createHash(10);
     }
+
 
     public class DNFSFolderEntry {
 

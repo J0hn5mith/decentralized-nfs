@@ -34,6 +34,11 @@ public class DNFSPeer {
 
     }
 
+    public DNFSBlock getBlock(Number160 id){
+        return new DNFSBlock();
+
+    }
+
     public FuturePut putFile(String path, String file) throws IOException {
 
         DNFSData<String> data = new DNFSData<String>(path, file);
