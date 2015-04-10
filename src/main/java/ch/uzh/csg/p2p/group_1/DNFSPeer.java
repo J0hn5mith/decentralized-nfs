@@ -37,6 +37,15 @@ public class DNFSPeer {
     }
 
     private Number160 createKey(String key) {
+
         return Number160.createHash(key);
     }
+
+
+    /**
+     * getInode
+     * getFile
+     * getNewInodeID
+     *
+     */
 }

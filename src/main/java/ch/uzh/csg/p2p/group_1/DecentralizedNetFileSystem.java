@@ -40,7 +40,6 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.debug("DNFS has been set up.");
     }
 
-
     public void start() {
         LOGGER.debug("DNFS has started.");
 

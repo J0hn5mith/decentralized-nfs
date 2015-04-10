@@ -7,12 +7,11 @@ import java.util.ArrayList;
 /**
  * Created by janmeier on 06.04.15.
  */
-public class DNFSFolder{
+public class DNFSFolder extends DNFSAbstractFile{
 
-    DNFSiNode iNode;
 
     public DNFSFolder(DNFSiNode iNode) {
-        this.iNode = iNode;
+        this.setiNode(iNode);
     }
 
     public ArrayList<DNFSFolderEntry> getEntries(){
