@@ -7,9 +7,11 @@ package ch.uzh.csg.p2p.group_1;
 import net.fusejna.*;
 import net.fusejna.types.TypeMode;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 
 import net.fusejna.util.FuseFilesystemAdapterFull;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 

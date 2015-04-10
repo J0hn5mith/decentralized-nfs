@@ -9,11 +9,20 @@ public abstract class DNFSAbstractFile {
 
     private DNFSiNode iNode;
 
+    /**
+     * 
+     * @return
+     */
     public DNFSiNode getINode() {
         return iNode;
     }
 
+    /**
+     * 
+     * @param iNode
+     */
     public void setiNode(DNFSiNode iNode) {
         this.iNode = iNode;
     }
+    
 }

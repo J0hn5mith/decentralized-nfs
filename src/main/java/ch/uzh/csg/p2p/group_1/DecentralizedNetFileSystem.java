@@ -49,12 +49,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.debug("DNFS has been set up.");
     }
 
-<<<<<<< HEAD
-=======
+
     /**
      * 
      */
->>>>>>> 63c702d1ad59eab29d0ad1006a760fa0726579d5
     public void start() {
         LOGGER.debug("DNFS has started.");
 
@@ -88,4 +86,5 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void shutDown() {
         LOGGER.debug("DNFS has shut down.");
     }
+    
 }
