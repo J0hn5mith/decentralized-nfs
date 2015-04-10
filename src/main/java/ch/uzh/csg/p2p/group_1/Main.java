@@ -6,7 +6,8 @@ package ch.uzh.csg.p2p.group_1;
 import org.apache.log4j.*;
 
 public class Main {
-    private static final Logger LOGGER = Logger.getLogger(Main.class);
+	
+    public static final Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String[] args) throws InterruptedException {
 

@@ -17,14 +17,22 @@ public abstract class DNFSAbstractFile {
 
     }
 
+    /**
+     * 
+     * @return
+     */
     public DNFSiNode getINode() {
         return iNode;
     }
 
+    /**
+     * 
+     * @param iNode
+     */
     public void setiNode(DNFSiNode iNode) {
         this.iNode = iNode;
     }
-
+    
     public DNFSPathResolver getPathResolver() {
         return pathResolver;
     }
@@ -32,4 +40,5 @@ public abstract class DNFSAbstractFile {
     public void setPathResolver(DNFSPathResolver pathResolver) {
         this.pathResolver = pathResolver;
     }
+    
 }

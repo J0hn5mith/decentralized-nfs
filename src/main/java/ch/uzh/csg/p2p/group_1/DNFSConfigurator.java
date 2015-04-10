@@ -6,30 +6,44 @@ package ch.uzh.csg.p2p.group_1;
 import org.apache.commons.configuration.*;
 import org.apache.log4j.Logger;
 
-import java.net.URL;
-
 public class DNFSConfigurator {
+	
     private final Logger LOGGER = Logger.getLogger(this.getClass());
 
-    private String file_path;
+    private String filePath;
     private XMLConfiguration config;
 
+    /**
+     * 
+     * @param config_file
+     */
     public DNFSConfigurator(String config_file){
-        this.file_path = config_file;
+        this.filePath = config_file;
         this.config = new XMLConfiguration();
     }
 
+    /**
+     * 
+     * @throws ConfigurationException
+     */
     public void setUp() throws ConfigurationException {
-        this.config.setFileName(this.file_path);
+        this.config.setFileName(this.filePath);
         this.config.setValidating(false); // We don't have a dtd schema by now
         this.config.load();
     }
 
+    /**
+     * 
+     * @param dnfs
+     */
     private void apply(DecentralizedNetFileSystem dnfs){
         LOGGER.info("Apply settings to dnfs.");
-
     }
-
+    
+    /**
+     * 
+     * @return
+     */
     public Configuration getConfig(){
         return this.config;
 
