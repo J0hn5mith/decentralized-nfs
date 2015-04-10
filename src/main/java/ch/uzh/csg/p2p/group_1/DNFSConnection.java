@@ -10,6 +10,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -40,10 +41,36 @@ public class DNFSConnection {
     }
 
     public void bootStrap(){
+
     }
 
-    public void mkdir(String path, String file){
+    public DNFSFolder getFolder(String path){
+        DNFSiNode iNode = new DNFSiNode();
+        iNode.setDir(true);
+        return new DNFSFolder(iNode);
+    }
 
+    public DNFSFile getFile(String path){
+        DNFSiNode iNode = new DNFSiNode();
+        return new DNFSFile(iNode);
+    }
+
+    public DNFSiNode getINode(String path){
+        DNFSiNode iNode = new DNFSiNode();
+
+        if(path.endsWith("/")){
+            iNode.setDir(true);
+        }
+        return iNode;
+    }
+
+    /**
+     *
+     * @param targetPath
+     * @param dirName
+     */
+    public void mkdir(String targetPath, String dirName){
+//        File file = peer.getFile(targetPath).awaitUninterruptibly();
     }
 
     public void write_file(String path, String file) throws IOException {

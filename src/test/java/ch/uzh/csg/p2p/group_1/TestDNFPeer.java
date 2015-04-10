@@ -14,6 +14,7 @@ import java.io.IOException;
  */
 public class TestDNFPeer {
     private final String fileName = "test.txt";
+    private final String fileContent = "Hello World";
     private DNFSPeer peer;
 
     @Before
@@ -30,15 +31,14 @@ public class TestDNFPeer {
     @Test
     public void testBasicFunctionality(){
         try {
-            this.peer.putFile(this.fileName, "Hello World").awaitUninterruptibly();
+            this.peer.putFile(this.fileName, this.fileContent).awaitUninterruptibly();
             FutureGet result = this.peer.getFile(this.fileName).awaitUninterruptibly();
             Data data = result.data();
-
 
             DNFSData<String> dnfsData = (DNFSData<String>) data.object();
             String result_data = dnfsData.getData();
 
-            Assert.assertEquals("Hello World", result_data);
+            Assert.assertEquals(this.fileContent, result_data);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -35,6 +35,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void setUp() {
         this.connection = new DNFSConnection(this.conf);
         this.connection.setUp();
+        this.fuseIntegration.setConnection(this.connection);
 
         LOGGER.debug("DNFS has been set up.");
     }

@@ -15,52 +15,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.lf5.LogLevel;
 
-//public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
-////    public static void main(final String... args) throws FuseException
-////    {
-////        if (args.length != 1) {
-////            System.err.println("Usage: HelloFS <mountpoint>");
-////            System.exit(1);
-////        }
-////        new HelloFS().log(true).mount(args[0]);
-////    }
-//
-//    final String filename = "/hello.txt";
-//    final String contents = "Hello World!\n";
-//
-//    @Override
-//    public int getattr(final String path, final StructStat.StatWrapper stat) {
-//        if (path.equals(File.separator)) { // Root directory
-//            stat.setMode(TypeMode.NodeType.DIRECTORY);
-//            return 0;
-//        }
-//        if (path.equals(filename)) { // hello.txt
-//            stat.setMode(TypeMode.NodeType.FILE).size(contents.length());
-//            return 0;
-//        }
-//        return -ErrorCodes.ENOENT();
-//    }
-//
-//    @Override
-//    public int read(final String path, final ByteBuffer buffer, final long size, final long offset,
-//                    final StructFuseFileInfo.FileInfoWrapper info) {
-//        // Compute substring that we are being asked to read
-//        final String s = contents.substring((int) offset,
-//                (int) Math.max(offset, Math.min(contents.length() - offset, offset + size)));
-//        buffer.put(s.getBytes());
-//        return s.getBytes().length;
-//    }
-//
-//    @Override
-//    public int readdir(final String path, final DirectoryFiller filler) {
-//        filler.add(filename);
-//        return 0;
-//    }
-//}
-
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     private Logger LOGGER = Logger.getLogger(this.getClass());
+    private DNFSConnection connection;
+
+    //    For testing
+    private final String fileName = "/test.txt";
+    final String contents = "Hello World!\n";
 
 
     public DNFSFuseIntegration() {
@@ -69,35 +31,41 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         this.LOGGER.setLevel(Level.DEBUG);
     }
 
-//    For testing
-    private final String fileName = "/test_file.txt";
-    final String contents = "Hello World!\n";
+    public void setConnection(DNFSConnection connection) {
+        this.connection = connection;
+    }
 
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
-        if (path.equals(File.separator)) { // Root directory
+        DNFSiNode iNode = this.connection.getINode(path);
+        if (iNode.isDir()) { // Root directory
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         }
-        if (path.equals(this.fileName)) { // hello.txt
-            stat.setMode(TypeMode.NodeType.FILE).size(contents.length());
+        else{
+            DNFSFile file = new DNFSFile(iNode);
+            stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
             return 0;
         }
-        return -ErrorCodes.ENOENT();
+//        return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
     }
     //    @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
-        LOGGER.debug("read was called");
         // Compute substring that we are being asked to read
-        final String s = contents.substring((int) offset,
-                (int) Math.max(offset, Math.min(contents.length() - offset, offset + size)));
+        String content = this.connection.getFile(path).getData();
+        final String s = content.substring((int) offset,
+                (int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
         buffer.put(s.getBytes());
         return s.getBytes().length;
     }
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
-        filler.add(this.fileName);
+        DNFSFolder folder = connection.getFolder(path);
+        for (DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
+            filler.add(o.getName());
+        }
+
         return 0;
     }
 
