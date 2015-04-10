@@ -10,8 +10,8 @@ import java.util.ArrayList;
 public class DNFSFolder extends DNFSAbstractFile{
 
 
-    public DNFSFolder(DNFSiNode iNode) {
-        this.setiNode(iNode);
+    DNFSFolder(DNFSiNode iNode, DNFSPathResolver pathResolver){
+        super(iNode, pathResolver);
     }
 
     public ArrayList<DNFSFolderEntry> getEntries(){
@@ -20,8 +20,6 @@ public class DNFSFolder extends DNFSAbstractFile{
         list.add(new DNFSFolderEntry(Number160.createHash(2), "heey.txt"));
         return list;
     }
-
-
 
     public class DNFSFolderEntry {
 

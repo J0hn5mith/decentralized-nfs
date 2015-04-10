@@ -63,23 +63,5 @@ public class DNFSPathResolver {
         }
         return iNode;
     }
-
-    /**
-     *
-     * @param targetPath
-     * @param dirName
-     */
-    public void mkdir(String targetPath, String dirName){
-//        File file = peer.getFile(targetPath).awaitUninterruptibly();
-    }
-
-    public void write_file(String path, String file) throws IOException {
-        peer.putFile(path, file).awaitUninterruptibly();
-
-    }
-
-    public void read_file(String path) throws IOException {
-        this.peer.getFile(path).awaitUninterruptibly();
-    }
 }
 

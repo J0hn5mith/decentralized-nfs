@@ -7,6 +7,7 @@ package ch.uzh.csg.p2p.group_1;
 import net.fusejna.*;
 import net.fusejna.types.TypeMode;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 
 import net.fusejna.util.FuseFilesystemAdapterFull;
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 	
     private Logger LOGGER = Logger.getLogger(this.getClass());
-    private DNFSPathResolver connection;
+    private DNFSPathResolver pathRelsover;
 
     //    For testing
     private final String fileName = "/test.txt";
@@ -30,19 +31,19 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         this.LOGGER.setLevel(Level.DEBUG);
     }
 
-    public void setConnection(DNFSPathResolver connection) {
-        this.connection = connection;
+    public void setPathRelsover(DNFSPathResolver pathRelsover) {
+        this.pathRelsover = pathRelsover;
     }
 
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
-        DNFSiNode iNode = this.connection.getINode(path);
+        DNFSiNode iNode = this.pathRelsover.getINode(path);
         if (iNode.isDir()) { // Root directory
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         }
         else{
-            DNFSFile file = new DNFSFile(iNode);
+            DNFSFile file = new DNFSFile(iNode, this.pathRelsover);
             stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
             return 0;
         }
@@ -51,7 +52,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     //    @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         // Compute substring that we are being asked to read
-        String content = this.connection.getFile(path).getData();
+        String content = this.pathRelsover.getFile(path).getData();
         final String s = content.substring((int) offset,
                 (int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
         buffer.put(s.getBytes());
@@ -60,7 +61,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
-        DNFSFolder folder = connection.getFolder(path);
+        DNFSFolder folder = pathRelsover.getFolder(path);
         for (DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
             filler.add(o.getName());
         }
