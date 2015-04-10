@@ -19,42 +19,68 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class DNFSPathResolver {
-    private final Logger LOGGER = Logger.getLogger(this.getClass());
 
     private DNFSConfigurator config;
     private DNFSPeer peer;
 
+    /**
+     * 
+     * @param config
+     */
     public DNFSPathResolver(DNFSConfigurator config) {
         this.config = config;
-        LOGGER.setLevel(Level.INFO);
+        Main.LOGGER.setLevel(Level.INFO);
     }
 
-    public void setUp(){
+    /**
+     * 
+     */
+    public void setUp() {
+    	
         try {
             this.peer = new DNFSPeer();
             this.peer.setUp();
         } catch (IOException e) {
             e.printStackTrace();
-            LOGGER.error("Failed to set up peer");
+            Main.LOGGER.error("Failed to set up peer");
         }
-        LOGGER.info("Successfully set up connection");
+        
+        Main.LOGGER.info("Successfully set up connection");
     }
 
+    /**
+     * 
+     */
     public void bootStrap(){
 
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public DNFSFolder getFolder(String path){
         DNFSiNode iNode = new DNFSiNode();
         iNode.setDir(true);
         return new DNFSFolder(iNode);
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public DNFSFile getFile(String path){
         DNFSiNode iNode = new DNFSiNode();
         return new DNFSFile(iNode);
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public DNFSiNode getINode(String path){
         DNFSiNode iNode = new DNFSiNode();
 
@@ -73,11 +99,22 @@ public class DNFSPathResolver {
 //        File file = peer.getFile(targetPath).awaitUninterruptibly();
     }
 
+    /**
+     * 
+     * @param path
+     * @param file
+     * @throws IOException
+     */
     public void write_file(String path, String file) throws IOException {
         peer.putFile(path, file).awaitUninterruptibly();
 
     }
 
+    /**
+     * 
+     * @param path
+     * @throws IOException
+     */
     public void read_file(String path) throws IOException {
         this.peer.getFile(path).awaitUninterruptibly();
     }

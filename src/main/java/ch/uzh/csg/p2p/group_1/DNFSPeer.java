@@ -15,16 +15,31 @@ import java.util.Random;
  * Created by janmeier on 02.04.15.
  */
 public class DNFSPeer {
+	
     private PeerDHT peer;
 
+    /**
+     * 
+     */
     public DNFSPeer() {
     }
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void setUp() throws IOException {
         final Random RND = new Random(42L);
         this.peer = new PeerBuilderDHT(new PeerBuilder(new Number160(RND)).ports(6111988).start()).start();
     }
 
+    /**
+     * 
+     * @param path
+     * @param file
+     * @return
+     * @throws IOException
+     */
     public FuturePut putFile(String path, String file) throws IOException {
 
         DNFSData<String> data = new DNFSData<String>(path, file);
@@ -32,10 +47,20 @@ public class DNFSPeer {
 
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public FutureGet getFile(String path) {
         return this.peer.get(this.createKey(path)).start();
     }
 
+    /**
+     * 
+     * @param key
+     * @return
+     */
     private Number160 createKey(String key) {
 
         return Number160.createHash(key);

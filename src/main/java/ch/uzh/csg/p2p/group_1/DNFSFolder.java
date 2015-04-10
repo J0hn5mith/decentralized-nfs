@@ -7,13 +7,20 @@ import java.util.ArrayList;
 /**
  * Created by janmeier on 06.04.15.
  */
-public class DNFSFolder extends DNFSAbstractFile{
+public class DNFSFolder extends DNFSAbstractFile {
 
-
+	/**
+	 * 
+	 * @param iNode
+	 */
     public DNFSFolder(DNFSiNode iNode) {
         this.setiNode(iNode);
     }
 
+    /**
+     * 
+     * @return
+     */
     public ArrayList<DNFSFolderEntry> getEntries(){
         ArrayList<DNFSFolderEntry> list = new ArrayList<DNFSFolderEntry>();
         list.add(new DNFSFolderEntry(Number160.createHash(123), "test.txt"));
@@ -21,8 +28,10 @@ public class DNFSFolder extends DNFSAbstractFile{
         return list;
     }
 
-
-
+    /**
+     * 
+     *
+     */
     public class DNFSFolderEntry {
 
         private Number160 key;
@@ -40,5 +49,7 @@ public class DNFSFolder extends DNFSAbstractFile{
         public String getName() {
             return name;
         }
+        
     }
+    
 }
