@@ -63,9 +63,8 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
     private InputStream getFolderFileData(){
-        String string =  "1 ./\n2 hello.txt\n3 heeey.txt";
-        InputStream is = new ByteArrayInputStream(string.getBytes());
-        return is;
+        DNFSBlock block = this.getPathResolver().getBlock(this.getINode().getBlockIDs().get(0));
+        return block.getInputStream();
     }
 
     /**

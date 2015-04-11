@@ -14,6 +14,12 @@ public class DNFSiNode implements Serializable{
     private static final long serialVersionUID = 2098774660703813030L;
     private boolean isDir;
 
+    List<Number160> blockIds;
+
+    public DNFSiNode() {
+        this.blockIds = new ArrayList<Number160>();
+    }
+
     public void setDir(boolean isDir) {
         this.isDir = isDir;
     }
@@ -22,6 +28,9 @@ public class DNFSiNode implements Serializable{
         return isDir;
     }
 
+    public int getSize(){
+        return 100;
+    }
     public int getUseID(){
         return 10;
     }
@@ -38,9 +47,10 @@ public class DNFSiNode implements Serializable{
         return new Date();
     }
 
+    public void addBlock(DNFSBlock block){
+        blockIds.add(Number160.createHash(1000));
+    }
     public List<Number160> getBlockIDs(){
-        List<Number160> ids = new ArrayList<Number160>();
-        ids.add(Number160.createHash(123));
-        return ids;
+        return blockIds;
     }
 }

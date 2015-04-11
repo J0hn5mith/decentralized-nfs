@@ -7,7 +7,10 @@ package ch.uzh.csg.p2p.group_1;
 import net.fusejna.*;
 import net.fusejna.types.TypeMode;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 
 import net.fusejna.util.FuseFilesystemAdapterFull;
@@ -80,7 +83,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             return 0;
         } else {
             DNFSFile file = new DNFSFile(iNode, this.pathResolver);
-            stat.setMode(TypeMode.NodeType.FILE).size(file.getData().length());
+            stat.setMode(TypeMode.NodeType.FILE).size(file.getINode().getSize());
             return 0;
         }
         //return -ErrorCodes.ENOENT(); // No needed right now because getattr cannot fail
@@ -170,7 +173,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         // Compute substring that we are being asked to read
-        String content = this.pathResolver.getFile(path).getData();
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.pathResolver.getFile(path).getInputStream()));
+        String content = null;
+        try {
+            content = br.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         final String s = content.substring((int) offset,
                 (int) Math.max(offset, Math.min(content.length() - offset, offset + size)));
         buffer.put(s.getBytes());

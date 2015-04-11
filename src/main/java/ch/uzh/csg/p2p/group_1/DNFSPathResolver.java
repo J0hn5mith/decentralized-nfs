@@ -91,6 +91,10 @@ public class DNFSPathResolver {
         return iNode;
     }
 
+    public DNFSBlock getBlock(Number160 blockID){
+        return this.peer.getBlock(blockID);
+    }
+
     /**
      * 
      * @param path
