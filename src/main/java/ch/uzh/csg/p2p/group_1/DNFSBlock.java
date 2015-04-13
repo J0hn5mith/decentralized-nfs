@@ -1,5 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
+import net.tomp2p.peers.Number160;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -10,13 +12,16 @@ import java.io.Serializable;
 public class DNFSBlock implements Serializable {
     private static final long serialVersionUID = 2098774660703813030L;
 
+    Number160 id;
     String data;
 
-    public DNFSBlock() {
+    public DNFSBlock(Number160 id) {
         this.data = "";
+        this.id = id;
     }
 
-    public DNFSBlock(String data) {
+    public DNFSBlock(Number160 id, String data) {
+        this(id);
         this.data = data;
     }
 

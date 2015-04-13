@@ -1,5 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
+import net.tomp2p.peers.Number160;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -18,6 +20,8 @@ public class DNFSFile extends DNFSAbstractFile {
     DNFSFile(DNFSiNode iNode, DNFSPathResolver pathResolver){
         super(iNode, pathResolver);
         //TODO: Check if iNode is File!
+        DNFSBlock block = new DNFSBlock(Number160.createHash(1000));
+        this.getINode().addBlock(block);
     }
     
     /**

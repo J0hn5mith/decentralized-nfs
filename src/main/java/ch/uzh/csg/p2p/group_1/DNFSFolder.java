@@ -17,6 +17,8 @@ public class DNFSFolder extends DNFSAbstractFile {
     DNFSFolder(DNFSiNode iNode, DNFSPathResolver pathResolver){
         super(iNode, pathResolver);
         //TODO: Check if iNode is Folder!
+        DNFSBlock block = new DNFSBlock(Number160.createHash(1));
+        this.getINode().addBlock(block);
     }
 
     /**

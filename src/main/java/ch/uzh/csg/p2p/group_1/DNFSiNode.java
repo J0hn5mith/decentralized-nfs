@@ -48,7 +48,7 @@ public class DNFSiNode implements Serializable{
     }
 
     public void addBlock(DNFSBlock block){
-        blockIds.add(Number160.createHash(1000));
+        blockIds.add(block.id);
     }
     public List<Number160> getBlockIDs(){
         return blockIds;
