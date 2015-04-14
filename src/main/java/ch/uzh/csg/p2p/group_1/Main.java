@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Level.WARN);
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
         dnfs.loadConfig("./conf/settings.xml");
         dnfs.setUp();

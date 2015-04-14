@@ -25,7 +25,19 @@ public class DNFSBlock implements Serializable {
         this.data = data;
     }
 
+    public Number160 getId() {
+        return id;
+    }
+
+    public void setId(Number160 id) {
+        this.id = id;
+    }
+
     public InputStream getInputStream(){
         return new ByteArrayInputStream(data.getBytes());
+    }
+
+    public void append(String appendString){
+        this.data = this.data + appendString;
     }
 }

@@ -9,19 +9,32 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
 import java.io.IOException;
+import java.util.Dictionary;
 import java.util.Random;
 
 /**
  * Created by janmeier on 02.04.15.
  */
 public class DNFSPeer {
-	
+
     private PeerDHT peer;
+    private Random random;
+    private Dictionary<Number160, DNFSBlock> blocks;
+    private Dictionary<Number160, DNFSiNode> iNodes;
+    /**
+     * TEST
+     */
+    public DNFSBlock fileBlock;
+    public DNFSBlock folderBlock;
+
 
     /**
      * 
      */
     public DNFSPeer() {
+        this.fileBlock =  new DNFSBlock(Number160.createHash(1000), "Hello world, again");
+        this.folderBlock = new DNFSBlock(Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt\n5 hi_ben.txt");
+        this.random = new Random();
     }
 
     /**
@@ -39,7 +52,9 @@ public class DNFSPeer {
      * @throws DNFSException
      */
     public DNFSiNode getRootINode() throws DNFSException {
-        return new DNFSiNode();
+        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
+        iNode.setDir(true);
+        return iNode;
     }
 
     /**
@@ -49,18 +64,35 @@ public class DNFSPeer {
      * @throws DNFSException
      */
     public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
-        return new DNFSiNode();
-
+        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
+        iNode.setDir(false);
+        return iNode;
     }
 
+    public DNFSiNode getNewINode(){
+        DNFSiNode iNode = new DNFSiNode(this.getNewINodeID());
+        return iNode;
+    }
+    public DNFSBlock getNewBlock(){
+        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
+        this.blocks.put(block.getId(), block);
+        return block;
+    }
+    public Number160 getNewINodeID(){
+        return Number160.createHash(this.random.nextInt());
+    }
+
+    public Number160 getNewBlockID(){
+        return Number160.createHash(this.random.nextInt());
+    }
     public DNFSBlock getBlock(Number160 id){
 
         if(id.equals(Number160.createHash(1000))){
-            return new DNFSBlock(Number160.createHash(1000), "Hello world");
+            return this.fileBlock;
 
         }
         else if (id.equals(Number160.createHash(1))){
-            return new DNFSBlock(Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt");
+            return this.folderBlock;
         }
         return new DNFSBlock(Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt");
     }

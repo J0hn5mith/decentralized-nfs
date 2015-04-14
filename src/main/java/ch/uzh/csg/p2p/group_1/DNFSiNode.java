@@ -13,11 +13,20 @@ import java.util.List;
 public class DNFSiNode implements Serializable{
     private static final long serialVersionUID = 2098774660703813030L;
     private boolean isDir;
-
+    Number160 id;
     List<Number160> blockIds;
 
-    public DNFSiNode() {
+    public DNFSiNode(Number160 id) {
+        this.id = id;
         this.blockIds = new ArrayList<Number160>();
+    }
+
+    public Number160 getId() {
+        return id;
+    }
+
+    public void setId(Number160 id) {
+        this.id = id;
     }
 
     public void setDir(boolean isDir) {

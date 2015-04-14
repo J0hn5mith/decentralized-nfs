@@ -7,10 +7,16 @@ import net.tomp2p.peers.Number160;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 public class DNFSPathResolver {
-
+    final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
     private DNFSConfigurator config;
     private DNFSPeer peer;
 
@@ -20,7 +26,7 @@ public class DNFSPathResolver {
      */
     public DNFSPathResolver(DNFSConfigurator config) {
         this.config = config;
-        Main.LOGGER.setLevel(Level.INFO);
+        Main.LOGGER.setLevel(Level.WARN);
     }
 
     /**
@@ -39,11 +45,12 @@ public class DNFSPathResolver {
         Main.LOGGER.info("Successfully set up connection");
     }
 
-    /**
-     * 
-     */
-    public void bootStrap(){
+    public DNFSPeer getPeer() {
+        return peer;
+    }
 
+    public void setPeer(DNFSPeer peer) {
+        this.peer = peer;
     }
 
     /**
@@ -52,10 +59,11 @@ public class DNFSPathResolver {
      * @return
      */
     public DNFSFolder getFolder(String path){
-        DNFSiNode iNode = new DNFSiNode();
+        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
         iNode.setDir(true);
         return new DNFSFolder(iNode, this);
     }
+
 
     /**
      * 
@@ -63,7 +71,7 @@ public class DNFSPathResolver {
      * @return
      */
     public DNFSFile getFile(String path){
-        DNFSiNode iNode = new DNFSiNode();
+        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
         return new DNFSFile(iNode, this);
     }
 
@@ -82,13 +90,8 @@ public class DNFSPathResolver {
      * @param path
      * @return
      */
-    public DNFSiNode getINode(String path){
-        DNFSiNode iNode = new DNFSiNode();
-
-        if(path.endsWith("/")){
-            iNode.setDir(true);
-        }
-        return iNode;
+    public DNFSiNode getINode(String path) throws DNFSException {
+        return this.resolve(path);
     }
 
     public DNFSBlock getBlock(Number160 blockID){
@@ -102,21 +105,43 @@ public class DNFSPathResolver {
      * @throws DNFSException
      */
     public DNFSiNode resolve(String path) throws DNFSException {
-        String[] parts = path.split(File.separator);
-        DNFSFolder currentFolder = this.getRootFolder();
+        List<String> parts = this.splitPath(path);
+        return this.resolve(parts);
 
-        for(int i = 0; i < parts.length - 1; i++) {
-            String part = parts[i];
+    }
+
+    public DNFSiNode resolve(List<String> pathParts) throws DNFSException {
+        DNFSFolder currentFolder = this.getRootFolder();
+        if (pathParts.size() == 0){
+            return currentFolder.getINode();
+        }
+
+        for(int i = 0; i < pathParts.size() - 1; i++) {
+            String part = pathParts.get(i);
             currentFolder = currentFolder.getChildFolder(part);
         }
 
-        return currentFolder.getChildINode(parts[parts.length - 1]);
+        return currentFolder.getChildINode(pathParts.get(pathParts.size() - 1));
+    }
+
+    /**
+     * Splits a path and makes sure that there are no empty items in it.
+     * @param path
+     * @return
+     */
+    static public List<String> splitPath(String path){
+        List<String> parts = new ArrayList<String>(Arrays.asList(path.split(File.separator)));
+        for (Iterator<String> iter = parts.listIterator(); iter.hasNext(); ) {
+            String a = iter.next();
+            if (a.isEmpty()) {
+                iter.remove();
+            }
+        }
+        return parts;
     }
 
     /**
      * 
-     * @param path
-     * @param file
      * @throws IOException
      */
     private DNFSFolder getRootFolder() throws DNFSException{
