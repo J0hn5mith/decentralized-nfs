@@ -32,8 +32,11 @@ public class DNFSPeer {
      * 
      */
     public DNFSPeer() {
-        this.fileBlock =  new DNFSBlock(Number160.createHash(1000), "Hello world, again");
-        this.folderBlock = new DNFSBlock(Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt\n5 hi_ben.txt");
+        DNFSBlock fileBlock =  new DNFSBlock(Number160.createHash(1000), "Hello world, again");
+        DNFSBlock folderBlock = new DNFSBlock(
+                Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt\n5 hi_ben.txt");
+        this.blocks.put(fileBlock.getId(), fileBlock);
+        this.blocks.put(folderBlock.getId(), folderBlock);
         this.random = new Random();
     }
 
@@ -88,13 +91,13 @@ public class DNFSPeer {
     public DNFSBlock getBlock(Number160 id){
 
         if(id.equals(Number160.createHash(1000))){
-            return this.fileBlock;
+            return this.blocks.get(Number160.createHash(1));
 
         }
         else if (id.equals(Number160.createHash(1))){
-            return this.folderBlock;
+            return this.blocks.get(Number160.createHash(1));
         }
-        return new DNFSBlock(Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt");
+        return this.blocks.get(Number160.createHash(1));
     }
 
     /**

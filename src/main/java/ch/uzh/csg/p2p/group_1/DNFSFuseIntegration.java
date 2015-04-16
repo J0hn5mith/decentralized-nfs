@@ -84,7 +84,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public int getattr(final String path, final StructStat.StatWrapper stat) {
         DNFSiNode iNode = null;
         try {
-            iNode = this.pathResolver.getINode(path);
+            iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
             LOGGER.warn("Could not find attrs for path: " + path);
             return -ErrorCodes.ENOENT();
@@ -151,11 +151,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public int mkdir(String path, TypeMode.ModeWrapper mode) {
         this.LOGGER.debug("mkdir was called for path: " + path);
 
-        List<String> parts = DNFSPathResolver.splitPath(path);
-        String newFolderName = parts.get(parts.size() - 1);
-        String newPath = Joiner.on("/").join(parts.subList(0, parts.size() - 1));//Change that TODO
-        DNFSFolder targetFolder = this.pathResolver.getFolder(newPath);
-        targetFolder.addChildFolder(newFolderName);
+        DNFSPath dnfsPath = new DNFSPath(path);
+        String folderName = dnfsPath.getComponent(-1);
+        DNFSPath subPath = dnfsPath.getSubPath(0, -1);
+        DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
+        targetFolder.addChildFolder(folderName);
 
         return 0;
     }
@@ -193,7 +193,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         // Compute substring that we are being asked to read
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.pathResolver.getFile(path).getInputStream()));
+        DNFSPath dnfsPath = new DNFSPath(path);
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.pathResolver.getFile(dnfsPath).getInputStream()));
         String content = null;
         try {
             content = br.readLine();
@@ -208,7 +209,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
-        DNFSFolder folder = pathResolver.getFolder(path);
+        DNFSFolder folder = pathResolver.getFolder(new DNFSPath(path));
         for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
             filler.add(o.getName());
         }

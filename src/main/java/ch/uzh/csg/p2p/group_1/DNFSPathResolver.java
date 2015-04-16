@@ -58,7 +58,7 @@ public class DNFSPathResolver {
      * @param path
      * @return
      */
-    public DNFSFolder getFolder(String path){
+    public DNFSFolder getFolder(DNFSPath path){
         DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
         iNode.setDir(true);
         return new DNFSFolder(iNode, this);
@@ -70,7 +70,7 @@ public class DNFSPathResolver {
      * @param path
      * @return
      */
-    public DNFSFile getFile(String path){
+    public DNFSFile getFile(DNFSPath path){
         DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
         return new DNFSFile(iNode, this);
     }
@@ -90,7 +90,7 @@ public class DNFSPathResolver {
      * @param path
      * @return
      */
-    public DNFSiNode getINode(String path) throws DNFSException {
+    public DNFSiNode getINode(DNFSPath path) throws DNFSException {
         return this.resolve(path);
     }
 
@@ -98,47 +98,21 @@ public class DNFSPathResolver {
         return this.peer.getBlock(blockID);
     }
 
-    /**
-     * 
-     * @param path
-     * @return
-     * @throws DNFSException
-     */
-    public DNFSiNode resolve(String path) throws DNFSException {
-        List<String> parts = this.splitPath(path);
-        return this.resolve(parts);
 
-    }
-
-    public DNFSiNode resolve(List<String> pathParts) throws DNFSException {
+    public DNFSiNode resolve(DNFSPath path) throws DNFSException {
         DNFSFolder currentFolder = this.getRootFolder();
-        if (pathParts.size() == 0){
+        if (path.length() == 0){
             return currentFolder.getINode();
         }
 
-        for(int i = 0; i < pathParts.size() - 1; i++) {
-            String part = pathParts.get(i);
-            currentFolder = currentFolder.getChildFolder(part);
+        for (String pathComponent : path.getComponents(0, -1)) {
+            currentFolder = currentFolder.getChildFolder(pathComponent);
+
         }
 
-        return currentFolder.getChildINode(pathParts.get(pathParts.size() - 1));
+        return currentFolder.getChildINode(path.getComponent(-1));
     }
 
-    /**
-     * Splits a path and makes sure that there are no empty items in it.
-     * @param path
-     * @return
-     */
-    static public List<String> splitPath(String path){
-        List<String> parts = new ArrayList<String>(Arrays.asList(path.split(File.separator)));
-        for (Iterator<String> iter = parts.listIterator(); iter.hasNext(); ) {
-            String a = iter.next();
-            if (a.isEmpty()) {
-                iter.remove();
-            }
-        }
-        return parts;
-    }
 
     /**
      * 
