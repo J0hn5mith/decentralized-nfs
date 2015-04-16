@@ -9,8 +9,7 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by janmeier on 02.04.15.
@@ -19,8 +18,8 @@ public class DNFSPeer {
 
     private PeerDHT peer;
     private Random random;
-    private Dictionary<Number160, DNFSBlock> blocks;
-    private Dictionary<Number160, DNFSiNode> iNodes;
+    private Map<Number160, DNFSBlock> blocks;
+    private Map<Number160, DNFSiNode> iNodes;
     /**
      * TEST
      */
@@ -35,6 +34,8 @@ public class DNFSPeer {
         DNFSBlock fileBlock =  new DNFSBlock(Number160.createHash(1000), "Hello world, again");
         DNFSBlock folderBlock = new DNFSBlock(
                 Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt\n5 hi_ben.txt");
+        this.blocks = new HashMap<Number160, DNFSBlock>();
+        this.iNodes = new HashMap<Number160, DNFSiNode>();
         this.blocks.put(fileBlock.getId(), fileBlock);
         this.blocks.put(folderBlock.getId(), folderBlock);
         this.random = new Random();
