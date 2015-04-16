@@ -4,7 +4,6 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
-import com.google.common.base.Joiner;
 import net.fusejna.*;
 import net.fusejna.types.TypeMode;
 
@@ -13,13 +12,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import net.fusejna.util.FuseFilesystemAdapterFull;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import sun.jvm.hotspot.opto.TypeNode;
 
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
@@ -33,7 +30,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public DNFSFuseIntegration() {
         super();
         this.log(false);
-        this.LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Level.DEBUG);
     }
 
     /**
@@ -49,7 +46,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int chmod(String path, TypeMode.ModeWrapper mode) {
-        this.LOGGER.debug("chmod() was called");
+        LOGGER.debug("chmod() was called");
         return 0;
     }
 
@@ -58,7 +55,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int chown(String path, long uid, long gid) {
-        this.LOGGER.debug("chown() was called");
+        LOGGER.debug("chown() was called");
         return 0;
     }
 
@@ -71,7 +68,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int create(String path, TypeMode.ModeWrapper mode, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("create() was called");
+        LOGGER.debug("create() was called");
         return 0;
     }
     
@@ -95,7 +92,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
-            DNFSFile file = new DNFSFile(iNode, this.pathResolver);
+            DNFSFile file = DNFSFile.createNewFile(this.pathResolver.getPeer());
             stat.setMode(TypeMode.NodeType.FILE).size(file.getINode().getSize());
             return 0;
         }
@@ -103,37 +100,37 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     protected String getName() {
-        this.LOGGER.debug("getName was called");
+        LOGGER.debug("getName was called");
         return "Fuse HD";
     }
 
     @Override
     protected String[] getOptions() {
-        this.LOGGER.debug("getOptions was called");
+        LOGGER.debug("getOptions was called");
         return new String[0];
     }
 
     @Override
     public int getxattr(String path, String xattr, XattrFiller filler, long size, long position) {
-        this.LOGGER.debug("getaxattr was called");
+        LOGGER.debug("getaxattr was called");
         return 0;
     }
 
     @Override
     public void init() {
-        this.LOGGER.debug("init was called");
+        LOGGER.debug("init was called");
 
     }
 
     @Override
     public int link(String path, String target) {
-        this.LOGGER.debug("link was called");
+        LOGGER.debug("link was called");
         return 0;
     }
 
     @Override
     public int listxattr(String path, XattrListFiller filler) {
-        this.LOGGER.debug("listaxattr was called");
+        LOGGER.debug("listaxattr was called");
         return 0;
     }
 
@@ -143,26 +140,27 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int lock(String path, StructFuseFileInfo.FileInfoWrapper info, FlockCommand command, StructFlock.FlockWrapper flock) {
-        this.LOGGER.debug("lock was called");
+        LOGGER.debug("lock was called");
         return 0;
     }
 
     @Override
     public int mkdir(String path, TypeMode.ModeWrapper mode) {
-        this.LOGGER.debug("mkdir was called for path: " + path);
+        LOGGER.debug("mkdir was called for path: " + path);
 
         DNFSPath dnfsPath = new DNFSPath(path);
         String folderName = dnfsPath.getComponent(-1);
         DNFSPath subPath = dnfsPath.getSubPath(0, -1);
         DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
-        targetFolder.addChildFolder(folderName);
+
+        targetFolder.addChildFolder(DNFSFolder.createNewFolder(this.pathResolver.getPeer()), folderName);
 
         return 0;
     }
 
     @Override
     public int mknod(String path, TypeMode.ModeWrapper mode, long dev) {
-        this.LOGGER.debug("mknod was called");
+        LOGGER.debug("mknod was called");
 
         return 0;
     }
@@ -173,7 +171,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int open(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("open was called");
+        LOGGER.debug("open was called");
         return 0;
     }
 
@@ -183,7 +181,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int opendir(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("opedir was called");
+        LOGGER.debug("opedir was called");
         return 0;
     }
 
@@ -219,7 +217,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     
     @Override
     public int readlink(String path, ByteBuffer buffer, long size) {
-        this.LOGGER.debug("readlink was called");
+        LOGGER.debug("readlink was called");
         return 0;
     }
 
@@ -238,67 +236,67 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int releasedir(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("relasedir was called");
+        LOGGER.debug("relasedir was called");
         return 0;
     }
 
     @Override
     public int removexattr(String path, String xattr) {
-        this.LOGGER.debug("removeattr was called");
+        LOGGER.debug("removeattr was called");
         return 0;
     }
 
     @Override
     public int rename(String path, String newName) {
-        this.LOGGER.debug("rename was called");
+        LOGGER.debug("rename was called");
         return 0;
     }
 
     @Override
     public int rmdir(String path) {
-        this.LOGGER.debug("rmdir was called");
+        LOGGER.debug("rmdir was called");
         return 0;
     }
 
     @Override
     public int setxattr(String path, String xattr, ByteBuffer value, long size, int flags, int position) {
-        this.LOGGER.debug("setxattr was called");
+        LOGGER.debug("setxattr was called");
         return 0;
     }
 
     @Override
     public int statfs(String path, StructStatvfs.StatvfsWrapper wrapper) {
-        this.LOGGER.debug("statfs was called");
+        LOGGER.debug("statfs was called");
         return 0;
     }
 
     @Override
     public int symlink(String path, String target) {
-        this.LOGGER.debug("symlink was called");
+        LOGGER.debug("symlink was called");
         return 0;
     }
 
     @Override
     public int truncate(String path, long offset) {
-        this.LOGGER.debug("truncate was called");
+        LOGGER.debug("truncate was called");
         return 0;
     }
 
     @Override
     public int unlink(String path) {
-        this.LOGGER.debug("unlink was called");
+        LOGGER.debug("unlink was called");
         return 0;
     }
 
     @Override
     public int utimens(String path, StructTimeBuffer.TimeBufferWrapper wrapper) {
-        this.LOGGER.debug("utimens was called");
+        LOGGER.debug("utimens was called");
         return 0;
     }
 
     @Override
     public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("write was called");
+        LOGGER.debug("write was called");
         return 0;
     }
     
@@ -316,7 +314,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int access(String path, int access) {
-        this.LOGGER.debug("access() was called.");
+        LOGGER.debug("access() was called.");
         return 0;
     }
 
@@ -325,7 +323,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public void afterUnmount(File mountPoint) {
-        this.LOGGER.debug("afterUnmount() was called");
+        LOGGER.debug("afterUnmount() was called");
     }
 
     /**
@@ -333,7 +331,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public void beforeMount(File mountPoint) {
-        this.LOGGER.debug("beforeMount() was called");
+        LOGGER.debug("beforeMount() was called");
     }
 
     /**
@@ -343,7 +341,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int bmap(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("bmap() was called");
+        LOGGER.debug("bmap() was called");
         return 0;
     }
     
@@ -355,7 +353,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public void destroy() {
-        this.LOGGER.debug("destory() was called");
+        LOGGER.debug("destory() was called");
     }
     
     /**
@@ -367,7 +365,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int fgetattr(String path, StructStat.StatWrapper stat, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("fgetattr() was called");
+        LOGGER.debug("fgetattr() was called");
         return 0;
     }
     
@@ -382,7 +380,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("flush() was called");
+        LOGGER.debug("flush() was called");
         return 0;
     }
     
@@ -394,7 +392,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int fsync(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("fsync() was called");
+        LOGGER.debug("fsync() was called");
         return 0;
     }
     
@@ -406,7 +404,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int fsyncdir(String path, int datasync, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("fsyncdir() was called");
+        LOGGER.debug("fsyncdir() was called");
         return 0;
     }
     
@@ -419,7 +417,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int ftruncate(String path, long offset, StructFuseFileInfo.FileInfoWrapper info) {
-        this.LOGGER.debug("ftruncate() was called");
+        LOGGER.debug("ftruncate() was called");
         return 0;
     }
 

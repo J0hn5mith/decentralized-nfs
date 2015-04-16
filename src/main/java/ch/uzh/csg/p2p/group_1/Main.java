@@ -18,7 +18,7 @@ public class Main {
         dnfs.start();
 
         while(true){
-            Thread.sleep(500);
+            Thread.sleep(50000);
 
         }
 

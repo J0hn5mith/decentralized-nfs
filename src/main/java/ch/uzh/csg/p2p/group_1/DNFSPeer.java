@@ -14,32 +14,14 @@ import java.util.*;
 /**
  * Created by janmeier on 02.04.15.
  */
-public class DNFSPeer {
+public class DNFSPeer implements DNFSIPeer{
 
     private PeerDHT peer;
-    private Random random;
-    private Map<Number160, DNFSBlock> blocks;
-    private Map<Number160, DNFSiNode> iNodes;
-    /**
-     * TEST
-     */
-    public DNFSBlock fileBlock;
-    public DNFSBlock folderBlock;
 
 
     /**
      * 
      */
-    public DNFSPeer() {
-        DNFSBlock fileBlock =  new DNFSBlock(Number160.createHash(1000), "Hello world, again");
-        DNFSBlock folderBlock = new DNFSBlock(
-                Number160.createHash(1), "1 ./\n2 hello.txt\n3 heeey.txt\n4 another_file.txt\n5 hi_ben.txt");
-        this.blocks = new HashMap<Number160, DNFSBlock>();
-        this.iNodes = new HashMap<Number160, DNFSiNode>();
-        this.blocks.put(fileBlock.getId(), fileBlock);
-        this.blocks.put(folderBlock.getId(), folderBlock);
-        this.random = new Random();
-    }
 
     /**
      * 
@@ -50,56 +32,6 @@ public class DNFSPeer {
         this.peer = new PeerBuilderDHT(new PeerBuilder(new Number160(RND)).ports(6111988).start()).start();
     }
 
-    /**
-     * 
-     * @return
-     * @throws DNFSException
-     */
-    public DNFSiNode getRootINode() throws DNFSException {
-        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
-        iNode.setDir(true);
-        return iNode;
-    }
-
-    /**
-     * 
-     * @param iNodeID
-     * @return
-     * @throws DNFSException
-     */
-    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
-        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
-        iNode.setDir(false);
-        return iNode;
-    }
-
-    public DNFSiNode getNewINode(){
-        DNFSiNode iNode = new DNFSiNode(this.getNewINodeID());
-        return iNode;
-    }
-    public DNFSBlock getNewBlock(){
-        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
-        this.blocks.put(block.getId(), block);
-        return block;
-    }
-    public Number160 getNewINodeID(){
-        return Number160.createHash(this.random.nextInt());
-    }
-
-    public Number160 getNewBlockID(){
-        return Number160.createHash(this.random.nextInt());
-    }
-    public DNFSBlock getBlock(Number160 id){
-
-        if(id.equals(Number160.createHash(1000))){
-            return this.blocks.get(Number160.createHash(1));
-
-        }
-        else if (id.equals(Number160.createHash(1))){
-            return this.blocks.get(Number160.createHash(1));
-        }
-        return this.blocks.get(Number160.createHash(1));
-    }
 
     /**
      * 
@@ -131,4 +63,38 @@ public class DNFSPeer {
         return Number160.createHash(key);
     }
 
+    @Override
+    public DNFSBlock getNewBlock() {
+        return null;
+    }
+
+    @Override
+    public DNFSBlock getBlock(Number160 id) {
+        return null;
+    }
+
+    @Override
+    public DNFSBlock deleteBlock(Number160 id) {
+        return null;
+    }
+
+    @Override
+    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
+        return null;
+    }
+
+    @Override
+    public DNFSiNode getNewINode() {
+        return null;
+    }
+
+    @Override
+    public DNFSiNode deleteINode(Number160 iNodeID) {
+        return null;
+    }
+
+    @Override
+    public DNFSiNode getRootINode() throws DNFSException {
+        return null;
+    }
 }

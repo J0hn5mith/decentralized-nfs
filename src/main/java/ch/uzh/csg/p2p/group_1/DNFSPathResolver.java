@@ -5,12 +5,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import net.tomp2p.peers.Number160;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
@@ -18,7 +13,7 @@ import org.apache.log4j.Level;
 public class DNFSPathResolver {
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
     private DNFSConfigurator config;
-    private DNFSPeer peer;
+    private DNFSIPeer peer;
 
     /**
      * 
@@ -35,7 +30,7 @@ public class DNFSPathResolver {
     public void setUp() {
     	
         try {
-            this.peer = new DNFSPeer();
+            this.peer = new DNFSDummyPeer();
             this.peer.setUp();
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,7 +40,7 @@ public class DNFSPathResolver {
         Main.LOGGER.info("Successfully set up connection");
     }
 
-    public DNFSPeer getPeer() {
+    public DNFSIPeer getPeer() {
         return peer;
     }
 
@@ -61,7 +56,7 @@ public class DNFSPathResolver {
     public DNFSFolder getFolder(DNFSPath path){
         DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
         iNode.setDir(true);
-        return new DNFSFolder(iNode, this);
+        return new DNFSFolder(iNode, this.peer);
     }
 
 
@@ -72,7 +67,7 @@ public class DNFSPathResolver {
      */
     public DNFSFile getFile(DNFSPath path){
         DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
-        return new DNFSFile(iNode, this);
+        return new DNFSFile(iNode, this.peer);
     }
 
     /**
@@ -119,7 +114,7 @@ public class DNFSPathResolver {
      * @throws IOException
      */
     private DNFSFolder getRootFolder() throws DNFSException{
-        return new DNFSFolder(peer.getRootINode(), this);
+        return new DNFSFolder(peer.getRootINode(), this.peer);
     }
     
 }
