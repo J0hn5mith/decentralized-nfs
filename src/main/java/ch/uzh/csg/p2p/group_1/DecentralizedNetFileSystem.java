@@ -5,6 +5,8 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
+import net.tomp2p.peers.Number160;
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -44,7 +46,33 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         this.pathResolver = new DNFSPathResolver(this.conf);
         this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
-                
+        
+        // START STORAGE EXAMPLE
+        
+        KeyValueStorageInterface keyValueStorage = new FileBasedKeyValueStorage();
+        String storageDirectory = this.conf.getConfig().getString("FileBasedStorageDirectory"); // muesch usefinde wo s config-objäkt isch
+        ((FileBasedKeyValueStorage) keyValueStorage).setDirectory(storageDirectory); // muesch typecaste zum directory sette.
+        
+        Number160 key = Number160.createHash(1000000 * (int)Math.random());
+        
+        System.out.println("EXISTS?" + (keyValueStorage.exists(key) ? "Yes" : "No"));
+        
+        keyValueStorage.set(key, new KeyValueData("HALLO".getBytes()));
+        
+        System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+        System.out.println("VALUE " + new String(keyValueStorage.get(key).getData()));
+        
+        keyValueStorage.set(key, new KeyValueData("WORLD".getBytes()));
+        
+        System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+        System.out.println("VALUE " + new String(keyValueStorage.get(key).getData()));
+        
+        keyValueStorage.delete(key);
+        
+        System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+        
+        // END STORAGE EXAMPLE
+        
         Main.LOGGER.debug("DNFS has been set up.");
     }
 
