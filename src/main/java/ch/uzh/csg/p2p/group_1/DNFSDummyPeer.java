@@ -27,17 +27,20 @@ public class DNFSDummyPeer implements DNFSIPeer{
         this.blocks = new HashMap<Number160, DNFSBlock>();
         this.iNodes = new HashMap<Number160, DNFSiNode>();
 
-        this.rootINode = DNFSFolder.createNewFolder(this).getINode();
 
 
         this.blocks.put(fileBlock.getId(), fileBlock);
         this.blocks.put(folderBlock.getId(), folderBlock);
 
 
-
-
-
         this.random = new Random();
+    }
+
+    @Override
+    public DNFSiNode createINode() {
+        DNFSiNode iNode = new DNFSiNode(this.getNewINodeID());
+        this.iNodes.put(iNode.getId(), iNode);
+        return iNode;
     }
 
     /**
@@ -52,15 +55,15 @@ public class DNFSDummyPeer implements DNFSIPeer{
         return iNode;
     }
 
-    public DNFSiNode getNewINode(){
-        DNFSiNode iNode = new DNFSiNode(this.getNewINodeID());
-        this.iNodes.put(iNode.getId(), iNode);
-        return iNode;
+    @Override
+    public void deleteINode(Number160 iNodeID) {
+
     }
 
+
     @Override
-    public DNFSiNode deleteINode(Number160 iNodeID) {
-        return null;
+    public void updateINode(DNFSiNode iNode) {
+
     }
 
     /**
@@ -72,18 +75,28 @@ public class DNFSDummyPeer implements DNFSIPeer{
         return this.rootINode;
     }
 
-    public DNFSBlock getNewBlock(){
-        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
-        this.blocks.put(block.getId(), block);
-        return block;
+    @Override
+    public DNFSiNode createRootINode() throws DNFSException {
+        return null;
     }
+
     public Number160 getNewINodeID(){
-        return Number160.createHash(this.random.nextInt());
+        int randomInt = this.random.nextInt();
+        Number160 id = Number160.createHash(randomInt);
+        return id;
     }
 
     public Number160 getNewBlockID(){
         return Number160.createHash(this.random.nextInt());
     }
+
+    @Override
+    public DNFSBlock createBlock() {
+        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
+        this.blocks.put(block.getId(), block);
+        return block;
+    }
+
     public DNFSBlock getBlock(Number160 id){
 
         if(id.equals(Number160.createHash(1000))){
@@ -97,12 +110,18 @@ public class DNFSDummyPeer implements DNFSIPeer{
     }
 
     @Override
-    public DNFSBlock deleteBlock(Number160 id) {
-        return null;
+    public void updateBlock(DNFSBlock block) {
+
     }
 
     @Override
-    public void setUp() throws IOException {
+    public void deleteBlock(Number160 id) {
 
+    }
+
+
+    @Override
+    public void setUp() throws IOException {
+        this.rootINode = DNFSFolder.createNewFolder(this).getINode();
     }
 }

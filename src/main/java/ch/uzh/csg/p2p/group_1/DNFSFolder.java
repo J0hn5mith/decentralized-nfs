@@ -20,6 +20,7 @@ public class DNFSFolder extends DNFSAbstractFile {
 
         //TODO: Check if iNode is Folder!
         DNFSBlock block = new DNFSBlock(Number160.createHash(1));
+        this.getINode().setDir(true);
         this.getINode().addBlock(block);
     }
 
@@ -27,9 +28,8 @@ public class DNFSFolder extends DNFSAbstractFile {
      * Factory method for creating new folders.
      */
     public static DNFSFolder createNewFolder(DNFSIPeer peer){
-        DNFSiNode iNode = peer.getNewINode();
-        iNode.setDir(true);
-        DNFSFolder folder = new DNFSFolder(peer.getNewINode(), peer);
+        DNFSiNode iNode = peer.createINode();
+        DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
         return folder;
     }
 

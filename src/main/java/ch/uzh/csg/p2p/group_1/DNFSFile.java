@@ -25,7 +25,7 @@ public class DNFSFile extends DNFSAbstractFile {
     }
 
     public static DNFSFile createNewFile(DNFSIPeer peer){
-        return new DNFSFile(peer.getNewINode(), peer);
+        return new DNFSFile(peer.createINode(), peer);
     }
 
     /**
