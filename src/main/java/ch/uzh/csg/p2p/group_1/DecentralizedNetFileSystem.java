@@ -40,9 +40,11 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      * 
      */
     public void setUp() {
+        
         this.pathResolver = new DNFSPathResolver(this.conf);
         this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
+                
         Main.LOGGER.debug("DNFS has been set up.");
     }
 

@@ -99,30 +99,6 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     }
 
     @Override
-    protected String getName() {
-        LOGGER.debug("getName was called");
-        return "Fuse HD";
-    }
-
-    @Override
-    protected String[] getOptions() {
-        LOGGER.debug("getOptions was called");
-        return new String[0];
-    }
-
-    @Override
-    public int getxattr(String path, String xattr, XattrFiller filler, long size, long position) {
-        LOGGER.debug("getaxattr was called");
-        return 0;
-    }
-
-    @Override
-    public void init() {
-        LOGGER.debug("init was called");
-
-    }
-
-    @Override
     public int link(String path, String target) {
         LOGGER.debug("link was called");
         return 0;
@@ -419,6 +395,39 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public int ftruncate(String path, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         LOGGER.debug("ftruncate() was called");
         return 0;
+    }
+    
+    @Override
+    protected String getName() {
+        LOGGER.debug("getName was called");
+        return "Fuse HD";
+    }
+
+    @Override
+    protected String[] getOptions() {
+        LOGGER.debug("getOptions was called");
+        return new String[0];
+    }
+    
+    /**
+     * FROM FUSI API:
+     * Get extended attributes.
+     * FROM LINUX MAN:
+     * Extended attributes are name:value pairs associated with inodes
+     * (files, directories, symbolic links, etc.). They are extensions
+     * to the normal attributes which are associated with all inodes in
+     * the system (i.e., the stat(2) data). A complete overview of
+     * extended attributes concepts can be found in attr(5). 
+     */
+    @Override
+    public int getxattr(String path, String xattr, XattrFiller filler, long size, long position) {
+        LOGGER.debug("getaxattr was called");
+        return 0;
+    }
+
+    @Override
+    public void init() {
+        LOGGER.debug("init was called");
     }
 
 }
