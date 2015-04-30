@@ -17,10 +17,10 @@ public class Main {
         dnfs.setUp();
         dnfs.start();
 
-        while(true){
-            Thread.sleep(50000);
-
-        }
+//        while(true){
+//            Thread.sleep(50000);
+//
+//        }
 
 
     }

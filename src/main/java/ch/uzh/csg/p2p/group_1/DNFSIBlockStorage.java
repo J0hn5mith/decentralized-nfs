@@ -7,8 +7,9 @@ import net.tomp2p.peers.Number160;
  */
 public interface DNFSIBlockStorage {
 
-    public DNFSBlock getNewBlock();
+    public DNFSBlock createBlock();
     public DNFSBlock getBlock(Number160 id);
-    public DNFSBlock deleteBlock(Number160 id);
+    public void updateBlock(DNFSBlock block);
+    public void deleteBlock(Number160 id);
 
 }

@@ -7,9 +7,11 @@ import net.tomp2p.peers.Number160;
  */
 public interface DNFSIiNodeStorage {
 
+    public DNFSiNode createINode();
     public DNFSiNode getINode(Number160 iNodeID) throws DNFSException;
-    public DNFSiNode getNewINode();
-    public DNFSiNode deleteINode(Number160 iNodeID);
+    public void deleteINode(Number160 iNodeID);
+    public void updateINode(DNFSiNode iNode);
 
     public DNFSiNode getRootINode() throws DNFSException;
+    public DNFSiNode createRootINode() throws DNFSException;
 }

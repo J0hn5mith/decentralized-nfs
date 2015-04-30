@@ -13,6 +13,7 @@ import java.util.*;
 
 /**
  * Created by janmeier on 02.04.15.
+ * WARN: Out of date, no longer used
  */
 public class DNFSPeer implements DNFSIPeer{
 
@@ -64,17 +65,27 @@ public class DNFSPeer implements DNFSIPeer{
     }
 
     @Override
-    public DNFSBlock getNewBlock() {
+    public DNFSBlock createBlock() {
         return null;
     }
 
-    @Override
     public DNFSBlock getBlock(Number160 id) {
         return null;
     }
 
     @Override
-    public DNFSBlock deleteBlock(Number160 id) {
+    public void updateBlock(DNFSBlock block) {
+
+    }
+
+    @Override
+    public void deleteBlock(Number160 id) {
+
+    }
+
+
+    @Override
+    public DNFSiNode createINode() {
         return null;
     }
 
@@ -84,17 +95,23 @@ public class DNFSPeer implements DNFSIPeer{
     }
 
     @Override
-    public DNFSiNode getNewINode() {
-        return null;
+    public void deleteINode(Number160 iNodeID) {
+
     }
 
     @Override
-    public DNFSiNode deleteINode(Number160 iNodeID) {
-        return null;
+    public void updateINode(DNFSiNode iNode) {
+
     }
+
 
     @Override
     public DNFSiNode getRootINode() throws DNFSException {
+        return null;
+    }
+
+    @Override
+    public DNFSiNode createRootINode() throws DNFSException {
         return null;
     }
 }

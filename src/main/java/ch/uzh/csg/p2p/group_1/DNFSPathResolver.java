@@ -53,9 +53,8 @@ public class DNFSPathResolver {
      * @param path
      * @return
      */
-    public DNFSFolder getFolder(DNFSPath path){
-        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1));
-        iNode.setDir(true);
+    public DNFSFolder getFolder(DNFSPath path) throws DNFSException {
+        DNFSiNode iNode = this.resolve(path);
         return new DNFSFolder(iNode, this.peer);
     }
 

@@ -79,6 +79,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
+
         DNFSiNode iNode = null;
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
@@ -151,7 +152,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         DNFSPath dnfsPath = new DNFSPath(path);
         String folderName = dnfsPath.getComponent(-1);
         DNFSPath subPath = dnfsPath.getSubPath(0, -1);
-        DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
+        DNFSFolder targetFolder = null;
+        try {
+            targetFolder = this.pathResolver.getFolder(subPath);
+        } catch (DNFSException e) {
+            e.printStackTrace();
+            return -1; //TODO: return proper error code
+        }
 
         targetFolder.addChildFolder(DNFSFolder.createNewFolder(this.pathResolver.getPeer()), folderName);
 
@@ -207,7 +214,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
-        DNFSFolder folder = pathResolver.getFolder(new DNFSPath(path));
+        DNFSFolder folder = null;
+        try {
+            folder = pathResolver.getFolder(new DNFSPath(path));
+        } catch (DNFSException e) {
+            e.printStackTrace();
+            return -1; //TODO: return proper error code
+        }
         for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
             filler.add(o.getName());
         }
