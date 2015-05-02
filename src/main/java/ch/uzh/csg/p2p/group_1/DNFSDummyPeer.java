@@ -10,7 +10,7 @@ import java.util.Random;
 /**
  * Created by janmeier on 16.04.15.
  */
-public class DNFSDummyPeer implements DNFSIPeer{
+public class DNFSDummyPeer implements DNFSIPeer {
 
     private Map<Number160, DNFSBlock> blocks;
     private Map<Number160, DNFSiNode> iNodes;
@@ -18,7 +18,7 @@ public class DNFSDummyPeer implements DNFSIPeer{
     private Random random;
 
     public DNFSDummyPeer() {
-        DNFSBlock fileBlock =  new DNFSBlock(
+        DNFSBlock fileBlock = new DNFSBlock(
                 Number160.createHash(1000), "Hello world, again"
         );
         DNFSBlock folderBlock = new DNFSBlock(
@@ -26,7 +26,6 @@ public class DNFSDummyPeer implements DNFSIPeer{
         );
         this.blocks = new HashMap<Number160, DNFSBlock>();
         this.iNodes = new HashMap<Number160, DNFSiNode>();
-
 
 
         this.blocks.put(fileBlock.getId(), fileBlock);
@@ -44,7 +43,6 @@ public class DNFSDummyPeer implements DNFSIPeer{
     }
 
     /**
-     *
      * @param iNodeID
      * @return
      * @throws DNFSException
@@ -67,7 +65,6 @@ public class DNFSDummyPeer implements DNFSIPeer{
     }
 
     /**
-     *
      * @return
      * @throws DNFSException
      */
@@ -80,13 +77,13 @@ public class DNFSDummyPeer implements DNFSIPeer{
         return null;
     }
 
-    public Number160 getNewINodeID(){
+    public Number160 getNewINodeID() {
         int randomInt = this.random.nextInt();
         Number160 id = Number160.createHash(randomInt);
         return id;
     }
 
-    public Number160 getNewBlockID(){
+    public Number160 getNewBlockID() {
         return Number160.createHash(this.random.nextInt());
     }
 
@@ -97,16 +94,8 @@ public class DNFSDummyPeer implements DNFSIPeer{
         return block;
     }
 
-    public DNFSBlock getBlock(Number160 id){
-
-        if(id.equals(Number160.createHash(1000))){
-            return this.blocks.get(Number160.createHash(1));
-
-        }
-        else if (id.equals(Number160.createHash(1))){
-            return this.blocks.get(Number160.createHash(1));
-        }
-        return this.blocks.get(Number160.createHash(1));
+    public DNFSBlock getBlock(Number160 id) {
+        return this.blocks.get(id);
     }
 
     @Override
@@ -122,6 +111,12 @@ public class DNFSDummyPeer implements DNFSIPeer{
 
     @Override
     public void setUp() throws IOException {
-        this.rootINode = DNFSFolder.createNewFolder(this).getINode();
+        DNFSFolder rootFolder = DNFSFolder.createNewFolder(this);
+        this.rootINode = rootFolder.getINode();
+        DNFSFile testFile = DNFSFile.createNewFile(this);
+        rootFolder.addChild(testFile, "Test_File_1.txt");
+
+        testFile = DNFSFile.createNewFile(this);
+        rootFolder.addChild(testFile, "Test_File_2.txt");
     }
 }

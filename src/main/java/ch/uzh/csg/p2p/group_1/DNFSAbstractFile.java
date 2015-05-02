@@ -5,9 +5,8 @@
 package ch.uzh.csg.p2p.group_1;
 
 
-public abstract class DNFSAbstractFile {
+public abstract class DNFSAbstractFile extends DNFSFileSystemEntry {
 
-    private DNFSiNode iNode;
 
     public DNFSIPeer getPeer() {
         return peer;
@@ -21,24 +20,8 @@ public abstract class DNFSAbstractFile {
 
 
     DNFSAbstractFile(DNFSiNode iNode, DNFSIPeer peer){
-        this.iNode = iNode;
+        super(iNode);
         this.peer = peer;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public DNFSiNode getINode() {
-        return iNode;
-    }
-
-    /**
-     * 
-     * @param iNode
-     */
-    public void setiNode(DNFSiNode iNode) {
-        this.iNode = iNode;
     }
 
 }

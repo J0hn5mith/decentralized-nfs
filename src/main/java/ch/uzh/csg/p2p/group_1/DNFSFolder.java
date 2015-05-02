@@ -15,21 +15,31 @@ public class DNFSFolder extends DNFSAbstractFile {
     /**
      * @param iNode
      */
-    DNFSFolder(DNFSiNode iNode, DNFSIPeer peer) {
+    private DNFSFolder(DNFSiNode iNode, DNFSIPeer peer) {
         super(iNode, peer);
 
         //TODO: Check if iNode is Folder!
-        DNFSBlock block = new DNFSBlock(Number160.createHash(1));
+        DNFSBlock block = this.getPeer().createBlock();
+
         this.getINode().setDir(true);
         this.getINode().addBlock(block);
+
     }
 
     /**
      * Factory method for creating new folders.
      */
     public static DNFSFolder createNewFolder(DNFSIPeer peer){
-        DNFSiNode iNode = peer.createINode();
         DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
+
+        DNFSBlock block = folder.getPeer().getBlock(folder.getINode().getBlockIDs().get(0));
+        block.append(folder.getINode().getId() + " " + "./");
+
+        return folder;
+    }
+
+    public static DNFSFolder getExistingFolder(DNFSiNode iNode, DNFSIPeer peer){
+        DNFSFolder folder = new DNFSFolder(iNode, peer);
         return folder;
     }
 
@@ -44,7 +54,12 @@ public class DNFSFolder extends DNFSAbstractFile {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] lineComponents = line.split(" ");
-                list.add(new DNFSFolderEntry(Number160.createHash(lineComponents[0]), lineComponents[1]));
+                if (lineComponents.length == 2){
+                    list.add(new DNFSFolderEntry(Number160.createHash(lineComponents[0]), lineComponents[1]));
+                }
+                else {
+                    LOGGER.warn("Format failure in folder data.");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,14 +69,13 @@ public class DNFSFolder extends DNFSAbstractFile {
         return list;
     }
 
+    public void addChild(DNFSFileSystemEntry entry, String name){
+        DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
+        block.append("\n" + entry.getINode().getId() + " " + name);
+    }
 
     public DNFSFolder getChildFolder(String name) throws DNFSException {
         return DNFSFolder.createNewFolder(this.getPeer());
-    }
-
-    public void addChildFolder(DNFSFolder folder, String name) {
-        DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
-        block.append("\n " + folder.getINode().getId() + " " + name);
     }
 
     public DNFSFile getChildFile(String name) throws DNFSException {

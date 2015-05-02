@@ -19,9 +19,7 @@ public class DNFSFile extends DNFSAbstractFile {
      */
     DNFSFile(DNFSiNode iNode, DNFSIPeer peer){
         super(iNode, peer);
-        //TODO: Check if iNode is File!
-        DNFSBlock block = new DNFSBlock(Number160.createHash(1000));
-        this.getINode().addBlock(block);
+        this.getINode().addBlock(this.getPeer());
     }
 
     public static DNFSFile createNewFile(DNFSIPeer peer){

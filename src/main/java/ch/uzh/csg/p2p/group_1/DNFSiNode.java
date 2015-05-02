@@ -59,10 +59,22 @@ public class DNFSiNode implements Serializable{
         return new Date();
     }
 
-    public void addBlock(DNFSBlock block){
+
+    public DNFSBlock  addBlock(DNFSBlock block){
         blockIds.add(block.id);
+        return block;
     }
+
     public List<Number160> getBlockIDs(){
         return blockIds;
+    }
+
+    /**
+     * Utilities
+     */
+
+    public DNFSBlock addBlock(DNFSIPeer peer){
+        DNFSBlock block = peer.createBlock();
+        return this.addBlock(block);
     }
 }

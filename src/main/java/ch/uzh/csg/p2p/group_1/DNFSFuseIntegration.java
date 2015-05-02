@@ -88,8 +88,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             return -ErrorCodes.ENOENT();
         }
 
-
-        if(iNode.isDir()) { // Root directory
+        if(iNode.isDir()) {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
@@ -136,7 +135,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             return -1; //TODO: return proper error code
         }
 
-        targetFolder.addChildFolder(DNFSFolder.createNewFolder(this.pathResolver.getPeer()), folderName);
+        targetFolder.addChild(DNFSFolder.createNewFolder(this.pathResolver.getPeer()), folderName);
 
         return 0;
     }
@@ -175,7 +174,12 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         // Compute substring that we are being asked to read
         DNFSPath dnfsPath = new DNFSPath(path);
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.pathResolver.getFile(dnfsPath).getInputStream()));
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(this.pathResolver.getFile(dnfsPath).getInputStream()));
+        } catch (DNFSException e) {
+            e.printStackTrace();
+        }
         String content = null;
         try {
             content = br.readLine();

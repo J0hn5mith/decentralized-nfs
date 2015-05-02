@@ -10,13 +10,12 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
-public class DNFSPathResolver {
+public class DNFSPathResolver implements DNFSIPathResolver {
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
     private DNFSConfigurator config;
     private DNFSIPeer peer;
 
     /**
-     * 
      * @param config
      */
     public DNFSPathResolver(DNFSConfigurator config) {
@@ -25,18 +24,18 @@ public class DNFSPathResolver {
     }
 
     /**
-     * 
+     *
      */
     public void setUp() {
-    	
+
         try {
-            this.peer = new DNFSDummyPeer();
-            this.peer.setUp();
+            this.setPeer(new DNFSDummyPeer());
+            this.getPeer().setUp();
         } catch (IOException e) {
             e.printStackTrace();
             Main.LOGGER.error("Failed to set up peer");
         }
-        
+
         Main.LOGGER.info("Successfully set up connection");
     }
 
@@ -44,43 +43,32 @@ public class DNFSPathResolver {
         return peer;
     }
 
-    public void setPeer(DNFSPeer peer) {
+    public void setPeer(DNFSIPeer peer) {
         this.peer = peer;
     }
 
+    @Override
     /**
-     * 
      * @param path
      * @return
      */
     public DNFSFolder getFolder(DNFSPath path) throws DNFSException {
         DNFSiNode iNode = this.resolve(path);
-        return new DNFSFolder(iNode, this.peer);
+        return DNFSFolder.getExistingFolder(iNode, this.getPeer());
     }
 
-
+    @Override
     /**
-     * 
      * @param path
      * @return
      */
-    public DNFSFile getFile(DNFSPath path){
-        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
-        return new DNFSFile(iNode, this.peer);
+    public DNFSFile getFile(DNFSPath path) throws DNFSException {
+        DNFSiNode iNode = this.resolve(path);
+        return new DNFSFile(iNode, this.getPeer());
     }
 
+    @Override
     /**
-     * 
-     * @param nodeID
-     * @return
-     * @throws DNFSException
-     */
-    public DNFSiNode getINodeByID(Number160 nodeID) throws DNFSException{
-        return peer.getINode(nodeID);
-    }
-
-    /**
-     * 
      * @param path
      * @return
      */
@@ -88,14 +76,10 @@ public class DNFSPathResolver {
         return this.resolve(path);
     }
 
-    public DNFSBlock getBlock(Number160 blockID){
-        return this.peer.getBlock(blockID);
-    }
 
-
-    public DNFSiNode resolve(DNFSPath path) throws DNFSException {
+    private DNFSiNode resolve(DNFSPath path) throws DNFSException {
         DNFSFolder currentFolder = this.getRootFolder();
-        if (path.length() == 0){
+        if (path.length() == 0) {
             return currentFolder.getINode();
         }
 
@@ -109,12 +93,11 @@ public class DNFSPathResolver {
 
 
     /**
-     * 
      * @throws IOException
      */
-    private DNFSFolder getRootFolder() throws DNFSException{
-        return new DNFSFolder(peer.getRootINode(), this.peer);
+    private DNFSFolder getRootFolder() throws DNFSException {
+        return DNFSFolder.getExistingFolder(peer.getRootINode(), this.getPeer());
     }
-    
+
 }
 
