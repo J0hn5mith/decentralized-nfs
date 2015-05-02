@@ -3,8 +3,6 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
-import net.tomp2p.peers.Number160;
-
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -54,7 +52,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      */
     public DNFSFolder getFolder(DNFSPath path) throws DNFSException {
         DNFSiNode iNode = this.resolve(path);
-        return DNFSFolder.getExistingFolder(iNode, this.getPeer());
+        return DNFSFolder.getExisting(iNode, this.getPeer());
     }
 
     @Override
@@ -85,7 +83,6 @@ public class DNFSPathResolver implements DNFSIPathResolver {
 
         for (String pathComponent : path.getComponents(0, -1)) {
             currentFolder = currentFolder.getChildFolder(pathComponent);
-
         }
 
         return currentFolder.getChildINode(path.getComponent(-1));
@@ -96,7 +93,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @throws IOException
      */
     private DNFSFolder getRootFolder() throws DNFSException {
-        return DNFSFolder.getExistingFolder(peer.getRootINode(), this.getPeer());
+        return DNFSFolder.getExisting(peer.getRootINode(), this.getPeer());
     }
 
 }

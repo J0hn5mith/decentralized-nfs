@@ -18,19 +18,8 @@ public class DNFSDummyPeer implements DNFSIPeer {
     private Random random;
 
     public DNFSDummyPeer() {
-        DNFSBlock fileBlock = new DNFSBlock(
-                Number160.createHash(1000), "Hello world, again"
-        );
-        DNFSBlock folderBlock = new DNFSBlock(
-                Number160.createHash(1)
-        );
         this.blocks = new HashMap<Number160, DNFSBlock>();
         this.iNodes = new HashMap<Number160, DNFSiNode>();
-
-
-        this.blocks.put(fileBlock.getId(), fileBlock);
-        this.blocks.put(folderBlock.getId(), folderBlock);
-
 
         this.random = new Random();
     }
@@ -48,9 +37,12 @@ public class DNFSDummyPeer implements DNFSIPeer {
      * @throws DNFSException
      */
     public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
-        DNFSiNode iNode = new DNFSiNode(Number160.createHash(1000));
-        iNode.setDir(false);
-        return iNode;
+        DNFSiNode node = this.iNodes.get(iNodeID);
+        if (node == null){
+            throw new DNFSException();
+        }
+
+        return node;
     }
 
     @Override
@@ -111,12 +103,15 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
     @Override
     public void setUp() throws IOException {
-        DNFSFolder rootFolder = DNFSFolder.createNewFolder(this);
+        DNFSFolder rootFolder = DNFSFolder.createNew(this);
         this.rootINode = rootFolder.getINode();
-        DNFSFile testFile = DNFSFile.createNewFile(this);
+        DNFSFile testFile = DNFSFile.createNew(this);
         rootFolder.addChild(testFile, "Test_File_1.txt");
 
-        testFile = DNFSFile.createNewFile(this);
+        testFile = DNFSFile.createNew(this);
         rootFolder.addChild(testFile, "Test_File_2.txt");
+
+        DNFSFolder testFolder = DNFSFolder.createNew(this);
+        rootFolder.addChild(testFolder, "test_folder");
     }
 }

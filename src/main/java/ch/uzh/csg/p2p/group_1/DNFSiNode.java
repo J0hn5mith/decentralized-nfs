@@ -69,6 +69,10 @@ public class DNFSiNode implements Serializable{
         return blockIds;
     }
 
+    public int getNumBlocks(){
+        return this.blockIds.size();
+    }
+
     /**
      * Utilities
      */

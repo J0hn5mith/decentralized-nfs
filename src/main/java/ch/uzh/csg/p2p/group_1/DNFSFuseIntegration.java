@@ -84,7 +84,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
-            LOGGER.warn("Could not find attrs for path: " + path);
+            LOGGER.error("Could not find attrs for path: " + path);
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         }
 
@@ -92,7 +93,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
-            DNFSFile file = DNFSFile.createNewFile(this.pathResolver.getPeer());
+            DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
             stat.setMode(TypeMode.NodeType.FILE).size(file.getINode().getSize());
             return 0;
         }
@@ -122,8 +123,6 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     public int mkdir(String path, TypeMode.ModeWrapper mode) {
-        LOGGER.debug("mkdir was called for path: " + path);
-
         DNFSPath dnfsPath = new DNFSPath(path);
         String folderName = dnfsPath.getComponent(-1);
         DNFSPath subPath = dnfsPath.getSubPath(0, -1);
@@ -135,7 +134,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             return -1; //TODO: return proper error code
         }
 
-        targetFolder.addChild(DNFSFolder.createNewFolder(this.pathResolver.getPeer()), folderName);
+        targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
 
         return 0;
     }

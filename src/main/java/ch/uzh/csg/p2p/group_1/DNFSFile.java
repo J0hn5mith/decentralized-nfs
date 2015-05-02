@@ -11,7 +11,8 @@ import java.io.InputStream;
 
 
 public class DNFSFile extends DNFSAbstractFile {
-	
+    static String LOREM_IPSUM = "al;skdjfl;aksjdfl;aksjdfl;aksjdf;laksjdflkjashdfklajhsdfklajshdfklasjdh";
+
 
     /**
      * 
@@ -19,10 +20,11 @@ public class DNFSFile extends DNFSAbstractFile {
      */
     DNFSFile(DNFSiNode iNode, DNFSIPeer peer){
         super(iNode, peer);
-        this.getINode().addBlock(this.getPeer());
+        DNFSBlock block = this.getINode().addBlock(this.getPeer());
+        block.append(LOREM_IPSUM);
     }
 
-    public static DNFSFile createNewFile(DNFSIPeer peer){
+    public static DNFSFile createNew(DNFSIPeer peer){
         return new DNFSFile(peer.createINode(), peer);
     }
 
@@ -33,5 +35,4 @@ public class DNFSFile extends DNFSAbstractFile {
     public InputStream getInputStream(){
         return this.getPeer().getBlock((this.getINode().getBlockIDs().get(0))).getInputStream();
     }
-    
 }
