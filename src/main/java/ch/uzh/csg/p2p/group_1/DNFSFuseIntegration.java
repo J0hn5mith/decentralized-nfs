@@ -103,7 +103,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
-            DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
+            DNFSFile file = DNFSFile.getExisting(iNode, this.pathResolver.getPeer());
             stat.setMode(TypeMode.NodeType.FILE).size(file.getINode().getSize());
             return 0;
         }

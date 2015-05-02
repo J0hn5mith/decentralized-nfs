@@ -61,11 +61,8 @@ public class DNFSBlock implements Serializable {
 
         buffer.get(bytesToWrite, 0, (int) bufferSize);
         this.data.position((int) offset);
-        LOGGER.debug("New data content" + this.data.toString());
         this.data.put(bytesToWrite);
-        LOGGER.debug("New data content" + this.data.toString());
         this.data.position(0);
-        LOGGER.debug("New data content" + this.data.toString());
         return (int) bufferSize;
     }
 }
