@@ -18,6 +18,7 @@ public class DNFSiNode implements Serializable{
     private boolean isDir;
     Number160 id;
     List<Number160> blockIds;
+    int size = 10;
 
     public DNFSiNode(Number160 id) {
         this.id = id;
@@ -41,7 +42,11 @@ public class DNFSiNode implements Serializable{
     }
 
     public int getSize(){
-        return 100;
+        return this.size;
+    }
+    public int setSize(int size){
+        this.size = size;
+        return size;
     }
     public int getUseID(){
         return 10;

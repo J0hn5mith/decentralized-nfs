@@ -5,24 +5,24 @@ import net.tomp2p.peers.Number160;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Created by janmeier on 10.04.15.
  */
 public class DNFSBlock implements Serializable {
+    final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegration.class.getName());
     private static final long serialVersionUID = 2098774660703813030L;
+    public static int BLOCK_SIZE = 100000;
 
     Number160 id;
-    String data;
+    private ByteBuffer data;
 
     public DNFSBlock(Number160 id) {
-        this.data = "";
         this.id = id;
-    }
-
-    public DNFSBlock(Number160 id, String data) {
-        this(id);
-        this.data = data;
+        this.data = ByteBuffer.allocate(0);
     }
 
     public Number160 getId() {
@@ -33,11 +33,39 @@ public class DNFSBlock implements Serializable {
         this.id = id;
     }
 
-    public InputStream getInputStream(){
-        return new ByteArrayInputStream(data.getBytes());
+    public long getSize(){
+        return this.data.array().length;
     }
 
-    public void append(String appendString){
-        this.data = this.data + appendString;
+    public InputStream getInputStream(){
+        return new ByteArrayInputStream(data.array());
+    }
+
+    public int append(String appendString){
+        int writeOffset = this.data.array().length;
+        int bufSize = appendString.getBytes().length;
+        ByteBuffer buffer = ByteBuffer.wrap(appendString.getBytes());
+
+        return this.write(buffer, bufSize, writeOffset);
+    }
+
+    public int write(ByteBuffer buffer, final long bufferSize, final long offset){
+
+        final int maxWriteIndex = (int) (offset + bufferSize);
+        final byte[] bytesToWrite = new byte[(int) bufferSize];
+        if (maxWriteIndex > data.capacity()) {
+            final ByteBuffer newContents = ByteBuffer.allocate(maxWriteIndex);
+            newContents.put(this.data);
+            this.data = newContents;
+        }
+
+        buffer.get(bytesToWrite, 0, (int) bufferSize);
+        this.data.position((int) offset);
+        LOGGER.debug("New data content" + this.data.toString());
+        this.data.put(bytesToWrite);
+        LOGGER.debug("New data content" + this.data.toString());
+        this.data.position(0);
+        LOGGER.debug("New data content" + this.data.toString());
+        return (int) bufferSize;
     }
 }

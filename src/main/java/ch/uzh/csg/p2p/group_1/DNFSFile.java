@@ -4,6 +4,7 @@ import net.tomp2p.peers.Number160;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Created by janmeier on 02.04.15.
@@ -12,7 +13,6 @@ import java.io.InputStream;
 
 public class DNFSFile extends DNFSAbstractFile {
     static String LOREM_IPSUM = "al;skdjfl;aksjdfl;aksjdfl;aksjdf;laksjdflkjashdfklajhsdfklajshdfklasjdh";
-
 
     /**
      * 
@@ -33,6 +33,17 @@ public class DNFSFile extends DNFSAbstractFile {
      * @return
      */
     public InputStream getInputStream(){
-        return this.getPeer().getBlock((this.getINode().getBlockIDs().get(0))).getInputStream();
+        return this.getFirstBlock().getInputStream();
+    }
+
+    public int write(final ByteBuffer buffer, final long bufSize, final long writeOffset)
+    {
+        int bytesWritten =  this.getFirstBlock().write(buffer, bufSize, writeOffset);
+        this.getINode().setSize((int) this.getFirstBlock().getSize());
+        return bytesWritten;
+    }
+
+    private DNFSBlock getFirstBlock(){
+        return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
     }
 }

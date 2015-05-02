@@ -160,11 +160,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      * From FUSE API:
      * OPTIONAL!
      */
-    @Override
-    public int open(String path, StructFuseFileInfo.FileInfoWrapper info) {
-        LOGGER.debug("open was called");
-        return 0;
-    }
+//    @Override
+//    public int open(String path, StructFuseFileInfo.FileInfoWrapper info) {
+//        LOGGER.debug("open was called");
+//        return 0;
+//    }
 
     /**
      * From FUSE API:
@@ -298,6 +298,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
 
     @Override
     public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
+        try {
+            DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
+            return file.write(buf, bufSize, writeOffset);
+
+        } catch (DNFSException e) {
+            e.printStackTrace();
+        }
         LOGGER.debug("write was called");
         return 0;
     }
@@ -314,11 +321,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      * Check file access permissions
      * This will be called for the access() system call. If the 'default_permissions' mount option is given, this method is not called.
      */
-    @Override
-    public int access(String path, int access) {
-        LOGGER.debug(String.format("access() was called.\nPath:%s access: %d", path, access));
-        return 0;
-    }
+//    @Override
+//    public int access(String path, int access) {
+//        LOGGER.debug(String.format("access() was called.\nPath:%s access: %d", path, access));
+//        return 0;
+//    }
 
     /**
      * Called after the FUSE file system is unmounted.
