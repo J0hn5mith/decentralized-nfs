@@ -27,7 +27,7 @@ public class DNFSFolder extends DNFSAbstractFile {
     /**
      * Factory method for creating new folders.
      */
-    public static DNFSFolder createNew(DNFSIPeer peer){
+    public static DNFSFolder createNew(DNFSIPeer peer) {
         DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
 
         DNFSBlock block = folder.getPeer().createBlock();
@@ -37,7 +37,7 @@ public class DNFSFolder extends DNFSAbstractFile {
         return folder;
     }
 
-    public static DNFSFolder getExisting(DNFSiNode iNode, DNFSIPeer peer){
+    public static DNFSFolder getExisting(DNFSiNode iNode, DNFSIPeer peer) {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
         return folder;
     }
@@ -47,7 +47,7 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
 
-    public void addChild(DNFSFileSystemEntry entry, String name){
+    public void addChild(DNFSFileSystemEntry entry, String name) {
         DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
         block.append("\n" + entry.getINode().getId() + " " + name);
         this.updateFolderEntries();
@@ -81,7 +81,6 @@ public class DNFSFolder extends DNFSAbstractFile {
         throw new DNFSException();
     }
 
-
     /**
      *
      */
@@ -108,9 +107,10 @@ public class DNFSFolder extends DNFSAbstractFile {
 
     }
 
-    private void updateFolderEntries(){
+    private void updateFolderEntries() {
         this.entries = this.extractFolderEntries();
     }
+
     /**
      * @return
      */
@@ -122,10 +122,9 @@ public class DNFSFolder extends DNFSAbstractFile {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] lineComponents = line.split(" ");
-                if (lineComponents.length == 2){
+                if (lineComponents.length == 2) {
                     list.add(new DNFSFolderEntry(new Number160(lineComponents[0]), lineComponents[1]));
-                }
-                else {
+                } else {
                     LOGGER.warn("Format failure in folder data.");
                 }
             }
@@ -138,7 +137,7 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
     private InputStream getFolderFileData() {
-        if (this.getINode().getNumBlocks() < 1){
+        if (this.getINode().getNumBlocks() < 1) {
             return new ByteArrayInputStream("".getBytes());
         }
 

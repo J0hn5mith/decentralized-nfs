@@ -20,12 +20,12 @@ import org.apache.log4j.Logger;
 
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
-    final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegration.class.getName());
 
     private DNFSPathResolver pathResolver;
 
     /**
-     * 
+     *
      */
     public DNFSFuseIntegration() {
         super();
@@ -34,7 +34,6 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     }
 
     /**
-     * 
      * @param pathResolver
      */
     public void setPathResolver(DNFSPathResolver pathResolver) {
@@ -68,10 +67,22 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int create(String path, TypeMode.ModeWrapper mode, StructFuseFileInfo.FileInfoWrapper info) {
-        LOGGER.debug("create() was called");
+        LOGGER.debug(String.format("create() was called.\nPath:%s\n mode: %s'\n info: %s", path, mode.toString(), info.toString()));
+        DNFSPath dnfsPath = new DNFSPath(path);
+        String fileName = dnfsPath.getComponent(-1);
+        DNFSPath subPath = dnfsPath.getSubPath(0, -1);
+        DNFSFolder targetFolder = null;
+        try {
+            targetFolder = this.pathResolver.getFolder(subPath);
+        } catch (DNFSException e) {
+            e.printStackTrace();
+            return -1; //TODO: return proper error code
+        }
+        DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
+        targetFolder.addChild(file, fileName);
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * Get file attributes.
@@ -85,11 +96,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
             LOGGER.error("Could not find attrs for path: " + path);
-            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         }
 
-        if(iNode.isDir()) {
+        if (iNode.isDir()) {
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
@@ -167,7 +177,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     }
 
     /**
-     * 
+     *
      */
     @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
@@ -200,13 +210,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
             e.printStackTrace();
             return -1; //TODO: return proper error code
         }
-        for(DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
+        for (DNFSFolder.DNFSFolderEntry o : folder.getEntries()) {
             filler.add(o.getName());
         }
 
         return 0;
     }
-    
+
     @Override
     public int readlink(String path, ByteBuffer buffer, long size) {
         LOGGER.debug("readlink was called");
@@ -297,7 +307,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      * Unused methods 
      * =================================
      */
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -306,7 +316,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      */
     @Override
     public int access(String path, int access) {
-        LOGGER.debug("access() was called.");
+        LOGGER.debug(String.format("access() was called.\nPath:%s access: %d", path, access));
         return 0;
     }
 
@@ -336,7 +346,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("bmap() was called");
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -347,7 +357,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
     public void destroy() {
         LOGGER.debug("destory() was called");
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -360,7 +370,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("fgetattr() was called");
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -375,7 +385,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("flush() was called");
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -387,7 +397,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("fsync() was called");
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -399,7 +409,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("fsyncdir() was called");
         return 0;
     }
-    
+
     /**
      * From FUSE API:
      * OPTIONAL!
@@ -412,7 +422,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("ftruncate() was called");
         return 0;
     }
-    
+
     @Override
     protected String getName() {
         LOGGER.debug("getName was called");
@@ -424,7 +434,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
         LOGGER.debug("getOptions was called");
         return new String[0];
     }
-    
+
     /**
      * FROM FUSI API:
      * Get extended attributes.
@@ -433,7 +443,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterFull {
      * (files, directories, symbolic links, etc.). They are extensions
      * to the normal attributes which are associated with all inodes in
      * the system (i.e., the stat(2) data). A complete overview of
-     * extended attributes concepts can be found in attr(5). 
+     * extended attributes concepts can be found in attr(5).
      */
     @Override
     public int getxattr(String path, String xattr, XattrFiller filler, long size, long position) {
