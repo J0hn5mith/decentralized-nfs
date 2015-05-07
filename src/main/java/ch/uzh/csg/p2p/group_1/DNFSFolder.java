@@ -276,7 +276,6 @@ public class DNFSFolder extends DNFSAbstractFile {
             e.printStackTrace();
         }
 
-
         return list;
     }
 

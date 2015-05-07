@@ -74,7 +74,7 @@ public class DNFSBlock implements Serializable {
         return (int) bytesToRead;
     }
 
-    public void truncate(final long offset)
+    public int truncate(final long offset)
     {
         if (offset < this.data.capacity()) {
             // Need to create a new, smaller buffer
@@ -84,6 +84,8 @@ public class DNFSBlock implements Serializable {
             newContents.put(bytesRead);
             this.data = newContents;
         }
+
+        return (int)offset;
     }
 
 }

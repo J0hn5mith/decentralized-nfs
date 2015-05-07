@@ -216,7 +216,6 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int rmdir(String pathString) {
-        DNFSiNode iNode;
         DNFSFolder parentFolder;
         DNFSPath path;
         try {
@@ -226,6 +225,22 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException e) {
             return -ErrorCodes.ENOENT();
         }
+        return 0;
+    }
+
+    @Override
+    public int truncate(final String pathString, final long offset)
+    {
+        DNFSPath path;
+        try {
+            path = new DNFSPath(pathString);
+            DNFSFile file = this.pathResolver.getFile(path);
+            file.truncate(offset);
+
+        } catch (DNFSException e) {
+            return -ErrorCodes.ENOENT();
+        }
+
         return 0;
     }
 

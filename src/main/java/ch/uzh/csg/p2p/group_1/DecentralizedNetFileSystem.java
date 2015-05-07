@@ -35,6 +35,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             e.printStackTrace();
             Main.LOGGER.error("Could not load the configuration.");
         }
+        int port = this.conf.getConfig().getInt("Port");
     }
 
     /**

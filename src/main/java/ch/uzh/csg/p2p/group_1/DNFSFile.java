@@ -55,6 +55,10 @@ public class DNFSFile extends DNFSAbstractFile {
         return 0;
     }
 
+    public int truncate(long offset){
+        return this.getFirstBlock().truncate(offset);
+    }
+
     private DNFSBlock getFirstBlock(){
         return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
     }
