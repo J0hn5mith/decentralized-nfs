@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 
 
 public class DNFSFile extends DNFSAbstractFile {
-    static String LOREM_IPSUM = "al;skdjfl;aksjdfl;aksjdfl;aksjdf;laksjdflkjashdfklajhsdfklajshdfklasjdh";
 
     /**
      * 
@@ -20,8 +19,7 @@ public class DNFSFile extends DNFSAbstractFile {
      */
     DNFSFile(DNFSiNode iNode, DNFSIPeer peer){
         super(iNode, peer);
-        DNFSBlock block = this.getINode().addBlock(this.getPeer());
-        block.append(LOREM_IPSUM);
+        this.getINode().addBlock(this.getPeer());
     }
 
     public static DNFSFile createNew(DNFSIPeer peer){
@@ -46,6 +44,12 @@ public class DNFSFile extends DNFSAbstractFile {
         this.getINode().setSize((int) this.getFirstBlock().getSize());
         return bytesWritten;
     }
+
+    public int read(final ByteBuffer buffer, final long bytesToRead, final long offset){
+        return this.getFirstBlock().read(buffer, bytesToRead, offset);
+
+    }
+
 
     private DNFSBlock getFirstBlock(){
         return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));

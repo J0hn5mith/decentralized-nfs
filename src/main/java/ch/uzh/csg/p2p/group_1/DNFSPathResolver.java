@@ -50,8 +50,11 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSFolder getFolder(DNFSPath path) throws DNFSException {
+    public DNFSFolder getFolder(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotFolderException {
         DNFSiNode iNode = this.resolve(path);
+        if (!iNode.isDir()) {
+            throw new DNFSException.DNFSNotFolderException();
+        }
         return DNFSFolder.getExisting(iNode, this.getPeer());
     }
 
@@ -60,8 +63,11 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSFile getFile(DNFSPath path) throws DNFSException {
+    public DNFSFile getFile(DNFSPath path) throws DNFSException.DNFSNotFileException, DNFSException.DNFSPathNotFound {
         DNFSiNode iNode = this.resolve(path);
+        if (iNode.isDir()) {
+            throw new DNFSException.DNFSNotFileException();
+        }
         return new DNFSFile(iNode, this.getPeer());
     }
 
@@ -70,22 +76,28 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSiNode getINode(DNFSPath path) throws DNFSException {
+    public DNFSiNode getINode(DNFSPath path) throws DNFSException.DNFSPathNotFound  {
         return this.resolve(path);
     }
 
 
-    private DNFSiNode resolve(DNFSPath path) throws DNFSException {
-        DNFSFolder currentFolder = this.getRootFolder();
-        if (path.length() == 0) {
-            return currentFolder.getINode();
-        }
+    private DNFSiNode resolve(DNFSPath path) throws DNFSException.DNFSPathNotFound {
+        DNFSFolder currentFolder = null;
+        try {
+            currentFolder = this.getRootFolder();
+            if (path.length() == 0) {
+                return currentFolder.getINode();
+            }
 
-        for (String pathComponent : path.getComponents(0, -1)) {
-            currentFolder = currentFolder.getChildFolder(pathComponent);
-        }
+            for (String pathComponent : path.getComponents(0, -1)) {
+                currentFolder = currentFolder.getChildFolder(pathComponent);
+            }
 
-        return currentFolder.getChildINode(path.getComponent(-1));
+            return currentFolder.getChildINode(path.getComponent(-1));
+
+        } catch (DNFSException e) {
+            throw new DNFSException.DNFSPathNotFound();
+        }
     }
 
 
