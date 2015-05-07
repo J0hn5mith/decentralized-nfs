@@ -20,8 +20,7 @@ public class TestDNFSFuseIntegration {
     public void setUp(){
         this.dnfs = new DecentralizedNetFileSystem();
 
-        this.dnfs.loadConfig("./conf/settings.xml");
-        this.dnfs.setUp();
+        this.dnfs.setUp("./conf/settings.xml", null);
         this.dnfs.start();
 
     }

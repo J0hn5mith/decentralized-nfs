@@ -6,6 +6,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -14,6 +15,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private DNFSFuseIntegration fuseIntegration;
     private DNFSPathResolver pathResolver;
     private DNFSConfigurator conf;
+    private DNFSIPeer peer;
 
     /**
      * 
@@ -41,9 +43,22 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     /**
      * 
      */
-    public void setUp() {
-        
-        this.pathResolver = new DNFSPathResolver(this.conf);
+    public void setUp(String configFile, CommandLine cmd) {
+        this.loadConfig(configFile);
+
+        if(cmd.hasOption('d')){
+            this.peer = new DNFSDummyPeer();
+        }
+        else{
+            this.peer = new DNFSPeer();
+            try {
+                this.peer.createRootINode();
+            } catch (DNFSException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+        this.pathResolver = new DNFSPathResolver(this.conf, this.peer);
         this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
         

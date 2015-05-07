@@ -19,6 +19,7 @@ public class Main {
             options.addOption("p", "port", true, "overwrite the default port");
             options.addOption("n", "new-server", false, "start a new server");
             options.addOption("a", "ip-address", true, "provide the ip of an existing server");
+            options.addOption("d", "dummy-peer", true, "use a dummy peer that requires no network connection");
         }
         return options;
 
@@ -39,7 +40,6 @@ public class Main {
 
         LOGGER.setLevel(Level.WARN);
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
-        dnfs.loadConfig("./conf/settings.xml");
 
         if (startNewServer){
             // Do what is needed
@@ -53,7 +53,7 @@ public class Main {
             // Do what is needed
             LOGGER.warn("IP overwriting is not yet implemented. IP-Address is " + cmd.getOptionValue("a"));
         }
-        dnfs.setUp();
+        dnfs.setUp("./conf/settings.xml", cmd );
         dnfs.start();
 
 

@@ -16,9 +16,10 @@ public class DNFSPathResolver implements DNFSIPathResolver {
     /**
      * @param config
      */
-    public DNFSPathResolver(DNFSConfigurator config) {
+    public DNFSPathResolver(DNFSConfigurator config, DNFSIPeer peer) {
         this.config = config;
         Main.LOGGER.setLevel(Level.WARN);
+        this.setPeer(peer);
     }
 
     /**
@@ -27,10 +28,8 @@ public class DNFSPathResolver implements DNFSIPathResolver {
     public void setUp() {
 
         try {
-            this.setPeer(new DNFSDummyPeer());
             this.getPeer().setUp();
         } catch (DNFSException e) {
-            e.printStackTrace();
             Main.LOGGER.error("Failed to set up peer");
         }
 
