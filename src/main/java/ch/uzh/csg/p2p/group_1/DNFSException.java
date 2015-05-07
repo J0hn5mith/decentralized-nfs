@@ -10,7 +10,12 @@ public class DNFSException extends Throwable {
     }
 
     
-    static public class DNFSNotFolderException extends DNFSException {
+    static public class NoSuchFileOrFolder extends DNFSException{
+   
+    }
+
+
+    static public class DNFSNotFolderException extends NoSuchFileOrFolder  {
 
     }
 

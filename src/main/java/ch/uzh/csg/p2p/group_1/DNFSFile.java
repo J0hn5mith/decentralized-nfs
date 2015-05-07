@@ -60,6 +60,14 @@ public class DNFSFile extends DNFSAbstractFile {
 
     }
 
+    @Override
+    public int delete() {
+        return 0;
+    }
+
+    public int truncate(long offset){
+        return this.getFirstBlock().truncate(offset);
+    }
 
     private DNFSBlock getFirstBlock() {
         try {

@@ -5,7 +5,6 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
-import net.tomp2p.peers.Number160;
 
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -36,6 +35,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             e.printStackTrace();
             Main.LOGGER.error("Could not load the configuration.");
         }
+        int port = this.conf.getConfig().getInt("Port");
     }
 
     /**

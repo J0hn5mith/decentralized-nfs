@@ -26,4 +26,7 @@ public abstract class DNFSFileSystemEntry {
         this.iNode = iNode;
     }
 
+
+    abstract public int delete();
+
 }
