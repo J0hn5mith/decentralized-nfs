@@ -5,7 +5,6 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.fusejna.FuseException;
-import net.tomp2p.peers.Number160;
 
 import org.apache.commons.configuration.ConfigurationException;
 

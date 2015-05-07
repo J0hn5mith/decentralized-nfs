@@ -16,7 +16,9 @@ public class DNFSFolder extends DNFSAbstractFile {
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
     final private static String SEPARATOR = " ";
 
-    private HashMap<String, DNFSFolderEntry> entries;
+    private HashMap<String, DNFSFolderEntry> childEntries;
+    private DNFSFolderEntry parentEntry;
+    private DNFSFolderEntry selfEntry;
 
     /**
      * @param iNode
@@ -36,7 +38,7 @@ public class DNFSFolder extends DNFSAbstractFile {
 
         DNFSBlock block = folder.getPeer().createBlock();
         folder.getINode().addBlock(block);
-        block.append(folder.getINode().getId() + SEPARATOR + "./");
+        block.append(folder.getINode().getId() + SEPARATOR + ".");
 
         return folder;
     }
@@ -46,31 +48,80 @@ public class DNFSFolder extends DNFSAbstractFile {
         return folder;
     }
 
-    public List<DNFSFolderEntry> getEntries() {
-        return new ArrayList<DNFSFolderEntry>(this.entries.values());
+
+    public List<DNFSFolderEntry> getChildEntries() {
+        List<DNFSFolderEntry> result = new ArrayList<DNFSFolderEntry>(this.childEntries.values());
+
+        if (this.selfEntry != null){
+            result.add(0, this.selfEntry);
+
+        }
+        if (this.parentEntry != null) {
+            result.add(1, this.parentEntry);
+        }
+
+        return result;
+    }
+
+    public List<DNFSFileSystemEntry> getChildren() {
+        List<DNFSFileSystemEntry> entries = new ArrayList<DNFSFileSystemEntry>();
+        DNFSiNode iNode;
+        for (DNFSFolderEntry entry : this.childEntries.values()) {
+            try {
+                iNode = this.getPeer().getINode(entry.getKey());
+                if(iNode.isDir()) {
+                    entries.add(DNFSFolder.getExisting(iNode, this.getPeer()));
+
+                }
+                else {
+                    entries.add(DNFSFile.getExisting(iNode, this.getPeer()));
+                }
+            } catch (DNFSException e) {
+
+            }
+
+
+        }
+        return entries;
     }
 
 
     public void addChild(DNFSFileSystemEntry entry, String name) {
         this.addChild(entry.getINode(), name);
     }
+
+    // TODO: There are different method doing the same thing => find way to unify it
+    // Basic problem is, that i cant decide weather getting children by name or id
+    public DNFSFileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrFolder {
+        DNFSiNode iNode = this.getChildINode(name);
+        if(iNode.isDir()) {
+            return DNFSFolder.getExisting(iNode, this.getPeer());
+
+        }
+        else {
+            return DNFSFile.getExisting(iNode, this.getPeer());
+        }
+    }
+
     public void addChild(DNFSiNode iNode, String name) {
         DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
         block.append("\n" + iNode.getId() + SEPARATOR + name);
         this.updateFolderEntries();
     }
 
-    public void removeChild(String name){
+    public void removeChild(String name) throws DNFSException.NoSuchFileOrFolder {
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
         String newContent = "";
+        DNFSFileSystemEntry child = this.getChild(name);
+        child.delete();
         try {
             String line;
             DNFSFolderEntry entry;
             while ((line = br.readLine()) != null) {
-                String[] lineComponents = line.split(" ");
+                String[] lineComponents = line.split(this.SEPARATOR);
 
                 if (!lineComponents[1].equals(name)) {
-                    entry = new DNFSFolderEntry(new Number160(lineComponents[0]), name);
+                    entry = new DNFSFolderEntry(new Number160(lineComponents[0]), lineComponents[1]);
                     newContent = newContent + entry.toString() + "\n";
                 }
             }
@@ -86,7 +137,7 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
     public boolean hasChild(String name) {
-        return this.entries.containsKey(name);
+        return this.childEntries.containsKey(name);
     }
 
     public void renameChild(String oldName, String newName) {
@@ -120,8 +171,13 @@ public class DNFSFolder extends DNFSAbstractFile {
      * Utilities
      */
 
-    public DNFSiNode getChildINode(String name) throws DNFSException {
-        return this.getPeer().getINode(this.getIDOfChild(name));
+
+    public DNFSiNode getChildINode(String name) throws DNFSException.NoSuchFileOrFolder {
+        try {
+            return this.getPeer().getINode(this.getIDOfChild(name));
+        } catch (DNFSException e) {
+            throw new DNFSException.NoSuchFileOrFolder();
+        }
     }
 
     public DNFSFolder getChildFolder(String name) throws DNFSException {
@@ -141,7 +197,7 @@ public class DNFSFolder extends DNFSAbstractFile {
         }
 
         if (this.hasChild(name)) {
-            return this.entries.get(name).getKey();
+            return this.childEntries.get(name).getKey();
         }
 
         throw new DNFSException();
@@ -183,7 +239,7 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
     private void updateFolderEntries() {
-        this.entries = this.extractFolderEntries();
+        this.childEntries = this.extractFolderEntries();
     }
 
     /**
@@ -195,10 +251,23 @@ public class DNFSFolder extends DNFSAbstractFile {
 
         try {
             String line;
+            String name;
+            Number160 inodeId;
             while ((line = br.readLine()) != null) {
                 String[] lineComponents = line.split(SEPARATOR);
                 if (lineComponents.length == 2) {
-                    list.put(lineComponents[1], new DNFSFolderEntry(new Number160(lineComponents[0]), lineComponents[1]));
+                    name= lineComponents[1];
+                    inodeId = new Number160(lineComponents[0]);
+
+                    if (name.equals(".")){
+                        this.selfEntry = new DNFSFolderEntry(inodeId, name);
+                    }
+                    else if (name.equals("..")){
+                        this.parentEntry = new DNFSFolderEntry(inodeId, name);
+                    }
+                    else {
+                        list.put(name, new DNFSFolderEntry(inodeId, name));
+                    }
                 } else {
                     LOGGER.warn("Format failure in folder data.");
                 }
@@ -220,4 +289,13 @@ public class DNFSFolder extends DNFSAbstractFile {
         return block.getInputStream();
     }
 
+    @Override
+    public int delete() {
+        for(DNFSFileSystemEntry entry : this.getChildren()){
+            entry.delete();
+        }
+        // TODO: How to handle the case where an inode appears at several places
+        this.getPeer().deleteINode(this.getINode().getId());
+        return 0;
+    }
 }

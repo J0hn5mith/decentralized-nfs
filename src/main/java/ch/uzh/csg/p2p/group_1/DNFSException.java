@@ -9,11 +9,14 @@ public class DNFSException extends Throwable {
 
     }
 
-    static public class DNFSNotFolderException extends DNFSException {
+    static public class NoSuchFileOrFolder extends DNFSException{
+    }
+
+    static public class DNFSNotFolderException extends NoSuchFileOrFolder  {
 
     }
 
-    static public class DNFSPathNotFound extends DNFSException {
+    static public class DNFSPathNotFound extends NoSuchFileOrFolder {
 
     }
 

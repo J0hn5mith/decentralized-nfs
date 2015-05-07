@@ -50,6 +50,10 @@ public class DNFSFile extends DNFSAbstractFile {
 
     }
 
+    @Override
+    public int delete() {
+        return 0;
+    }
 
     private DNFSBlock getFirstBlock(){
         return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));

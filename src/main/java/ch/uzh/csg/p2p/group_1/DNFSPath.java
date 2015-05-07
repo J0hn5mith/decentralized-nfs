@@ -104,4 +104,9 @@ public class DNFSPath {
     public DNFSPath getSubPath(int from, int to) {
         return new DNFSPath(this.getComponents(from, to));
     }
+
+    public DNFSPath getParent(){
+        return this.getSubPath(0, -1);
+    }
+
 }
