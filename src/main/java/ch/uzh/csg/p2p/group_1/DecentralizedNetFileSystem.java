@@ -48,10 +48,12 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
         if(cmd.hasOption('d')){
             this.peer = new DNFSDummyPeer();
+
         }
         else{
             this.peer = new DNFSPeer();
             try {
+                this.peer.setUp();
                 this.peer.createRootINode();
             } catch (DNFSException e) {
                 e.printStackTrace();

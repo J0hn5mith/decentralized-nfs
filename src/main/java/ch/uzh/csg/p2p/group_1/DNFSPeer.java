@@ -12,7 +12,7 @@ public class DNFSPeer implements DNFSIPeer {
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
     
-    public void setup(int port) throws DNFSException {
+    public void setUp(int port) throws DNFSException {
         DNFSNetwork.createNetwork(port); // TODO put this call somewhere else and delete method
     }
     
