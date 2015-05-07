@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -33,15 +34,15 @@ public class DNFSBlock implements Serializable {
         this.id = id;
     }
 
-    public long getSize(){
+    public long getSize() {
         return this.data.array().length;
     }
 
-    public InputStream getInputStream(){
+    public InputStream getInputStream() {
         return new ByteArrayInputStream(data.array());
     }
 
-    public int append(String appendString){
+    public int append(String appendString) {
         int writeOffset = this.data.array().length;
         int bufSize = appendString.getBytes().length;
         ByteBuffer buffer = ByteBuffer.wrap(appendString.getBytes());
@@ -49,7 +50,7 @@ public class DNFSBlock implements Serializable {
         return this.write(buffer, bufSize, writeOffset);
     }
 
-    public int write(ByteBuffer buffer, final long bufferSize, final long offset){
+    public int write(ByteBuffer buffer, final long bufferSize, final long offset) {
 
         final int maxWriteIndex = (int) (offset + bufferSize);
         final byte[] bytesToWrite = new byte[(int) bufferSize];
@@ -65,4 +66,25 @@ public class DNFSBlock implements Serializable {
         this.data.position(0);
         return (int) bufferSize;
     }
+
+    public int read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
+        bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
+
+        byteBuffer.position(0);
+        byteBuffer.put(this.data.array(), (int) offset, (int) bytesToRead);
+        return (int) bytesToRead;
+    }
+
+    public void truncate(final long offset)
+    {
+        if (offset < this.data.capacity()) {
+            // Need to create a new, smaller buffer
+            final ByteBuffer newContents = ByteBuffer.allocate((int) offset);
+            final byte[] bytesRead = new byte[(int) offset];
+            this.data.get(bytesRead);
+            newContents.put(bytesRead);
+            this.data = newContents;
+        }
+    }
+
 }
