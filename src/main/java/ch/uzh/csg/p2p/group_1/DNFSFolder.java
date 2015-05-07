@@ -1,6 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -32,13 +33,19 @@ public class DNFSFolder extends DNFSAbstractFile {
      * Factory method for creating new folders.
      */
     public static DNFSFolder createNew(DNFSIPeer peer) {
-        DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
-
-        DNFSBlock block = folder.getPeer().createBlock();
-        folder.getINode().addBlock(block);
-        block.append(folder.getINode().getId() + SEPARATOR + "./");
-
-        return folder;
+        try {
+            DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
+    
+            DNFSBlock block = folder.getPeer().createBlock();
+            folder.getINode().addBlock(block);
+            block.append(folder.getINode().getId() + SEPARATOR + "./");
+    
+            return folder;
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     public static DNFSFolder getExisting(DNFSiNode iNode, DNFSIPeer peer) {
@@ -54,10 +61,17 @@ public class DNFSFolder extends DNFSAbstractFile {
     public void addChild(DNFSFileSystemEntry entry, String name) {
         this.addChild(entry.getINode(), name);
     }
+    
+    
     public void addChild(DNFSiNode iNode, String name) {
-        DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
-        block.append("\n" + iNode.getId() + SEPARATOR + name);
-        this.updateFolderEntries();
+        try {
+            DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
+            block.append("\n" + iNode.getId() + SEPARATOR + name);
+            this.updateFolderEntries();
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
     }
 
     public void removeChild(String name){
@@ -148,7 +162,13 @@ public class DNFSFolder extends DNFSAbstractFile {
     }
 
     private DNFSBlock getBlock() {
-        return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
+        try {
+            return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
 

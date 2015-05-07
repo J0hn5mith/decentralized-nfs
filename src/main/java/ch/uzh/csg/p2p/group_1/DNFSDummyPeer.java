@@ -102,9 +102,10 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
 
     @Override
-    public void setUp() throws IOException {
+    public void setUp() throws DNFSException {
         DNFSFolder rootFolder = DNFSFolder.createNew(this);
         this.rootINode = rootFolder.getINode();
+        
         DNFSFile testFile = DNFSFile.createNew(this);
         rootFolder.addChild(testFile, "Test_File_1.txt");
 

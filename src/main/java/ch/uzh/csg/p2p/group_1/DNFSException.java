@@ -9,12 +9,52 @@ public class DNFSException extends Throwable {
 
     }
 
+    
     static public class DNFSNotFolderException extends DNFSException {
 
     }
 
+    
     static public class DNFSPathNotFound extends DNFSException {
 
+    }
+    
+    
+    static public class DNFSNetworkSetupException extends DNFSException {
+        public DNFSNetworkSetupException(String message) {
+            super(message);
+        }
+    }
+    
+    
+    static public class DNFSNetworkPutException extends DNFSException {
+        public DNFSNetworkPutException(String message) {
+            super(message);
+        }
+    }
+    
+    
+    static public class DNFSNetworkGetException extends DNFSException {
+        public DNFSNetworkGetException(String message) {
+            super(message);
+        }
+    }
+    
+    
+    static public class DNFSNetworkDeleteException extends DNFSException {
+        public DNFSNetworkDeleteException(String message) {
+            super(message);
+        }
+    }
+    
+    
+    public DNFSException() {
+        super();
+    }
+    
+    
+    public DNFSException(String message) {
+        super(message);
     }
 
 }

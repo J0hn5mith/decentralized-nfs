@@ -29,7 +29,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
         try {
             this.setPeer(new DNFSDummyPeer());
             this.getPeer().setUp();
-        } catch (IOException e) {
+        } catch (DNFSException e) {
             e.printStackTrace();
             Main.LOGGER.error("Failed to set up peer");
         }

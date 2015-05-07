@@ -83,7 +83,13 @@ public class DNFSiNode implements Serializable{
      */
 
     public DNFSBlock addBlock(DNFSIPeer peer){
-        DNFSBlock block = peer.createBlock();
-        return this.addBlock(block);
+        try {
+            DNFSBlock block = peer.createBlock();
+            return this.addBlock(block);
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

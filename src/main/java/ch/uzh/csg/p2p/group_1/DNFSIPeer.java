@@ -8,5 +8,5 @@ import java.io.IOException;
 public interface DNFSIPeer extends DNFSIBlockStorage, DNFSIiNodeStorage{
 
 
-    public void setUp() throws IOException;
+    public void setUp() throws DNFSException;
 }
