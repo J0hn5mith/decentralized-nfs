@@ -313,7 +313,12 @@ public class DNFSFolder extends DNFSAbstractFile {
             entry.delete();
         }
         // TODO: How to handle the case where an inode appears at several places
-        this.getPeer().deleteINode(this.getINode().getId());
+        try {
+            this.getPeer().deleteINode(this.getINode().getId());
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
         return 0;
     }
 }
