@@ -29,13 +29,6 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
         parseCommandLineArguments(args);
-        
-        try {
-            System.out.println("Hallo");
-            DNFSNetwork.createNetwork(6667);
-        } catch (DNFSNetworkSetupException e) {
-            e.printStackTrace();
-        }
 
         boolean startNewServer = cmd.hasOption('n');
         int portOverwrite = -1;

@@ -31,6 +31,8 @@ public class DNFSNetwork {
     public static void createNetwork(int port) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
         setupPeer(port);
+        
+        _connected = true;
     }
     
     
