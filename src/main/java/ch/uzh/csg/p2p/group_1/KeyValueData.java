@@ -7,6 +7,7 @@ public class KeyValueData {
     
     
     public KeyValueData() {
+        data = new byte[0];
     }
     
     
