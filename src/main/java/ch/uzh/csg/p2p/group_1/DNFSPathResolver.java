@@ -19,20 +19,6 @@ public class DNFSPathResolver implements DNFSIPathResolver {
         this.setPeer(peer);
     }
 
-    /**
-     *
-     */
-    public void setUp() {
-
-        try {
-            this.getPeer().setUp();
-        } catch (DNFSException e) {
-            Main.LOGGER.error("Failed to set up peer");
-        }
-
-        Main.LOGGER.info("Successfully set up connection");
-    }
-
     public DNFSIPeer getPeer() {
         return peer;
     }

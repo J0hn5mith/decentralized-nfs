@@ -3,39 +3,64 @@ package ch.uzh.csg.p2p.group_1;
 import java.io.IOException;
 
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 
+import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+
 public class DNFSPeer implements DNFSIPeer {
+    
+    
     final private static Logger LOGGER = Logger.getLogger(DNFSPeer.class.getName());
 
-    
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
+    
+    private static KeyValueStorageInterface keyValueStorage;
     
 
     @Override
     public DNFSBlock createBlock() throws DNFSException {
-        // TODO Auto-generated method stub
-        return null;
+        Number160 id = DNFSNetwork.getUniqueKey();
+        DNFSBlock block = new DNFSBlock(id);
+        DNFSNetwork.put(id, new Object());
+        
+        keyValueStorage.set(id, new KeyValueData()); // TODO not local
+       
+        return block;
     }
 
+    
     @Override
     public DNFSBlock getBlock(Number160 id) throws DNFSException {
-        // TODO Auto-generated method stub
-        return null;
+        PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        
+        // TODO not local
+        
+        byte[] data = keyValueStorage.get(id).getData();
+        
+        return new DNFSBlock(id, data);
     }
 
+    
     @Override
     public void updateBlock(DNFSBlock block) throws DNFSException {
-        // TODO Auto-generated method stub
-
+        PeerAddress resonder = DNFSNetwork.getFirstResponder(block.id);
+        
+        keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
     }
 
+    
     @Override
     public void deleteBlock(Number160 id) throws DNFSException {
-        // TODO Auto-generated method stub
-
+        PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        
+        // TODO not local
+        keyValueStorage.delete(id);
     }
 
+    
     @Override
     public DNFSiNode createINode() throws DNFSException {
         Number160 iNodeID = DNFSNetwork.getUniqueKey();
@@ -45,6 +70,7 @@ public class DNFSPeer implements DNFSIPeer {
         return iNode;
     }
 
+    
     @Override
     public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
         Object data = DNFSNetwork.get(iNodeID);
@@ -52,11 +78,13 @@ public class DNFSPeer implements DNFSIPeer {
         return iNode;
     }
 
+    
     @Override
     public void deleteINode(Number160 iNodeID) throws DNFSException {
         DNFSNetwork.delete(iNodeID);
     }
 
+    
     @Override
     public void updateINode(DNFSiNode iNode) throws DNFSException {
         DNFSNetwork.delete(iNode.id); // TODO: change this once we have vDHT
@@ -64,11 +92,13 @@ public class DNFSPeer implements DNFSIPeer {
         DNFSNetwork.put(iNode.id, data);
     }
 
+    
     @Override
     public DNFSiNode getRootINode() throws DNFSException {
         return getINode(ROOT_INODE_KEY);
     }
 
+    
     @Override
     public DNFSiNode createRootINode() throws DNFSException {
         DNFSiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
@@ -78,8 +108,12 @@ public class DNFSPeer implements DNFSIPeer {
         return iNode;
     }
 
+    
     @Override
-    public void setUp() throws DNFSException {
+    public void setUp(DNFSSettings settings) throws DNFSException {
+        keyValueStorage = new FileBasedKeyValueStorage();
+        String storageDirectory = settings.getFileBasedStorageDirectory();
+        ((FileBasedKeyValueStorage) keyValueStorage).setDirectory(storageDirectory);
     }
 
 }

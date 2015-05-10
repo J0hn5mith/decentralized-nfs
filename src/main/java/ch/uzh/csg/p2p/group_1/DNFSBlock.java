@@ -24,6 +24,13 @@ public class DNFSBlock implements Serializable {
         this.id = id;
         this.data = ByteBuffer.allocate(0);
     }
+    
+    
+    public DNFSBlock(Number160 id, byte[] byteArray) {
+        this.id = id;
+        this.data = ByteBuffer.wrap(byteArray);
+    }
+    
 
     public Number160 getId() {
         return id;
@@ -40,6 +47,12 @@ public class DNFSBlock implements Serializable {
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data.array());
     }
+    
+    
+    public byte[] getByteArray() {
+        return this.data.array();
+    }
+    
 
     public int append(String appendString) {
         int writeOffset = this.data.array().length;

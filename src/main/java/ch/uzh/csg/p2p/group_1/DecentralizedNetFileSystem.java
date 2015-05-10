@@ -4,6 +4,7 @@
 
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 
@@ -42,7 +43,6 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
         this.setUpPeer();
         this.pathResolver = new DNFSPathResolver(this.peer);
-        this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
 
 
@@ -112,20 +112,26 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         Main.LOGGER.debug("DNFS has shut down.");
     }
 
-
-    private void setUpPeer(){
-        if(this.settings.getUseDummyPeer()){
-            this.peer = new DNFSDummyPeer();
-        }
-        else{
-            this.peer = new DNFSPeer();
-            try {
-                this.peer.setUp();
-                this.peer.createRootINode();
-            } catch (DNFSException e) {
-                e.printStackTrace();
-                System.exit(-1);
+    
+    /**
+     * 
+     */
+    private void setUpPeer() {
+        
+        try {
+            if(this.settings.getUseDummyPeer()) {
+                this.peer = new DNFSDummyPeer();
+                
+            } else {
+                DNFSNetwork.createNetwork(6667);
+                this.peer = new DNFSPeer();
             }
+            this.peer.setUp(this.settings);
+            this.peer.createRootINode();
+                
+        } catch (DNFSException e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
 
     }

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+
 /**
  * Created by janmeier on 16.04.15.
  */
@@ -101,8 +103,7 @@ public class DNFSDummyPeer implements DNFSIPeer {
     }
 
 
-    @Override
-    public void setUp() throws DNFSException {
+    public void setUp(DNFSSettings settings) throws DNFSException {
         DNFSFolder rootFolder = DNFSFolder.createNew(this);
         this.rootINode = rootFolder.getINode();
         

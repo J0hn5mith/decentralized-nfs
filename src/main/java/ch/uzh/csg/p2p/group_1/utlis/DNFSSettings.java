@@ -45,6 +45,11 @@ public class DNFSSettings {
     public boolean getUseDummyPeer() {
         return this.useDummyPeer;
     }
+   
+    
+    public String getFileBasedStorageDirectory() {
+        return this.conf.getConfig().getString("FileBasedStorageDirectory");
+    }
 
 
     private void setUseDummyPeer(){
