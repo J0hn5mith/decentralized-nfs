@@ -85,8 +85,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         try {
             this.fuseIntegration.mount(this.settings.getMountPoint());
         } catch (FuseException e) {
-            e.printStackTrace();
             Main.LOGGER.error("Failed to mount the fuse file system.");
+            e.printStackTrace();
         }
         LOGGER.info("The DNFS started successful");
     }
@@ -120,13 +120,17 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         else{
             this.peer = new DNFSPeer();
             try {
-                this.peer.setUp();
                 this.peer.createRootINode();
             } catch (DNFSException e) {
                 e.printStackTrace();
                 System.exit(-1);
             }
         }
-
+        try {
+            this.peer.setUp();
+        } catch (DNFSException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
 }

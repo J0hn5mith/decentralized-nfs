@@ -108,7 +108,6 @@ public class DNFSNetwork {
         }
     }
 
-
     public static Object get(Number160 key) throws DNFSException.DNFSNetworkGetException {
         if(_connected) {
             try {
