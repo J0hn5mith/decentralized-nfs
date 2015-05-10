@@ -7,6 +7,7 @@ import ch.uzh.csg.p2p.group_1.DecentralizedNetFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.csg.p2p.group_1.utlis.DNFSCommandLineOptionsFactory;
@@ -20,13 +21,18 @@ public class DNFSTestBed {
 
     static int currentPort = BASE_PORT;
 
-    static List<DecentralizedNetFileSystem> dnfsInstances;
+    static List<DNFSRunnable> dnfsInstances;
 
 
     public static void main(String[] args) throws InterruptedException, ParseException {
+        dnfsInstances = new ArrayList<DNFSRunnable>();
 
         for (int i = 0; i < NUM_PEERS; i++) {
             createDnfsInstance();
+        }
+
+        for (DNFSRunnable dnfsInstance : dnfsInstances) {
+            dnfsInstance.start();
         }
 
         return;
@@ -52,8 +58,7 @@ public class DNFSTestBed {
 
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
         dnfs.setUp("./conf/settings.xml", cmd);
-        dnfs.start();
-        dnfsInstances.add(dnfs);
+        dnfsInstances.add(new DNFSRunnable(dnfs));
     }
 
     static private Integer getNextPort(){
@@ -91,6 +96,27 @@ public class DNFSTestBed {
 
         return (temp);
     }
+    static class DNFSRunnable implements Runnable {
+        private Thread t;
+        private DecentralizedNetFileSystem dnfs;
+
+        DNFSRunnable(DecentralizedNetFileSystem dnfs){
+            this.dnfs = dnfs;
+        }
+        public void run() {
+            dnfs.start();
+        }
+
+        public void start ()
+        {
+            t = new Thread (this);
+            t.start ();
+        }
+
+    }
+
+
+
 
 
 }
