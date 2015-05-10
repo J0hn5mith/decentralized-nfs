@@ -7,6 +7,8 @@ import ch.uzh.csg.p2p.group_1.utlis.DNFSCommandLineOptionsFactory;
 import org.apache.commons.cli.*;
 import org.apache.log4j.*;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
+
 public class Main {
     static CommandLineParser parser;
     static CommandLine cmd;
@@ -16,6 +18,13 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
         parseCommandLineArguments(args);
+        
+        try {
+            System.out.println("Hallo");
+            DNFSNetwork.createNetwork(6667);
+        } catch (DNFSNetworkSetupException e) {
+            e.printStackTrace();
+        }
 
         boolean startNewServer = cmd.hasOption('n');
         int portOverwrite = -1;

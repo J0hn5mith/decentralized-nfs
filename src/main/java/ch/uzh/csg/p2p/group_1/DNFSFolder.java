@@ -12,24 +12,27 @@ import java.util.List;
 /**
  * Created by janmeier on 06.04.15.
  */
-public class DNFSFolder extends DNFSAbstractFile {
+public class DNFSFolder extends DNFSFileSystemEntry {
+    
+    
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
-    final private static String SEPARATOR = " ";
+    final private static String SEPARATOR = "\t";
 
     private HashMap<String, DNFSFolderEntry> childEntries;
     private DNFSFolderEntry parentEntry;
     private DNFSFolderEntry selfEntry;
 
+    
     /**
      * @param iNode
      */
     private DNFSFolder(DNFSiNode iNode, DNFSIPeer peer) {
         super(iNode, peer);
         this.getINode().setDir(true);
-
         this.updateFolderEntries();
     }
 
+    
     /**
      * Factory method for creating new folders.
      */
@@ -111,6 +114,7 @@ public class DNFSFolder extends DNFSAbstractFile {
         }
     }
 
+    
     public void addChild(DNFSiNode iNode, String name) {
         try {
             DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
@@ -122,6 +126,7 @@ public class DNFSFolder extends DNFSAbstractFile {
         }
     }
 
+    
     public void removeChild(String name) throws DNFSException.NoSuchFileOrFolder {
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
         String newContent = "";
@@ -149,10 +154,12 @@ public class DNFSFolder extends DNFSAbstractFile {
 
     }
 
+    
     public boolean hasChild(String name) {
         return this.childEntries.containsKey(name);
     }
 
+    
     public void renameChild(String oldName, String newName) {
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
         String newContent = "";
@@ -193,10 +200,12 @@ public class DNFSFolder extends DNFSAbstractFile {
         }
     }
 
+    
     public DNFSFolder getChildFolder(String name) throws DNFSException {
         return DNFSFolder.getExisting(this.getChildINode(name), this.getPeer());
     }
 
+    
     public DNFSFile getChildFile(String name) throws DNFSException {
         return DNFSFile.createNew(this.getPeer());
     }
@@ -216,6 +225,7 @@ public class DNFSFolder extends DNFSAbstractFile {
         throw new DNFSException();
     }
 
+    
     private DNFSBlock getBlock() {
         try {
             return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));

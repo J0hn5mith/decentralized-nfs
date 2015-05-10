@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  */
 
 
-public class DNFSFile extends DNFSAbstractFile {
+public class DNFSFile extends DNFSFileSystemEntry {
 
     /**
      * 
