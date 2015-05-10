@@ -4,66 +4,48 @@
 
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 
 public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
+    final private static Logger LOGGER = Logger.getLogger(DNFSPeer.class.getName());
+
+
     private DNFSFuseIntegration fuseIntegration;
     private DNFSPathResolver pathResolver;
-    private DNFSConfigurator conf;
+    private DNFSSettings settings;
     private DNFSIPeer peer;
+
+    private String mountPoint;
+
 
     /**
      * 
      */
     public DecentralizedNetFileSystem() {
+        this.LOGGER.setLevel(Level.INFO);
         this.fuseIntegration = new DNFSFuseIntegration();
-        Main.LOGGER.debug("DEBUG");
     }
     
     /**
      * 
      */
-    public void loadConfig(String configFile) {
-        Main.LOGGER.debug("DNFS has loaded the configuration.");
-        this.conf = new DNFSConfigurator(configFile);
-        try {
-            this.conf.setUp();
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-            Main.LOGGER.error("Could not load the configuration.");
-        }
-        int port = this.conf.getConfig().getInt("Port");
-    }
-
-    /**
-     * 
-     */
     public void setUp(String configFile, CommandLine cmd) {
-        this.loadConfig(configFile);
+        this.settings = new DNFSSettings(configFile, cmd);
 
-        if(cmd.hasOption('d')){
-            this.peer = new DNFSDummyPeer();
-
-        }
-        else{
-            this.peer = new DNFSPeer();
-            try {
-                this.peer.setUp();
-                this.peer.createRootINode();
-            } catch (DNFSException e) {
-                e.printStackTrace();
-                System.exit(-1);
-            }
-        }
-        this.pathResolver = new DNFSPathResolver(this.conf, this.peer);
+        this.setUpPeer();
+        this.pathResolver = new DNFSPathResolver(this.peer);
         this.pathResolver.setUp();
         this.fuseIntegration.setPathResolver(this.pathResolver);
-        
+
+
         // START STORAGE EXAMPLE
         
 //        KeyValueStorageInterface keyValueStorage = new FileBasedKeyValueStorage();
@@ -90,7 +72,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         
         // END STORAGE EXAMPLE
         
-        Main.LOGGER.debug("DNFS has been set up.");
+        LOGGER.info("DNFS has been set up.with mount point " + this.settings.getMountPoint());
     }
 
 
@@ -101,13 +83,12 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         Main.LOGGER.debug("DNFS has started.");
 
         try {
-            String mountPoint = this.conf.getConfig().getString("MountPoint");
-            this.fuseIntegration.mount(mountPoint);
+            this.fuseIntegration.mount(this.settings.getMountPoint());
         } catch (FuseException e) {
             e.printStackTrace();
             Main.LOGGER.error("Failed to mount the fuse file system.");
         }
-        Main.LOGGER.info("The DNFS started successful.");
+        LOGGER.info("The DNFS started successful");
     }
 
     /**
@@ -130,5 +111,22 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void shutDown() {
         Main.LOGGER.debug("DNFS has shut down.");
     }
-    
+
+
+    private void setUpPeer(){
+        if(this.settings.getUseDummyPeer()){
+            this.peer = new DNFSDummyPeer();
+        }
+        else{
+            this.peer = new DNFSPeer();
+            try {
+                this.peer.setUp();
+                this.peer.createRootINode();
+            } catch (DNFSException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+
+    }
 }
