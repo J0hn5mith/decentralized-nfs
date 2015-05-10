@@ -10,14 +10,11 @@ import org.apache.log4j.Level;
 
 public class DNFSPathResolver implements DNFSIPathResolver {
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
-    private DNFSConfigurator config;
     private DNFSIPeer peer;
 
     /**
-     * @param config
      */
-    public DNFSPathResolver(DNFSConfigurator config, DNFSIPeer peer) {
-        this.config = config;
+    public DNFSPathResolver(DNFSIPeer peer) {
         Main.LOGGER.setLevel(Level.WARN);
         this.setPeer(peer);
     }

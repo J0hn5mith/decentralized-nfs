@@ -8,7 +8,6 @@ import org.apache.commons.cli.CommandLine;
 public interface IDecentralizedNetFileSystem {
 
     public void setUp(String settingsPath, CommandLine cmd);
-    public void loadConfig(String configFile);
     public void start();
     public void pause();
     public void resume();

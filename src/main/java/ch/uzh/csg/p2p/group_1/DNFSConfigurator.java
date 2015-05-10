@@ -6,8 +6,9 @@ package ch.uzh.csg.p2p.group_1;
 import org.apache.commons.configuration.*;
 import org.apache.log4j.Logger;
 
+//TODO Remove this class
 public class DNFSConfigurator {
-	
+
     private final Logger LOGGER = Logger.getLogger(this.getClass());
 
     private String filePath;
