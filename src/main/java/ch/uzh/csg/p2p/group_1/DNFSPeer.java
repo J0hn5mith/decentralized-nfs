@@ -11,11 +11,6 @@ public class DNFSPeer implements DNFSIPeer {
     
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
-    
-    public void setUp(int port) throws DNFSException {
-        DNFSNetwork.createNetwork(port); // TODO put this call somewhere else and delete method
-    }
-    
 
     @Override
     public DNFSBlock createBlock() throws DNFSException {
@@ -85,7 +80,6 @@ public class DNFSPeer implements DNFSIPeer {
 
     @Override
     public void setUp() throws DNFSException {
-        // TODO
     }
 
 }
