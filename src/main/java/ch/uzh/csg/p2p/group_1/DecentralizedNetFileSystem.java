@@ -117,7 +117,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         if(this.settings.getUseDummyPeer()){
             this.peer = new DNFSDummyPeer();
         }
-        else{
+        else {
             this.peer = new DNFSPeer();
             try {
                 this.peer.createRootINode();
@@ -125,15 +125,15 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 e.printStackTrace();
                 System.exit(-1);
             }
-            this.peer.setUp(this.settings);
-            this.peer.createRootINode();
-                
-        } catch (DNFSException e) {
-            e.printStackTrace();
-            System.exit(-1);
+            try {
+                this.peer.createRootINode();
+            } catch (DNFSException e) {
+                e.printStackTrace();
+            }
         }
+
         try {
-            this.peer.setUp();
+            this.peer.setUp(this.settings);
         } catch (DNFSException e) {
             e.printStackTrace();
             System.exit(-1);

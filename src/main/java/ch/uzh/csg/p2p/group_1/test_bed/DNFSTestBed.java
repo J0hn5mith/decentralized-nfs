@@ -26,6 +26,17 @@ public class DNFSTestBed {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
         dnfsInstances = new ArrayList<DNFSRunnable>();
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                for(DNFSRunnable runnable : dnfsInstances){
+                    runnable.stop();
+                }
+                System.out.println("Shutdown hook ran!");
+            }
+        });
 
         for (int i = 0; i < NUM_PEERS; i++) {
             createDnfsInstance();
@@ -111,6 +122,10 @@ public class DNFSTestBed {
         {
             t = new Thread (this);
             t.start ();
+        }
+
+        public void stop(){
+            this.t.interrupt();
         }
 
     }

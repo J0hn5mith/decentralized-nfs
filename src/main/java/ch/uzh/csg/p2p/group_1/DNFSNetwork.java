@@ -30,7 +30,10 @@ public class DNFSNetwork {
     
     private static boolean _connected = false;
     private static PeerDHT _peer;
-    
+
+    public PeerDHT getPeer(){
+        return this._peer;
+    }
     
     /**
      * 
