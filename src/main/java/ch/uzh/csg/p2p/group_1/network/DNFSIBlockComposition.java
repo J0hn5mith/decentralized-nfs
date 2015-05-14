@@ -11,7 +11,7 @@ public interface DNFSIBlockComposition {
 
 
     public long size() throws DNFSException.DNFSBlockStorageException;
-    public long write(ByteBuffer byteBuffer, final long bufferSize, final long offset) throws DNFSException.DNFSBlockStorageException;
+    public long write(ByteBuffer byteBuffer, final long bufferSize, final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection;
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) throws DNFSException.DNFSBlockStorageException;
     public long truncate(final long offset);
 }

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Random;
 
 import ch.uzh.csg.p2p.group_1.utlis.DNFSCommandLineOptionsFactory;
+import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+
 import org.apache.commons.cli.*;
 
 public class DNFSTestBed {
@@ -91,9 +93,12 @@ public class DNFSTestBed {
             System.exit(-1);
             return;
         }
+        
+        DNFSSettings settings = new DNFSSettings("./conf/settings.xml", cmd);
 
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
-        dnfs.setUp("./conf/settings.xml", cmd);
+        dnfs.setUp(settings);
+        
         dnfsInstances.add(new DNFSRunnable(dnfs));
     }
 

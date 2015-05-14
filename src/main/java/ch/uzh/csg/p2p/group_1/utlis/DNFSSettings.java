@@ -2,30 +2,35 @@
  * Created by janmeier on 10.05.15.
  */
 package ch.uzh.csg.p2p.group_1.utlis;
-import ch.uzh.csg.p2p.group_1.DNFSConfigurator;
 import org.apache.commons.cli.CommandLine;
-
-import javax.naming.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 
 public class DNFSSettings {
-    private CommandLine cmd;
-    private DNFSConfigurator conf;
+    
 
+    private XMLConfiguration config;
+    private CommandLine cmd;
 
     private String mountPoint;
     private int port;
     private boolean startNewServer = false;
     private boolean useDummyPeer = false;
 
+    
     public DNFSSettings(String configFile, CommandLine cmd) {
-        this.cmd = cmd;
-        this.conf = new DNFSConfigurator(configFile);
+        
+        this.config = new XMLConfiguration();
+        this.config.setFileName(configFile);
+        this.config.setValidating(false); // We don't have a dtd schema for now
         try {
-            this.conf.setUp();
+            this.config.load();
         } catch (org.apache.commons.configuration.ConfigurationException e) {
             e.printStackTrace();
+            System.exit(-1);
         }
-
+        
+        this.cmd = cmd;
+        
         this.setMountPoint();
         this.setPort();
         this.setUseDummyPeer();
@@ -51,7 +56,7 @@ public class DNFSSettings {
    
     
     public String getFileBasedStorageDirectory() {
-        return this.conf.getConfig().getString("FileBasedStorageDirectory");
+        return this.config.getString("FileBasedStorageDirectory");
     }
 
 
@@ -79,7 +84,7 @@ public class DNFSSettings {
             this.mountPoint = cmd.getOptionValue("m");
         }
         else{
-            this.mountPoint = this.conf.getConfig().getString("MountPoint");
+            this.mountPoint = this.config.getString("MountPoint");
         }
     }
 }

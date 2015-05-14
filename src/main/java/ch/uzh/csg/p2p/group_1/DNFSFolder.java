@@ -31,20 +31,35 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         this.getINode().setDir(true);
         this.updateFolderEntries();
     }
-
+    
     
     /**
-     * Factory method for creating new folders.
+     * Factory method for creating new folders with a given iNode.
      */
-    public static DNFSFolder createNew(DNFSIPeer peer) {
+    public static DNFSFolder createNew(DNFSiNode iNode, DNFSIPeer peer) {
         try {
-            DNFSFolder folder = new DNFSFolder(peer.createINode(), peer);
+            DNFSFolder folder = new DNFSFolder(iNode, peer);
     
             DNFSBlock block = peer.createBlock();
             folder.getINode().addBlock(block);
             block.append(folder.getINode().getId() + SEPARATOR + "./");
     
             return folder;
+        } catch(DNFSException e) {
+            // TODO: DEAL WITH THIS
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+
+    
+    /**
+     * Factory method for creating new folders with a new iNode.
+     */
+    public static DNFSFolder createNew(DNFSIPeer peer) {
+        try {
+            return createNew(peer.createINode(), peer);
         } catch(DNFSException e) {
             // TODO: DEAL WITH THIS
             System.out.println(e.getMessage());
@@ -168,7 +183,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             String line;
             DNFSFolderEntry entry;
             while ((line = br.readLine()) != null) {
-                String[] lineComponents = line.split(this.SEPARATOR);
+                String[] lineComponents = line.split(SEPARATOR);
 
                 if (!lineComponents[1].equals(name)) {
                     entry = new DNFSFolderEntry(new Number160(lineComponents[0]), lineComponents[1]);

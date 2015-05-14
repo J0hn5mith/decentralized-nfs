@@ -44,7 +44,8 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
 
     @Override
     public long write(ByteBuffer byteBuffer, long bufferSize, long offsetInBytes) throws
-            DNFSException.DNFSBlockStorageException
+            DNFSException.DNFSBlockStorageException,
+            DNFSException.DNFSNetworkNoConnection
     {
         DNFSBlockCompositionOffset offset = findPosition(offsetInBytes);
         DNFSBlock block = offset.getBlock();
@@ -108,7 +109,10 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         return null;
     }
 
-    private DNFSBlock splitBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException {
+    private DNFSBlock splitBlock(DNFSBlock block) throws
+            DNFSException.DNFSBlockStorageException,
+            DNFSException.DNFSNetworkNoConnection
+    {
         DNFSBlock newBlock = this.getBlockStorage().createBlock();
 
         long halfSize = block.getSize()/2;

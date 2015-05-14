@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * Created by janmeier on 10.04.15.
  */
 public class DNFSBlock implements Serializable {
-    final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
     public static int BLOCK_SIZE = 100000;
 
@@ -67,6 +67,7 @@ public class DNFSBlock implements Serializable {
         return this.write(buffer, bufSize, writeOffset);
     }
 
+    
     public int write(ByteBuffer buffer, final long bufferSize, final long offset) {
 
         final int maxWriteIndex = (int) (offset + bufferSize);
@@ -84,6 +85,7 @@ public class DNFSBlock implements Serializable {
         return (int) bufferSize;
     }
 
+    
     public int read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
 
@@ -92,8 +94,8 @@ public class DNFSBlock implements Serializable {
         return (int) bytesToRead;
     }
 
-    public int truncate(final long offset)
-    {
+    
+    public int truncate(final long offset) {
         if (offset < this.data.capacity()) {
             // Need to create a new, smaller buffer
             final ByteBuffer newContents = ByteBuffer.allocate((int) offset);

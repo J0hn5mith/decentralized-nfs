@@ -2,7 +2,6 @@ package ch.uzh.csg.p2p.group_1;
 
 import net.tomp2p.peers.Number160;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
