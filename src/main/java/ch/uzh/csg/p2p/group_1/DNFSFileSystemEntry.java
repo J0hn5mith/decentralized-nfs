@@ -41,8 +41,10 @@ public abstract class DNFSFileSystemEntry {
         return peer;
     }
 
-    
-//    /**
+    public DNFSBlockComposition getBlockComposition() {
+        return blockComposition;
+    }
+    //    /**
 //     *
 //     * @param peer
 //     */
