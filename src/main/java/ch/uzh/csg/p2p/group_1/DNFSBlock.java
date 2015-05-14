@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * Created by janmeier on 10.04.15.
  */
 public class DNFSBlock implements Serializable {
-    final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegrationCommented.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class.getName());
     private static final long serialVersionUID = 2098774660703813030L;
     public static int BLOCK_SIZE = 100000;
 

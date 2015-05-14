@@ -188,7 +188,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOTDIR();
         }
-        for (DNFSFolder.DNFSFolderEntry o : folder.getChildEntries()) {
+        for (DNFSFolderEntry o : folder.getChildEntries()) {
             filler.add(o.getName());
         }
 
