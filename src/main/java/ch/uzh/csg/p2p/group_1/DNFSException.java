@@ -23,8 +23,13 @@ public class DNFSException extends Throwable {
     static public class DNFSPathNotFound extends DNFSException {
 
     }
-    
-    
+
+    static public class DNFSNetworkNoConnection extends DNFSException {
+        public DNFSNetworkNoConnection() {
+            super("Your network is not connected.");
+        }
+    }
+
     static public class DNFSNetworkSetupException extends DNFSException {
         public DNFSNetworkSetupException(String message) {
             super(message);
