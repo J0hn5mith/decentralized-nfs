@@ -51,17 +51,16 @@ public class TestDNFSNetworkVDHTTest {
     public void testVDHTPut() {
         try {
             FuturePut fp;
-            fp = peers[0].put(Number160.ONE)
+            Number160 key = Number160.ONE;
+            fp = peers[0].put(key)
                     .data(Number160.ZERO, new Data("start -"))
                     .start()
                     .awaitUninterruptibly();
-            fp = peers[0].put(Number160.ONE)
+            fp = peers[0].put(key)
                     .data(Number160.ZERO, new Data("HELLO").prepareFlag())
                     .start()
                     .awaitUninterruptibly();
-            Thread.sleep(1000);
 
-            Number160 key = Number160.ONE;
             final CountDownLatch cl = new CountDownLatch(1);
             new Thread(new Runnable() {
                 @Override
@@ -79,6 +78,7 @@ public class TestDNFSNetworkVDHTTest {
             }).start();
 
             this.network.put(Number160.ONE, (Object) new Data("string to append."));
+            System.out.print("Coul put data with vDHT");
 
             cl.await();
 

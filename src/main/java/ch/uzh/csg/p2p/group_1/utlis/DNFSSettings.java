@@ -37,6 +37,10 @@ public class DNFSSettings {
         return port;
     }
 
+    public boolean getStartNewServer(){
+        return this.startNewServer;
+    }
+
     public String getMountPoint() {
         return mountPoint;
     }

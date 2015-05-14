@@ -27,6 +27,14 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private String mountPoint;
 
 
+    public DNFSIPeer getPeer() {
+        return peer;
+    }
+
+    public void setPeer(DNFSIPeer peer) {
+        this.peer = peer;
+    }
+
     /**
      * 
      */
@@ -51,6 +59,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         this.setUpPeer();
         this.pathResolver = new DNFSPathResolver(this.peer);
         this.fuseIntegration.setPathResolver(this.pathResolver);
+
+        if(this.settings.getStartNewServer()){
+            this.createRootFolder();
+        }
 
 
         // START STORAGE EXAMPLE
@@ -127,12 +139,23 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         else {
             this.peer = new DNFSPeer();
         }
+
         try {
             this.peer.setUp(this.settings);
-            this.peer.createRootINode();
         } catch (DNFSException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not set up peer.", e);
             System.exit(-1);
         }
+    }
+
+    private void createRootFolder(){
+        try {
+            this.getPeer().createRootINode();
+            DNFSFolder rootFolder = DNFSFolder.createNew(this.getPeer());
+        } catch (DNFSException e) {
+            LOGGER.error("Could not create root folder.", e);
+            return;
+        }
+
     }
 }

@@ -25,7 +25,6 @@ public class DNFSPeer implements DNFSIPeer {
         Number160 id = DNFSNetwork.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
         DNFSNetwork.put(id, new Object());
-        
         keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
         return block;
