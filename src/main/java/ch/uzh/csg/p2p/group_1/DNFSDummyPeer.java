@@ -67,7 +67,7 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
     @Override
     public DNFSiNode createRootINode() throws DNFSException {
-        return null;
+        return this.rootINode;
     }
 
     public Number160 getNewINodeID() {

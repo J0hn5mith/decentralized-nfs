@@ -55,8 +55,8 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
             this.splitBlock(block);
         }
 
-        block.write(byteBuffer, bufferSize, offsetInBytes);
-        return offsetInBytes;
+        int bytesWritten = block.write(byteBuffer, bufferSize, offsetInBytes);
+        return bytesWritten;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.blockStorage.getBlock(blockID);
             long blockSize = block.getSize();
-            if (bytesLeft - blockSize < 0){
+            if (bytesLeft - blockSize <= 0){
                 return new DNFSBlockCompositionOffset(block, bytesLeft);
             }
             bytesLeft -= blockSize;
