@@ -1,8 +1,10 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Logger;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
 public class DNFSPeer implements DNFSIPeer {
@@ -26,8 +28,13 @@ public class DNFSPeer implements DNFSIPeer {
         Number160 id = _network.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
         
-       //Number160 testFillerContent = Number160.createHash(0);
-        //_network.put(id, testFillerContent);
+        Number160 testFillerContent = Number160.createHash(0);
+        try {
+            _network.put(id, (Object) testFillerContent);
+        } catch (DNFSNetworkPutException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         _keyValueStorage.set(id, new KeyValueData()); // TODO not local
        

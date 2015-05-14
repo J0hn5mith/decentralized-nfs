@@ -7,6 +7,7 @@ package ch.uzh.csg.p2p.group_1;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
+import net.tomp2p.peers.Number160;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -47,8 +48,6 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         if(this.settings.getStartNewServer()) {
             this.createRootFolder();
         }
-        
-        LOGGER.info("DNFS has been set up.with mount point " + this.settings.getMountPoint());
     }
     
 
@@ -83,32 +82,58 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      * 
      */
     public void start() {
-        LOGGER.debug("DNFS has started.");
-
+        
+        LOGGER.info("Starting DNFS with mountpoint \"" + this.settings.getMountPoint() + "\"");
+        
+        Thread thread = new Thread() { // TODO Remove after testing
+            public void run(){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //testitest();
+            }
+        };
+        thread.start();
+        
         try {
             this.fuseIntegration.mount(this.settings.getMountPoint());
         } catch (FuseException e) {
             LOGGER.error("Failed to mount the fuse file system.");
             e.printStackTrace();
         }
-        LOGGER.info("The DNFS started successfully");
-        
-        //test(); // TODO REMOVE after testing
     }
     
     
     /**
      * TODO: this is just for testing
      */
-    public void test() {
-        System.out.println("Started testing");
+    private void testitest() {
+        System.out.println("---------- Started testing");
         try {
-            DNFSBlock block = peer.createBlock();
-            System.out.println("Created: " + block.getId());
+       
+            DNFSBlock block1 = peer.createBlock();
+            Number160 key = block1.getId();
+            System.out.println("Created: " + block1.getId());
+            
+            String mydata = "Hallihallo";
+            DNFSBlock block2 = new DNFSBlock(key, mydata.getBytes());
+            peer.updateBlock(block2);
+            
+            DNFSBlock block3 = peer.getBlock(key);
+            String string1 = new String(block3.getByteArray());
+            System.out.println("Got Content: " + string1);
+            
+            
+            
+            
+            
+            
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        System.out.println("Testing finished");
+        System.out.println("----------- Testing finished");
     }
 
     
