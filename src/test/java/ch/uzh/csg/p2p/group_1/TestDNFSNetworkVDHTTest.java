@@ -2,7 +2,6 @@ package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utils.DNFSTestUtils;
-import ch.uzh.csg.p2p.group_1.utils.TestDNFSDummyNetwork;
 import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.FuturePut;
 import net.tomp2p.dht.PeerDHT;
@@ -37,7 +36,7 @@ public class TestDNFSNetworkVDHTTest {
                     port);
             DNFSTestUtils.bootstrap(peers);
 
-            this.network = new DNFSNetworkVDHT(new TestDNFSDummyNetwork(peers[1]));
+//            this.network = new DNFSNetworkVDHT(new TestDNFSDummyNetwork(peers[1]));
 
             master = peers[0];
             Number160 nr = new Number160(RND);
