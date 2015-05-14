@@ -24,27 +24,22 @@ import net.tomp2p.storage.Data;
 public class DNFSNetwork {
     
     
-    private static Random _random;
+    private Random _random;
     
-    private static int _port = 0;
+    private int _port = 0;
     
-    private static boolean _connected = false;
-    private static PeerDHT _peer;
-
-    public PeerDHT getPeer(){
-        return this._peer;
-    }
+    private boolean _connected = false;
+    private PeerDHT _peer;
+    
     
     /**
      * 
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    public static void createNetwork(int port) throws DNFSException.DNFSNetworkSetupException {
+    public DNFSNetwork(int port) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
         setupPeer(port);
-        
-        _connected = true;
     }
     
     
@@ -55,10 +50,7 @@ public class DNFSNetwork {
      * @param masterPort
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    public static void connectToNetwork(int port, String masterIpAddress, int masterPort) throws DNFSException.DNFSNetworkSetupException {
-        
-        _random = new Random(System.currentTimeMillis());
-        setupPeer(port);
+    public void connectToNetwork(int port, String masterIpAddress, int masterPort) throws DNFSException.DNFSNetworkSetupException {
         
         try {
             InetAddress masterInetAddress = InetAddress.getByName(masterIpAddress);
@@ -90,7 +82,7 @@ public class DNFSNetwork {
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    private static void setupPeer(int port) throws DNFSException.DNFSNetworkSetupException {
+    private void setupPeer(int port) throws DNFSException.DNFSNetworkSetupException {
         
         try {
             _port = port;
@@ -112,7 +104,7 @@ public class DNFSNetwork {
      * @return
      * @throws DNFSException.DNFSNetworkGetException
      */
-    public static boolean keyExists(Number160 key) {
+    public boolean keyExists(Number160 key) {
         try {
             return get(key) != null;
         } catch (DNFSException.DNFSNetworkGetException e) {
@@ -126,7 +118,7 @@ public class DNFSNetwork {
      * @return
      * @throws DNFSException.DNFSNetworkGetException
      */
-    public static Number160 getUniqueKey() throws DNFSException.DNFSNetworkGetException {
+    public Number160 getUniqueKey() throws DNFSException.DNFSNetworkGetException {
         Number160 key = Number160.createHash(_random.nextLong());
         while(keyExists(key)) {
             key = Number160.createHash(_random.nextLong());
@@ -141,7 +133,7 @@ public class DNFSNetwork {
      * @param data
      * @throws DNFSException.DNFSNetworkPutException
      */
-    public static void put(Number160 key, Object data) throws DNFSException.DNFSNetworkPutException {
+    public void put(Number160 key, Object data) throws DNFSException.DNFSNetworkPutException {
         if(_connected) {
             try {
                 FuturePut futurePut = _peer.put(key).data(new Data(data)).start();
@@ -164,7 +156,7 @@ public class DNFSNetwork {
      * @return
      * @throws DNFSException.DNFSNetworkGetException
      */
-    public static Object get(Number160 key) throws DNFSException.DNFSNetworkGetException {
+    public Object get(Number160 key) throws DNFSException.DNFSNetworkGetException {
         if(_connected) {
             try {
                 FutureGet futureGet = _peer.get(key).start();
@@ -190,7 +182,7 @@ public class DNFSNetwork {
      * @param key
      * @throws DNFSException.DNFSNetworkDeleteException
      */
-    public static void delete(Number160 key) throws DNFSException.DNFSNetworkDeleteException {
+    public void delete(Number160 key) throws DNFSException.DNFSNetworkDeleteException {
         if(_connected) {
             FutureRemove futureRemove = _peer.remove(key).start();
             futureRemove.awaitUninterruptibly();
@@ -208,7 +200,7 @@ public class DNFSNetwork {
      * @param key
      * @return
      */
-    public static PeerAddress getFirstResponder(Number160 key) throws DNFSException.DNFSNetworkGetException {
+    public PeerAddress getFirstResponder(Number160 key) throws DNFSException.DNFSNetworkGetException {
         if(_connected) {
             FutureGet futureGet = _peer.get(key).start();
             futureGet.awaitUninterruptibly();
@@ -230,6 +222,15 @@ public class DNFSNetwork {
         } else {
             throw new DNFSException.DNFSNetworkGetException("Not connected to network.");
         }
+    }
+    
+    
+    /**
+     * 
+     * @return
+     */
+    public PeerDHT getPeer() {
+        return this._peer;
     }
     
 }

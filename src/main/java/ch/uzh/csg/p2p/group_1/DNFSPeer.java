@@ -1,11 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
-import java.io.IOException;
-
 import net.tomp2p.peers.Number160;
-import net.tomp2p.peers.PeerAddress;
-
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
@@ -17,18 +12,24 @@ public class DNFSPeer implements DNFSIPeer {
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
-    private static KeyValueStorageInterface keyValueStorage;
+    private static DNFSNetwork _network;
+    private static KeyValueStorageInterface _keyValueStorage;
+    
+    
+    public DNFSPeer(DNFSNetwork network) {
+        _network = network;
+    }
     
 
     @Override
     public DNFSBlock createBlock() throws DNFSException {
-        Number160 id = DNFSNetwork.getUniqueKey();
+        Number160 id = _network.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
         
        //Number160 testFillerContent = Number160.createHash(0);
-        //DNFSNetwork.put(id, new Object());
+        //_network.put(id, new Object());
 
-        keyValueStorage.set(id, new KeyValueData()); // TODO not local
+        _keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
         return block;
     }
@@ -36,11 +37,11 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public DNFSBlock getBlock(Number160 id) throws DNFSException {
-        //PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        //PeerAddress resonder = _network.getFirstResponder(id);
         
         // TODO not local
         
-        byte[] data = keyValueStorage.get(id).getData();
+        byte[] data = _keyValueStorage.get(id).getData();
         
         return new DNFSBlock(id, data);
     }
@@ -48,34 +49,34 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public void updateBlock(DNFSBlock block) throws DNFSException {
-        //PeerAddress resonder = DNFSNetwork.getFirstResponder(block.id);
+        //PeerAddress resonder = _network.getFirstResponder(block.id);
         
-        keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
+        _keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
     }
 
     
     @Override
     public void deleteBlock(Number160 id) throws DNFSException {
-        //PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        //PeerAddress resonder = _network.getFirstResponder(id);
         
         // TODO not local
-        keyValueStorage.delete(id);
+        _keyValueStorage.delete(id);
     }
 
     
     @Override
     public DNFSiNode createINode() throws DNFSException {
-        Number160 iNodeID = DNFSNetwork.getUniqueKey();
+        Number160 iNodeID = _network.getUniqueKey();
         DNFSiNode iNode = new DNFSiNode(iNodeID);
         Object data = (Object) iNode; // TODO do better serialization
-        DNFSNetwork.put(iNodeID, data);
+        _network.put(iNodeID, data);
         return iNode;
     }
 
     
     @Override
     public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
-        Object data = DNFSNetwork.get(iNodeID);
+        Object data = _network.get(iNodeID);
         DNFSiNode iNode = (DNFSiNode) data; // TODO do better serialization
         return iNode;
     }
@@ -83,15 +84,15 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public void deleteINode(Number160 iNodeID) throws DNFSException {
-        DNFSNetwork.delete(iNodeID);
+        _network.delete(iNodeID);
     }
 
     
     @Override
     public void updateINode(DNFSiNode iNode) throws DNFSException {
-        DNFSNetwork.delete(iNode.id); // TODO: change this once we have vDHT
+        _network.delete(iNode.id); // TODO: change this once we have vDHT
         Object data = (Object) iNode; // TODO do better serialization
-        DNFSNetwork.put(iNode.id, data);
+        _network.put(iNode.id, data);
     }
 
     
@@ -105,7 +106,7 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSiNode createRootINode() throws DNFSException {
         DNFSiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
         Object data = (Object) iNode; // TODO do better serialization
-        DNFSNetwork.put(ROOT_INODE_KEY, data);
+        _network.put(ROOT_INODE_KEY, data);
         LOGGER.info("Successfully create root iNode");
         return iNode;
     }
@@ -113,9 +114,35 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public void setUp(DNFSSettings settings) throws DNFSException {
-        keyValueStorage = new FileBasedKeyValueStorage();
+        _keyValueStorage = new FileBasedKeyValueStorage();
         String storageDirectory = settings.getFileBasedStorageDirectory();
-        ((FileBasedKeyValueStorage) keyValueStorage).setDirectory(storageDirectory);
+        ((FileBasedKeyValueStorage) _keyValueStorage).setDirectory(storageDirectory);
+        
+        // START STORAGE EXAMPLE
+        
+//      KeyValueStorageInterface keyValueStorage = new FileBasedKeyValueStorage();
+//      String storageDirectory = this.conf.getConfig().getString("FileBasedStorageDirectory"); // muesch usefinde wo s config-objäkt isch
+//      ((FileBasedKeyValueStorage) keyValueStorage).setDirectory(storageDirectory); // muesch typecaste zum directory sette.
+//
+//      Number160 key = Number160.createHash(1000000 * (int)Math.random());
+//
+//      System.out.println("EXISTS?" + (keyValueStorage.exists(key) ? "Yes" : "No"));
+//
+//      keyValueStorage.set(key, new KeyValueData("HALLO".getBytes()));
+//
+//      System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+//      System.out.println("VALUE " + new String(keyValueStorage.get(key).getData()));
+//
+//      keyValueStorage.set(key, new KeyValueData("WORLD".getBytes()));
+//
+//      System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+//      System.out.println("VALUE " + new String(keyValueStorage.get(key).getData()));
+//
+//      keyValueStorage.delete(key);
+//
+//      System.out.println("EXISTS? " + (keyValueStorage.exists(key) ? "Yes" : "No"));
+      
+      // END STORAGE EXAMPLE
     }
 
 }

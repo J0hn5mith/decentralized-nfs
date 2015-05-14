@@ -15,7 +15,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
     /**
      */
     public DNFSPathResolver(DNFSIPeer peer) {
-        Main.LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Level.WARN);
         this.setPeer(peer);
     }
 
@@ -24,7 +24,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      */
     public void setUp() {
 
-        Main.LOGGER.info("Successfully set up connection");
+        LOGGER.info("Successfully set up connection");
     }
 
     public DNFSIPeer getPeer() {
