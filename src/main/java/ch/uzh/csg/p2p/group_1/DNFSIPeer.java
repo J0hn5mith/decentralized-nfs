@@ -1,7 +1,5 @@
 package ch.uzh.csg.p2p.group_1;
 
-import java.io.IOException;
-
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
 /**

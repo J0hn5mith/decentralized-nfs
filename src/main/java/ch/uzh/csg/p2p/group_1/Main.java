@@ -22,9 +22,10 @@ public class Main {
 
     
     /**
+     * Uses GnuParser to parse command line arguments
      * 
-     * @param args
-     * @return
+     * @param args Command line arguments
+     * @return 
      * @throws ParseException
      */
     private static CommandLine parseCommandLineArguments(String[] args) throws ParseException {
