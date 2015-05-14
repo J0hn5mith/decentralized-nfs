@@ -62,6 +62,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException {
 
         // First block
+//        TODO: Double check this code!!!
         long summedUpSize = 0;
         long bytesNotRead = bytesToRead;
         ByteBuffer readContent = ByteBuffer.wrap(new byte[(int)bytesToRead]);
@@ -71,24 +72,24 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
             long blockSize = block.getSize();
             if (summedUpSize + blockSize > offset){
                 long bytesRead = block.read(readContent, bytesNotRead, Math.max(0, offset - summedUpSize));
+                summedUpSize += bytesRead;
+            }
+            else{
+                summedUpSize += blockSize;
+
             }
 
-            summedUpSize += blockSize;
 
             if (summedUpSize > offset + bytesToRead){
                 break;
             }
         }
 
-
-        // intermediate blocks
-
-        // last block
-        return 0;
+        return summedUpSize - offset;
     }
 
     @Override
-    public long offset(long offset) {
+    public long truncate(long offset) {
         return 0;
     }
 
