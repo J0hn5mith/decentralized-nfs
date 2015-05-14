@@ -93,7 +93,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
         LOGGER.info("The DNFS started successfully");
         
-        test(); // TODO REMOVE after testing
+        //test(); // TODO REMOVE after testing
     }
     
     
