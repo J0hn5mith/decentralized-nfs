@@ -24,7 +24,10 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSBlock createBlock() throws DNFSException {
         Number160 id = DNFSNetwork.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
-        DNFSNetwork.put(id, new Object());
+        
+       //Number160 testFillerContent = Number160.createHash(0);
+        //DNFSNetwork.put(id, new Object());
+
         keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
         return block;
@@ -33,7 +36,7 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public DNFSBlock getBlock(Number160 id) throws DNFSException {
-        PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        //PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
         
         // TODO not local
         
@@ -45,7 +48,7 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public void updateBlock(DNFSBlock block) throws DNFSException {
-        PeerAddress resonder = DNFSNetwork.getFirstResponder(block.id);
+        //PeerAddress resonder = DNFSNetwork.getFirstResponder(block.id);
         
         keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
     }
@@ -53,7 +56,7 @@ public class DNFSPeer implements DNFSIPeer {
     
     @Override
     public void deleteBlock(Number160 id) throws DNFSException {
-        PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
+        //PeerAddress resonder = DNFSNetwork.getFirstResponder(id);
         
         // TODO not local
         keyValueStorage.delete(id);
