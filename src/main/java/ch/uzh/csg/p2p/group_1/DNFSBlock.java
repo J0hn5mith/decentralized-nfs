@@ -44,6 +44,11 @@ public class DNFSBlock implements Serializable {
         return this.data.array().length;
     }
 
+    public long getFreeSize(){
+        return BLOCK_SIZE - this.getSize();
+
+    }
+
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data.array());
     }

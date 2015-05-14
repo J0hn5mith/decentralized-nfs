@@ -24,6 +24,10 @@ public class DNFSException extends Throwable {
 
     }
 
+    static public class DNFSBlockStorageException extends DNFSException {
+
+    }
+
     static public class DNFSNetworkNoConnection extends DNFSException {
         public DNFSNetworkNoConnection() {
             super("Your network is not connected.");

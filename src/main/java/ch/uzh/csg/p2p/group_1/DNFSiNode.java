@@ -70,6 +70,12 @@ public class DNFSiNode implements Serializable{
         return block;
     }
 
+    public DNFSBlock  addBlock(DNFSBlock block, DNFSBlock afterBlock){
+        int index = blockIds.indexOf(afterBlock.getId());
+        blockIds.add(index + 1, block.getId());
+        return block;
+    }
+
     public List<Number160> getBlockIDs(){
         return blockIds;
     }
