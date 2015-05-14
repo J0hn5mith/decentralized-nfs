@@ -24,9 +24,10 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSBlock createBlock() throws DNFSException {
         Number160 id = DNFSNetwork.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
+        
        //Number160 testFillerContent = Number160.createHash(0);
         //DNFSNetwork.put(id, new Object());
-         
+
         keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
         return block;

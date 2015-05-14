@@ -52,6 +52,7 @@ public class DNFSNetworkVDHT {
             }
             else{
                 oldVersionKey = null;
+                LOGGER.error("Inconsistent versions.");
             }
         }
         confirm(key, versionKey);

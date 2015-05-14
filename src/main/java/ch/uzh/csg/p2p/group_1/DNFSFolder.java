@@ -144,7 +144,8 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     public void addChild(DNFSiNode iNode, String name) {
         try {
             
-            DNFSBlock block = this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
+            Number160 blockID = this.getINode().getBlockIDs().get(0);
+            DNFSBlock block = this.getPeer().getBlock(blockID);
             block.append("\n" + iNode.getId() + SEPARATOR + name);
             this.updateFolderEntries();
         } catch(DNFSException e) {
