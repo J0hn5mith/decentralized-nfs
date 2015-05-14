@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,8 @@ public class TestDNFSFuseIntegration {
     public void setUp(){
         this.dnfs = new DecentralizedNetFileSystem();
 
-        this.dnfs.setUp("./conf/settings.xml", null);
+        DNFSSettings settings = new DNFSSettings("./conf/settings.xml", null);
+        this.dnfs.setUp(settings);
         this.dnfs.start();
 
     }

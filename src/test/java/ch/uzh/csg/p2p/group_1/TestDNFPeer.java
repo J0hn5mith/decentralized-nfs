@@ -19,7 +19,7 @@ public class TestDNFPeer {
 
     @Before
     public void setUp(){
-        this.peer = new DNFSPeer();
+//        this.peer = new DNFSPeer();
 //        try {
 //            this.peer.setUp();
 //        } catch (IOException e) {

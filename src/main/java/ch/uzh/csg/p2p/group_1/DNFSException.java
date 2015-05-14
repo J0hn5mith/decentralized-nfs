@@ -26,8 +26,17 @@ public class DNFSException extends Throwable {
     static public class DNFSPathNotFound extends DNFSException {
         private static final long serialVersionUID = -7866969856858819069L;
     }
-    
-    
+
+    static public class DNFSBlockStorageException extends DNFSException {
+
+    }
+
+    static public class DNFSNetworkNoConnection extends DNFSException {
+        public DNFSNetworkNoConnection() {
+            super("Your network is not connected.");
+        }
+    }
+
     static public class DNFSNetworkSetupException extends DNFSException {
         private static final long serialVersionUID = 482847664421090530L;
 

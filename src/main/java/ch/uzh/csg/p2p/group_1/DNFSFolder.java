@@ -163,9 +163,8 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             DNFSBlock block = this.getPeer().getBlock(blockID);
             block.append("\n" + iNode.getId() + SEPARATOR + name);
             this.updateFolderEntries();
-        } catch(DNFSException e) {
-            // TODO: DEAL WITH THIS
-            LOGGER.error("Could not add child", e);
+        } catch (DNFSException e) {
+            e.printStackTrace();
         }
     }
 
