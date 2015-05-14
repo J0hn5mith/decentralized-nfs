@@ -27,7 +27,7 @@ public class DNFSPeer implements DNFSIPeer {
         DNFSBlock block = new DNFSBlock(id);
         
        //Number160 testFillerContent = Number160.createHash(0);
-        //_network.put(id, new Object());
+        //_network.put(id, testFillerContent);
 
         _keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
