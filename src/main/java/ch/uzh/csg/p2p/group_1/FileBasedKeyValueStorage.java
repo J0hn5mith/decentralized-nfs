@@ -1,8 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,8 +1,5 @@
 package ch.uzh.csg.p2p.group_1;
 
-import net.tomp2p.peers.Number160;
-
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 

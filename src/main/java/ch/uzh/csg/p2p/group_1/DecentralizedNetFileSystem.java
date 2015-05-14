@@ -91,7 +91,24 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             LOGGER.error("Failed to mount the fuse file system.");
             e.printStackTrace();
         }
-        LOGGER.info("The DNFS started successful");
+        LOGGER.info("The DNFS started successfully");
+        
+        //test(); // TODO REMOVE after testing
+    }
+    
+    
+    /**
+     * TODO: this is just for testing
+     */
+    public void test() {
+        System.out.println("Started testing");
+        try {
+            DNFSBlock block = peer.createBlock();
+            System.out.println("Created: " + block.getId());
+        } catch(Throwable e) {
+            e.printStackTrace();
+        }
+        System.out.println("Testing finished");
     }
 
     

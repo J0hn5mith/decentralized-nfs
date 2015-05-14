@@ -12,8 +12,8 @@ public class DNFSPeer implements DNFSIPeer {
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
-    private static DNFSNetwork _network;
-    private static KeyValueStorageInterface _keyValueStorage;
+    private DNFSNetwork _network;
+    private KeyValueStorageInterface _keyValueStorage;
     
     
     public DNFSPeer(DNFSNetwork network) {
@@ -27,7 +27,7 @@ public class DNFSPeer implements DNFSIPeer {
         DNFSBlock block = new DNFSBlock(id);
         
        //Number160 testFillerContent = Number160.createHash(0);
-        //_network.put(id, new Object());
+        //_network.put(id, testFillerContent);
 
         _keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
