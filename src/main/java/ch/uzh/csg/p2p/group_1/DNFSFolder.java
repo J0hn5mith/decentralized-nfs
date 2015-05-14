@@ -122,7 +122,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             this.updateFolderEntries();
         } catch(DNFSException e) {
             // TODO: DEAL WITH THIS
-            System.out.println(e.getMessage());
+            LOGGER.error("Could not add child", e);
         }
     }
 

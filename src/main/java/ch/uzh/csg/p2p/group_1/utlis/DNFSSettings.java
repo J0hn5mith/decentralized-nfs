@@ -14,9 +14,7 @@ public class DNFSSettings {
 
     private String mountPoint;
     private int port;
-
-
-
+    private boolean startNewServer = false;
     private boolean useDummyPeer = false;
 
     public DNFSSettings(String configFile, CommandLine cmd) {
@@ -31,6 +29,7 @@ public class DNFSSettings {
         this.setMountPoint();
         this.setPort();
         this.setUseDummyPeer();
+        this.setStartNewServer();
 
     }
 
@@ -56,6 +55,13 @@ public class DNFSSettings {
         if (cmd.hasOption("d")) {
             this.useDummyPeer = true;
         }
+    }
+
+    private void setStartNewServer(){
+        if (cmd.hasOption("n")) {
+            this.startNewServer = true;
+        }
+
     }
 
     private void setPort() {

@@ -23,14 +23,8 @@ public class DNFSFile extends DNFSFileSystemEntry {
     }
 
     
-    public static DNFSFile createNew(DNFSIPeer peer){
-        try {
-            return new DNFSFile(peer.createINode(), peer);
-        } catch(DNFSException e) {
-            // TODO: DEAL WITH THIS
-            System.out.println(e.getMessage());
-        }
-        return null;
+    public static DNFSFile createNew(DNFSIPeer peer) throws DNFSException {
+        return new DNFSFile(peer.createINode(), peer);
     }
     
     

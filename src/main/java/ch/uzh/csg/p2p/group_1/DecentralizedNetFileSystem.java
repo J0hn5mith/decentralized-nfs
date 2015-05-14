@@ -41,6 +41,13 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void setUp(String configFile, CommandLine cmd) {
         this.settings = new DNFSSettings(configFile, cmd);
 
+        try {
+            DNFSNetwork.createNetwork(this.settings.getPort());
+        } catch (DNFSNetworkSetupException e) {
+            LOGGER.error("Could not set up the network.", e);
+            System.exit(-1);
+        }
+
         this.setUpPeer();
         this.pathResolver = new DNFSPathResolver(this.peer);
         this.fuseIntegration.setPathResolver(this.pathResolver);
@@ -119,21 +126,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
         else {
             this.peer = new DNFSPeer();
-            try {
-                this.peer.createRootINode();
-            } catch (DNFSException e) {
-                e.printStackTrace();
-                System.exit(-1);
-            }
-            try {
-                this.peer.createRootINode();
-            } catch (DNFSException e) {
-                e.printStackTrace();
-            }
         }
-
         try {
             this.peer.setUp(this.settings);
+            this.peer.createRootINode();
         } catch (DNFSException e) {
             e.printStackTrace();
             System.exit(-1);

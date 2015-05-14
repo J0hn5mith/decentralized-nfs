@@ -87,7 +87,13 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         if (targetFolder.hasChild(fileName)) {
             return -ErrorCodes.EEXIST();
         }
-        DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
+        DNFSFile file = null;
+        try {
+            file = DNFSFile.createNew(this.pathResolver.getPeer());
+        } catch (DNFSException e) {
+            LOGGER.error("Could not create new file", e);
+            return -1;
+        }
         targetFolder.addChild(file, fileName);
         return 0;
     }

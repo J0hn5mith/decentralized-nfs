@@ -67,7 +67,6 @@ public class TestDNFSNetworkVDHTTest {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("Confirm");
                         Thread.sleep(3000);
                         FuturePut fp = peers[0].put(Number160.ONE)
                                 .versionKey(Number160.ZERO).putConfirm()

@@ -112,8 +112,12 @@ public class DNFSNetwork {
      * @return
      * @throws DNFSException.DNFSNetworkGetException
      */
-    public static boolean keyExists(Number160 key) throws DNFSException.DNFSNetworkGetException {
-        return get(key) != null;
+    public static boolean keyExists(Number160 key) {
+        try {
+            return get(key) != null;
+        } catch (DNFSException.DNFSNetworkGetException e) {
+            return false;
+        }
     }
     
     
