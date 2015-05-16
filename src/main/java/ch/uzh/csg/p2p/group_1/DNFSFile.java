@@ -51,8 +51,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
 
     
     public int read(final ByteBuffer buffer, final long bytesToRead, final long offset) throws
-            DNFSException.DNFSBlockStorageException
-    {
+            DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         return (int) this.getBlockComposition().read(buffer, bytesToRead, offset);
 
     }

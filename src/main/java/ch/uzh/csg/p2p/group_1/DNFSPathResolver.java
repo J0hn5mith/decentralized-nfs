@@ -40,7 +40,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSFolder getFolder(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotFolderException {
+    public DNFSFolder getFolder(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotFolderException, DNFSException.DNFSNetworkNoConnection {
         DNFSiNode iNode = this.resolve(path);
         if (!iNode.isDir()) {
             throw new DNFSException.DNFSNotFolderException();
@@ -66,7 +66,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSiNode getINode(DNFSPath path) throws DNFSException.DNFSPathNotFound  {
+    public DNFSiNode getINode(DNFSPath path) throws DNFSException.DNFSPathNotFound {
         return this.resolve(path);
     }
 

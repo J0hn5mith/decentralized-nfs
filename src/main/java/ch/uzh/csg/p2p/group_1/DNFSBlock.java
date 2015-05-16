@@ -18,17 +18,24 @@ public class DNFSBlock implements Serializable {
     public static int BLOCK_SIZE = 100000;
 
     Number160 id;
+    DNFSIBlockStorage blockStorage;
     private ByteBuffer data;
 
-    public DNFSBlock(Number160 id) {
+    public DNFSBlock(Number160 id, DNFSIBlockStorage blockStorage) {
         this.id = id;
+        this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
     }
     
     
-    public DNFSBlock(Number160 id, byte[] byteArray) {
+    public DNFSBlock(Number160 id, byte[] byteArray, DNFSIBlockStorage blockStorage) {
         this.id = id;
         this.data = ByteBuffer.wrap(byteArray);
+        this.blockStorage = blockStorage;
+    }
+
+    static public long getCapacity(){
+        return BLOCK_SIZE;
     }
     
 
@@ -49,6 +56,10 @@ public class DNFSBlock implements Serializable {
 
     }
 
+    public DNFSIBlockStorage getBlockStorage() {
+        return blockStorage;
+    }
+
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data.array());
     }
@@ -59,7 +70,7 @@ public class DNFSBlock implements Serializable {
     }
     
 
-    public int append(String appendString) {
+    public int append(String appendString) throws DNFSException.DNFSNetworkNoConnection {
         int writeOffset = this.data.array().length;
         int bufSize = appendString.getBytes().length;
         ByteBuffer buffer = ByteBuffer.wrap(appendString.getBytes());
@@ -68,7 +79,7 @@ public class DNFSBlock implements Serializable {
     }
 
     
-    public int write(ByteBuffer buffer, final long bufferSize, final long offset) {
+    public int write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
 
         final int maxWriteIndex = (int) (offset + bufferSize);
         final byte[] bytesToWrite = new byte[(int) bufferSize];
@@ -82,6 +93,12 @@ public class DNFSBlock implements Serializable {
         this.data.position((int) offset);
         this.data.put(bytesToWrite);
         this.data.position(0);
+
+        try {
+            this.getBlockStorage().updateBlock(this);
+        } catch (DNFSException.DNFSBlockStorageException e) {
+            LOGGER.error("Serious probelm. Could not update block. Updated is ignored.", e);
+        }
         return (int) bufferSize;
     }
 

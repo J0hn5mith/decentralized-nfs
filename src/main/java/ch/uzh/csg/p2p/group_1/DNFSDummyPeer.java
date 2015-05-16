@@ -82,7 +82,7 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
     @Override
     public DNFSBlock createBlock() {
-        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
+        DNFSBlock block = new DNFSBlock(this.getNewBlockID(), this);
         this.blocks.put(block.getId(), block);
         return block;
     }

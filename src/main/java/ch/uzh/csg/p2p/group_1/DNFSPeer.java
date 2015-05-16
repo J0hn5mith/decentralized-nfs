@@ -1,9 +1,12 @@
 package ch.uzh.csg.p2p.group_1;
 
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
 import org.apache.log4j.Logger;
 
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+
+import java.util.Objects;
 
 public class DNFSPeer implements DNFSIPeer {
     
@@ -24,10 +27,15 @@ public class DNFSPeer implements DNFSIPeer {
     @Override
     public DNFSBlock createBlock() throws DNFSException.DNFSNetworkNoConnection {
         Number160 id = _network.getUniqueKey();
-        DNFSBlock block = new DNFSBlock(id);
+        DNFSBlock block = new DNFSBlock(id, this);
         
-       //Number160 testFillerContent = Number160.createHash(0);
-        //_network.put(id, testFillerContent);
+//       Number160 testFillerContent = Number160.createHash(0);
+        byte[] testFillerContent = new byte[0];
+        try {
+            _network.put(id, testFillerContent);
+        } catch (DNFSException.DNFSNetworkPutException e) {
+            LOGGER.error("Could not put block.", e);
+        }
 
         _keyValueStorage.set(id, new KeyValueData()); // TODO not local
        
@@ -36,22 +44,35 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public DNFSBlock getBlock(Number160 id){
-        //PeerAddress resonder = _network.getFirstResponder(id);
-        
+    public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSNetworkNoConnection {
+        byte[] data = new byte[0];
+        try {
+            PeerAddress responder = _network.getFirstResponder(id);
+            Object object = this._network.get(id);
+            data = (byte[]) object;
+        } catch (DNFSException.DNFSNetworkGetException e) {
+            LOGGER.error("Fatal error. Block does not exist.", e);
+        }
+
         // TODO not local
-        
-        byte[] data = _keyValueStorage.get(id).getData();
-        
-        return new DNFSBlock(id, data);
+
+//        byte[] data = _keyValueStorage.get(id).getData();
+
+        return new DNFSBlock(id, data, this);
     }
 
     
     @Override
-    public void updateBlock(DNFSBlock block) {
-        //PeerAddress resonder = _network.getFirstResponder(block.id);
+    public void updateBlock(DNFSBlock block) throws DNFSException.DNFSNetworkNoConnection {
+
+        try {
+            this._network.put(block.getId(), block.getByteArray());
+        } catch (DNFSException.DNFSNetworkPutException e) {
+            LOGGER.error("Serious problem. Could not update block.", e);
+        }
+//        PeerAddress resonder = _network.getFirstResponder(block.id);
         
-        _keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
+//        _keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
     }
 
     

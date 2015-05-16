@@ -1,6 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,8 +14,20 @@ public class FileBasedKeyValueStorage implements KeyValueStorageInterface {
     
     
     String directory = ".";
-    
-    
+
+
+    public FileBasedKeyValueStorage() {
+        try {
+            this.directory = this.createTempDirectory().getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public FileBasedKeyValueStorage(String directory) {
+        this.directory = directory;
+    }
+
     public void setDirectory(String path) {
         directory = path;
     }
@@ -78,4 +91,20 @@ public class FileBasedKeyValueStorage implements KeyValueStorageInterface {
         return false;
     }
 
+    public File createTempDirectory()
+            throws IOException {
+        final File temp;
+
+        temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+
+        if (!(temp.delete())) {
+            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+        }
+
+        if (!(temp.mkdir())) {
+            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
+
+        return (temp);
+    }
 }

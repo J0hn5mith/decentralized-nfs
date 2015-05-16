@@ -33,7 +33,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     }
 
     @Override
-    public long size() throws DNFSException.DNFSBlockStorageException {
+    public long size() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.blockStorage.getBlock(blockID);
@@ -42,11 +42,30 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         return totalSize;
     }
 
+    public long getCapacity(){
+
+        long maxCapacity = 0;
+        for (Number160 blockID : iNode.getBlockIDs()) {
+            maxCapacity += DNFSBlock.BLOCK_SIZE;
+        }
+
+        return maxCapacity;
+    }
+
     @Override
     public long write(ByteBuffer byteBuffer, long bufferSize, long offsetInBytes) throws
             DNFSException.DNFSBlockStorageException,
             DNFSException.DNFSNetworkNoConnection
     {
+
+        long additionalCapacity = this.size() + bufferSize - this.getCapacity();
+        if (additionalCapacity > 0){
+            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()/2));
+            for (int i = 0; i < numAdditionalBlocks; i++) {
+                DNFSBlock block = this.getBlockStorage().createBlock();
+                this.getINode().addBlock(block);
+            }
+        }
         DNFSBlockCompositionOffset offset = findPosition(offsetInBytes);
         DNFSBlock block = offset.getBlock();
 
@@ -60,19 +79,18 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     }
 
     @Override
-    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException {
+    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
 
         // First block
 //        TODO: Double check this code!!!
         long summedUpSize = 0;
         long bytesNotRead = bytesToRead;
-        ByteBuffer readContent = ByteBuffer.wrap(new byte[(int)bytesToRead]);
         for (Number160 blockId : this.getINode().getBlockIDs()) {
             DNFSBlock block = this.getBlockStorage().getBlock(blockId);
 
             long blockSize = block.getSize();
             if (summedUpSize + blockSize > offset){
-                long bytesRead = block.read(readContent, bytesNotRead, Math.max(0, offset - summedUpSize));
+                long bytesRead = block.read(byteBuffer, bytesNotRead, Math.max(0, offset - summedUpSize));
                 summedUpSize += bytesRead;
             }
             else{
@@ -94,8 +112,13 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         return 0;
     }
 
+    @Override
+    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        return this.write(byteBuffer, bufferSize, this.size());
+    }
 
-    private DNFSBlockCompositionOffset findPosition(final long offset) throws DNFSException.DNFSBlockStorageException {
+
+    private DNFSBlockCompositionOffset findPosition(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
 
         long bytesLeft = offset;
         for (Number160 blockID : iNode.getBlockIDs()) {

@@ -94,7 +94,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             LOGGER.error("Could not create new file", e);
             return -1;
         }
-        targetFolder.addChild(file, fileName);
+        try {
+            targetFolder.addChild(file, fileName);
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+        }
         return 0;
     }
 
@@ -142,7 +146,12 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.EEXIST();
         }
 
-        targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
+        try {
+            targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
+        }
 
         return 0;
     }
@@ -176,6 +185,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSBlockStorageException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
         }
     }
 
@@ -190,6 +202,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSNotFolderException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOTDIR();
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
         }
         for (DNFSFolderEntry o : folder.getChildEntries()) {
             filler.add(o.getName());
@@ -218,6 +233,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSException.NoSuchFileOrFolder noSuchFileOrFolder) {
             return -ErrorCodes.ENOENT();
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
         }
 
         return 0;
