@@ -6,7 +6,6 @@ package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.*;
 import net.tomp2p.peers.Number160;
-import net.tomp2p.utils.Pair;
 
 import java.nio.ByteBuffer;
 
@@ -17,26 +16,26 @@ import java.nio.ByteBuffer;
 public class DNFSBlockComposition implements DNFSIBlockComposition {
 
     DNFSiNode iNode;
-    DNFSIBlockStorage blockStorage;
+    DNFSIPeer peer;
 
-    public DNFSIBlockStorage getBlockStorage() {
-        return blockStorage;
+    public DNFSIPeer getPeer() {
+        return peer;
     }
 
     public DNFSiNode getINode() {
         return iNode;
     }
 
-    public DNFSBlockComposition(DNFSiNode iNode, DNFSIBlockStorage blockStorage) {
+    public DNFSBlockComposition(DNFSiNode iNode, DNFSIPeer peer) {
         this.iNode = iNode;
-        this.blockStorage = blockStorage;
+        this.peer = peer;
     }
 
     @Override
     public long size() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
-            DNFSBlock block = this.blockStorage.getBlock(blockID);
+            DNFSBlock block = this.peer.getBlock(blockID);
             totalSize += block.getSize();
         }
         return totalSize;
@@ -62,8 +61,13 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         if (additionalCapacity > 0){
             int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()/2));
             for (int i = 0; i < numAdditionalBlocks; i++) {
-                DNFSBlock block = this.getBlockStorage().createBlock();
+                DNFSBlock block = this.getPeer().createBlock();
                 this.getINode().addBlock(block);
+            }
+            try {
+                this.getPeer().updateINode(this.getINode());
+            } catch (DNFSException e) {
+                e.printStackTrace();
             }
         }
         DNFSBlockCompositionOffset offset = findPosition(offsetInBytes);
@@ -86,7 +90,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
         long summedUpSize = 0;
         long bytesNotRead = bytesToRead;
         for (Number160 blockId : this.getINode().getBlockIDs()) {
-            DNFSBlock block = this.getBlockStorage().getBlock(blockId);
+            DNFSBlock block = this.getPeer().getBlock(blockId);
 
             long blockSize = block.getSize();
             if (summedUpSize + blockSize > offset){
@@ -122,7 +126,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
 
         long bytesLeft = offset;
         for (Number160 blockID : iNode.getBlockIDs()) {
-            DNFSBlock block = this.blockStorage.getBlock(blockID);
+            DNFSBlock block = this.peer.getBlock(blockID);
             long blockSize = block.getSize();
             if (bytesLeft - blockSize <= 0){
                 return new DNFSBlockCompositionOffset(block, bytesLeft);
@@ -136,7 +140,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
             DNFSException.DNFSBlockStorageException,
             DNFSException.DNFSNetworkNoConnection
     {
-        DNFSBlock newBlock = this.getBlockStorage().createBlock();
+        DNFSBlock newBlock = this.getPeer().createBlock();
 
         long halfSize = block.getSize()/2;
         ByteBuffer contentNewBlock = ByteBuffer.wrap(new byte[(int) halfSize]);

@@ -54,10 +54,6 @@ public class DNFSPeer implements DNFSIPeer {
             LOGGER.error("Fatal error. Block does not exist.", e);
         }
 
-        // TODO not local
-
-//        byte[] data = _keyValueStorage.get(id).getData();
-
         return new DNFSBlock(id, data, this);
     }
 

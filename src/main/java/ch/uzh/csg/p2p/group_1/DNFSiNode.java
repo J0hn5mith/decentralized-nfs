@@ -20,6 +20,7 @@ public class DNFSiNode implements Serializable{
     List<Number160> blockIds;
     int size = 10;
 
+
     public DNFSiNode(Number160 id) {
         this.id = id;
         this.blockIds = new ArrayList<Number160>();
@@ -48,6 +49,8 @@ public class DNFSiNode implements Serializable{
         this.size = size;
         return size;
     }
+
+
     public int getUseID(){
         return 10;
     }
@@ -98,4 +101,5 @@ public class DNFSiNode implements Serializable{
         }
         return null;
     }
+
 }

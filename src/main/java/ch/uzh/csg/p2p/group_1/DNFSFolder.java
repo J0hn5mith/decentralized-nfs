@@ -371,6 +371,9 @@ public class DNFSFolder extends DNFSFileSystemEntry {
 
     private void addNewFolderEntry(DNFSiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
         String entryAsString = LINE_SEPARATOR + iNode.getId() + SEPARATOR + name;
+        if(this.childEntries.size() < 1){
+             entryAsString = iNode.getId() + SEPARATOR + name;
+        }
         ByteBuffer entry = ByteBuffer.wrap(entryAsString.getBytes());
         try {
             this.getBlockComposition().append(entry, entryAsString.getBytes().length);
