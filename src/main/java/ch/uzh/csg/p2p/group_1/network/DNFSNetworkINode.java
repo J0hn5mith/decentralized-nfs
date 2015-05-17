@@ -1,7 +1,109 @@
 package ch.uzh.csg.p2p.group_1.network;
 
+import ch.uzh.csg.p2p.group_1.*;
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import net.tomp2p.peers.Number160;
+import org.apache.log4j.Logger;
+
+import java.util.Date;
+import java.util.List;
+
 /**
  * Created by janmeier on 17.05.15.
  */
-public class DNFSNetworkINode {
+public class DNFSNetworkINode implements DNFSIiNode {
+    final private static Logger LOGGER = Logger.getLogger(DNFSNetworkINode.class.getName());
+
+    DNFSIiNode iNode;
+    DNFSIiNodeStorage iNodeStorage;
+
+    public DNFSNetworkINode(DNFSIiNode iNode, DNFSIiNodeStorage iNodeStorage) {
+        this.iNode = iNode;
+        this.iNodeStorage = iNodeStorage;
+    }
+
+    @Override
+    public Number160 getId() {
+        return iNode.getId();
+    }
+
+    @Override
+    public void setDir(boolean isDir) {
+        iNode.setDir(isDir);
+        this.update();
+    }
+
+    @Override
+    public boolean isDir() {
+        return this.iNode.isDir();
+    }
+
+    @Override
+    public int getSize() {
+        return this.iNode.getSize();
+    }
+
+    @Override
+    public int setSize(int size) {
+        this.iNode.setSize(size);
+        this.update();
+        return size;
+    }
+
+    @Override
+    public int getUseID() {
+        return this.iNode.getUseID();
+    }
+
+    @Override
+    public int getGroupID() {
+        return this.iNode.getGroupID();
+    }
+
+    @Override
+    public int intGetFileMode() {
+        return this.iNode.intGetFileMode();
+    }
+
+    @Override
+    public Date getTimeStamp() {
+        return this.iNode.getTimeStamp();
+    }
+
+    @Override
+    public DNFSBlock addBlock(DNFSBlock block) {
+        this.iNode.addBlock(block);
+        this.update();
+        return block;
+    }
+
+    @Override
+    public DNFSBlock addBlock(DNFSBlock block, DNFSBlock after) {
+        this.iNode.addBlock(block, after);
+        this.update();
+        return block;
+    }
+
+    @Override
+    public List<Number160> getBlockIDs() {
+        return this.iNode.getBlockIDs();
+    }
+
+    @Override
+    public int getNumBlocks() {
+        return this.iNode.getNumBlocks();
+    }
+
+    @Override
+    public DNFSIiNode getSerializableVersion() {
+        return this.iNode;
+    }
+
+    private void update(){
+        try {
+            this.iNodeStorage.updateINode(this.iNode);
+        } catch (DNFSException e) {
+            LOGGER.warn("Could not update iNode.");
+        }
+    }
 }

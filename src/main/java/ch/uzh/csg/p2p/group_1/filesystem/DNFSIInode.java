@@ -32,4 +32,6 @@ public interface DNFSIiNode {
     public DNFSBlock addBlock(DNFSBlock block, DNFSBlock after);
     public List<Number160> getBlockIDs();
     public int getNumBlocks();
+
+    public DNFSIiNode getSerializableVersion();
 }

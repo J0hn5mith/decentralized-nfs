@@ -84,6 +84,12 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
         return this.blockIds.size();
     }
 
+    @Override
+    public DNFSIiNode getSerializableVersion() {
+        return this;
+    }
+
+
     /**
      * Utilities
      */

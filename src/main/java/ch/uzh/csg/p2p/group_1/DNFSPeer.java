@@ -1,6 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import org.apache.log4j.Logger;
@@ -86,7 +87,7 @@ public class DNFSPeer implements DNFSIPeer {
         DNFSIiNode iNode = new DNFSiNode(iNodeID);
         Object data = (Object) iNode; // TODO do better serialization
         _network.put(iNodeID, data);
-        return iNode;
+        return new DNFSNetworkINode(iNode, this);
     }
 
     
@@ -94,7 +95,7 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException {
         Object data = _network.get(iNodeID);
         DNFSIiNode iNode = (DNFSIiNode) data; // TODO do better serialization
-        return iNode;
+        return new DNFSNetworkINode(iNode, this);
     }
 
     
@@ -107,7 +108,7 @@ public class DNFSPeer implements DNFSIPeer {
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException {
         _network.delete(iNode.getId()); // TODO: change this once we have vDHT
-        Object data = (Object) iNode; // TODO do better serialization
+        Object data = (Object) iNode.getSerializableVersion(); // TODO do better serialization
         _network.put(iNode.getId(), data);
     }
 
