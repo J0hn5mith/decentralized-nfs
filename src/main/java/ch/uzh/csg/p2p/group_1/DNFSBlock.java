@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.network.DNFSIBlockComposition;
 import net.tomp2p.peers.Number160;
 
 import java.io.ByteArrayInputStream;
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by janmeier on 10.04.15.
  */
-public class DNFSBlock implements Serializable {
+public class DNFSBlock implements Serializable, DNFSIBlockComposition {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
     public static int BLOCK_SIZE = 100000;
@@ -70,16 +71,13 @@ public class DNFSBlock implements Serializable {
     }
     
 
-    public int append(String appendString) throws DNFSException.DNFSNetworkNoConnection {
+    public long append(ByteBuffer buffer, final long bufferSize) throws DNFSException.DNFSNetworkNoConnection {
         int writeOffset = this.data.array().length;
-        int bufSize = appendString.getBytes().length;
-        ByteBuffer buffer = ByteBuffer.wrap(appendString.getBytes());
-
-        return this.write(buffer, bufSize, writeOffset);
+        return this.write(buffer, bufferSize, writeOffset);
     }
 
     
-    public int write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
+    public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
 
         final int maxWriteIndex = (int) (offset + bufferSize);
         final byte[] bytesToWrite = new byte[(int) bufferSize];
@@ -103,7 +101,7 @@ public class DNFSBlock implements Serializable {
     }
 
     
-    public int read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
+    public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
 
         byteBuffer.position(0);
@@ -112,7 +110,7 @@ public class DNFSBlock implements Serializable {
     }
 
     
-    public int truncate(final long offset) {
+    public long truncate(final long offset) {
         if (offset < this.data.capacity()) {
             // Need to create a new, smaller buffer
             final ByteBuffer newContents = ByteBuffer.allocate((int) offset);

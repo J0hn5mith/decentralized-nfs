@@ -341,7 +341,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             return new ByteArrayInputStream("".getBytes());
         }
         try {
-            long size = this.getBlockComposition().size();
+            long size = this.getBlockComposition().getSize();
             ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) size]);
             long bytesRead = this.getBlockComposition().read(buffer, size, 0);
             return new ByteArrayInputStream(buffer.array());

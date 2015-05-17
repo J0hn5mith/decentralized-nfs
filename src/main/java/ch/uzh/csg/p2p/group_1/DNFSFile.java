@@ -61,7 +61,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
         return 0;
     }
 
-    public int truncate(long offset){
+    public long truncate(long offset){
         return this.getFirstBlock().truncate(offset);
     }
 
