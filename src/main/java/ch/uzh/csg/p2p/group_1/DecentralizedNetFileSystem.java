@@ -92,7 +92,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //testitest();
+                testitest();
             }
         };
         thread.start();

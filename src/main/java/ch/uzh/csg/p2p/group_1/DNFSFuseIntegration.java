@@ -176,6 +176,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSBlockStorageException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
+        } catch (DNFSException.DNFSNetworkNoConnection e) {
+            LOGGER.error(e.toString());
+            return -ErrorCodes.ENOENT();
         }
     }
 

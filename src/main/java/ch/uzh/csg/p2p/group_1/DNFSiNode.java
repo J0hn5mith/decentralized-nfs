@@ -13,7 +13,7 @@ import java.util.List;
  * Notes from meeting at 30.4
  * - Implicit updating after each change
  */
-public class DNFSiNode implements Serializable{
+public class DNFSiNode implements Serializable {
     private static final long serialVersionUID = 2098774660703813030L;
     private boolean isDir;
     Number160 id;

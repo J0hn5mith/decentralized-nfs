@@ -29,6 +29,10 @@ public class DNFSException extends Throwable {
 
     static public class DNFSBlockStorageException extends DNFSException {
         private static final long serialVersionUID = 8480393673517541259L;
+        
+        public DNFSBlockStorageException(String message) {
+            super(message);
+        }
     }
 
     static public class DNFSNetworkNoConnection extends DNFSException {
@@ -70,6 +74,15 @@ public class DNFSException extends Throwable {
         private static final long serialVersionUID = -1935907951987843485L;
 
         public DNFSNetworkDeleteException(String message) {
+            super(message);
+        }
+    }
+    
+    
+    static public class DNFSNetworkSendException extends DNFSException {
+        private static final long serialVersionUID = 3029814494456359295L;
+
+        public DNFSNetworkSendException(String message) {
             super(message);
         }
     }

@@ -5,6 +5,7 @@ package ch.uzh.csg.p2p.group_1.network;
  */
 
 import ch.uzh.csg.p2p.group_1.*;
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNoConnection;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.utils.Pair;
 
@@ -33,7 +34,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     }
 
     @Override
-    public long size() throws DNFSException.DNFSBlockStorageException {
+    public long size() throws DNFSException.DNFSBlockStorageException, DNFSNetworkNoConnection {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.blockStorage.getBlock(blockID);
@@ -60,7 +61,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     }
 
     @Override
-    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException {
+    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSNetworkNoConnection {
 
         // First block
 //        TODO: Double check this code!!!
@@ -95,7 +96,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     }
 
 
-    private DNFSBlockCompositionOffset findPosition(final long offset) throws DNFSException.DNFSBlockStorageException {
+    private DNFSBlockCompositionOffset findPosition(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSNetworkNoConnection {
 
         long bytesLeft = offset;
         for (Number160 blockID : iNode.getBlockIDs()) {

@@ -1,10 +1,20 @@
 package ch.uzh.csg.p2p.group_1;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.rpc.ObjectDataReply;
 
 import org.apache.log4j.Logger;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkGetException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkPutException;
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
 public class DNFSPeer implements DNFSIPeer {
@@ -24,47 +34,91 @@ public class DNFSPeer implements DNFSIPeer {
     
 
     @Override
-    public DNFSBlock createBlock() throws DNFSException.DNFSNetworkNoConnection {
+    public DNFSBlock createBlock() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         Number160 id = _network.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id);
-        
-        Number160 testFillerContent = Number160.createHash(0);
-        try {
-            _network.put(id, (Object) testFillerContent);
-        } catch (DNFSNetworkPutException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        _keyValueStorage.set(id, new KeyValueData()); // TODO not local
-       
+        updateBlock(block);       
         return block;
     }
 
     
     @Override
-    public DNFSBlock getBlock(Number160 id){
-        //PeerAddress resonder = _network.getFirstResponder(id);
-        
-        // TODO not local
-        
-        byte[] data = _keyValueStorage.get(id).getData();
-        
-        return new DNFSBlock(id, data);
+    public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        try {
+            PeerAddress responder = _network.getFirstResponder(id);
+            //TODO
+            byte[] data = new byte[0];
+            
+            return new DNFSBlock(id, data);
+            
+        } catch(DNFSNetworkGetException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: " + e.getMessage());
+        }
     }
 
     
     @Override
-    public void updateBlock(DNFSBlock block) {
-        //PeerAddress resonder = _network.getFirstResponder(block.id);
+    public void updateBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        
+        try {
+            
+            Number160 id = block.id;
+            byte[] data = block.getByteArray();
+            
+            boolean success = false;
+            
+            while(!success) {
+                
+                DNFSBlockPacket packet;
+                ArrayList<PeerAddress> responders;
+                
+                DNFSBlockLock lock = new DNFSBlockLock(true);
+                _network.put(id, (Object) lock);
+                
+                packet = new DNFSBlockPacket(DNFSBlockPacket.Type.STORE, id, data);
+                responders = _network.getAllResponders(id);
+                _network.sendToAll(responders, (Object) packet);
+                
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                byte[] hash = md.digest(data);
+                
+                success = true;
+                packet = new DNFSBlockPacket(DNFSBlockPacket.Type.CHECK_HASH, id, hash);
+                responders = _network.getAllResponders(id);
+                ArrayList<Object> hashResponses = _network.sendToAll(responders, (Object) packet);
+                
+                for(Object hashResponse : hashResponses) {
+                    DNFSBlockPacket responsePacket = (DNFSBlockPacket) hashResponse;
+                    if(responsePacket.is(DNFSBlockPacket.Type.HASH_FAIL)) {
+                        success = false;
+                    }
+                }
+            }
+            
+            DNFSBlockLock lock = new DNFSBlockLock(false);
+            _network.put(id, (Object) lock);
+            
+        } catch(DNFSNetworkPutException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkPutException: " + e.getMessage());
+        } catch(DNFSNetworkGetException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: " + e.getMessage());
+        } catch(DNFSNetworkSendException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkSendException: " + e.getMessage());
+        } catch(NoSuchAlgorithmException e) {
+            throw new DNFSException.DNFSBlockStorageException("NoSuchAlgorithmException: " + e.getMessage());
+        }
         
         _keyValueStorage.set(block.id, new KeyValueData(block.getByteArray())); // TODO not local
     }
 
     
     @Override
-    public void deleteBlock(Number160 id) {
-        //PeerAddress resonder = _network.getFirstResponder(id);
+    public void deleteBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        try {
+            PeerAddress resonder = _network.getFirstResponder(id);
+        } catch(DNFSNetworkGetException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: " + e.getMessage());
+        }
         
         // TODO not local
         _keyValueStorage.delete(id);
@@ -124,6 +178,33 @@ public class DNFSPeer implements DNFSIPeer {
         _keyValueStorage = new FileBasedKeyValueStorage();
         String storageDirectory = settings.getFileBasedStorageDirectory();
         ((FileBasedKeyValueStorage) _keyValueStorage).setDirectory(storageDirectory);
+        
+        _network.registerObjectDataReply(new ObjectDataReply() {
+
+            @Override
+            public Object reply(PeerAddress sender, Object request) throws Exception {
+                DNFSBlockPacket requestPacket = (DNFSBlockPacket) request;
+                
+                if(requestPacket.is(DNFSBlockPacket.Type.STORE)) {
+                    _keyValueStorage.set(requestPacket.getId(), new KeyValueData());
+                    return new DNFSBlockPacket(DNFSBlockPacket.Type.STORE_ACK);
+                
+                } else if(requestPacket.is(DNFSBlockPacket.Type.CHECK_HASH)) {
+                    byte[] data = _keyValueStorage.get(requestPacket.getId()).getData();
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    byte[] hash = md.digest(data);
+                    if(Arrays.equals(hash, requestPacket.getData())) {
+                        return new DNFSBlockPacket(DNFSBlockPacket.Type.HASH_OK);
+                    } else {
+                        return new DNFSBlockPacket(DNFSBlockPacket.Type.HASH_FAIL);
+                    }
+                    
+                }
+                
+                return null;
+            }
+            
+        });
         
         // START STORAGE EXAMPLE
         

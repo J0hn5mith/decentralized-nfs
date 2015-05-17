@@ -3,6 +3,8 @@ package ch.uzh.csg.p2p.group_1;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNoConnection;
+
 /**
  * Created by janmeier on 02.04.15.
  */
@@ -51,7 +53,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
 
     
     public int read(final ByteBuffer buffer, final long bytesToRead, final long offset) throws
-            DNFSException.DNFSBlockStorageException
+            DNFSException.DNFSBlockStorageException, DNFSNetworkNoConnection
     {
         return (int) this.getBlockComposition().read(buffer, bytesToRead, offset);
 
