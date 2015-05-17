@@ -1,12 +1,11 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import org.apache.log4j.Logger;
 
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
-
-import java.util.Objects;
 
 public class DNFSPeer implements DNFSIPeer {
     
@@ -82,9 +81,9 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public DNFSiNode createINode() throws DNFSException {
+    public DNFSIiNode createINode() throws DNFSException {
         Number160 iNodeID = _network.getUniqueKey();
-        DNFSiNode iNode = new DNFSiNode(iNodeID);
+        DNFSIiNode iNode = new DNFSiNode(iNodeID);
         Object data = (Object) iNode; // TODO do better serialization
         _network.put(iNodeID, data);
         return iNode;
@@ -92,9 +91,9 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException {
         Object data = _network.get(iNodeID);
-        DNFSiNode iNode = (DNFSiNode) data; // TODO do better serialization
+        DNFSIiNode iNode = (DNFSIiNode) data; // TODO do better serialization
         return iNode;
     }
 
@@ -106,22 +105,22 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public void updateINode(DNFSiNode iNode) throws DNFSException {
-        _network.delete(iNode.id); // TODO: change this once we have vDHT
+    public void updateINode(DNFSIiNode iNode) throws DNFSException {
+        _network.delete(iNode.getId()); // TODO: change this once we have vDHT
         Object data = (Object) iNode; // TODO do better serialization
-        _network.put(iNode.id, data);
+        _network.put(iNode.getId(), data);
     }
 
     
     @Override
-    public DNFSiNode getRootINode() throws DNFSException {
+    public DNFSIiNode getRootINode() throws DNFSException {
         return getINode(ROOT_INODE_KEY);
     }
 
     
     @Override
-    public DNFSiNode createRootINode() throws DNFSException {
-        DNFSiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
+    public DNFSIiNode createRootINode() throws DNFSException {
+        DNFSIiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
         Object data = (Object) iNode; // TODO do better serialization
         _network.put(ROOT_INODE_KEY, data);
         LOGGER.info("Successfully create root iNode");

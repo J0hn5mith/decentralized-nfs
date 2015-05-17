@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 
 /**
@@ -7,11 +8,11 @@ import net.tomp2p.peers.Number160;
  */
 public interface DNFSIiNodeStorage {
 
-    public DNFSiNode createINode() throws DNFSException;
-    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException;
+    public DNFSIiNode createINode() throws DNFSException;
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException;
     public void deleteINode(Number160 iNodeID) throws DNFSException;
-    public void updateINode(DNFSiNode iNode) throws DNFSException;
+    public void updateINode(DNFSIiNode iNode) throws DNFSException;
 
-    public DNFSiNode getRootINode() throws DNFSException;
-    public DNFSiNode createRootINode() throws DNFSException;
+    public DNFSIiNode getRootINode() throws DNFSException;
+    public DNFSIiNode createRootINode() throws DNFSException;
 }

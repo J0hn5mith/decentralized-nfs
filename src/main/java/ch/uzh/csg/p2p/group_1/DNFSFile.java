@@ -1,5 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -14,9 +16,8 @@ public class DNFSFile extends DNFSFileSystemEntry {
      * 
      * @param iNode
      */
-    DNFSFile(DNFSiNode iNode, DNFSIPeer peer){
+    DNFSFile(DNFSIiNode iNode, DNFSIPeer peer){
         super(iNode, peer);
-        this.getINode().addBlock(this.getPeer());
     }
 
     
@@ -25,7 +26,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
     }
     
     
-    public static DNFSFile getExisting(DNFSiNode iNode, DNFSIPeer peer){
+    public static DNFSFile getExisting(DNFSIiNode iNode, DNFSIPeer peer){
         DNFSFile file = new DNFSFile(iNode, peer);
         return file;
     }

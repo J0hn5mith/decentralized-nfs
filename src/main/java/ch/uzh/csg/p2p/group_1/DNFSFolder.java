@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 import org.apache.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * @param iNode
      */
-    private DNFSFolder(DNFSiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
+    private DNFSFolder(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
         super(iNode, peer);
         this.getINode().setDir(true);
         this.updateFolderEntries();
@@ -37,7 +38,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * Factory method for creating new folders with a given iNode.
      */
-    public static DNFSFolder createNew(DNFSiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection, DNFSException.DNFSBlockStorageException {
+    public static DNFSFolder createNew(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection, DNFSException.DNFSBlockStorageException {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
         return folder;
     }
@@ -62,7 +63,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param peer
      * @return
      */
-    public static DNFSFolder getExisting(DNFSiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
+    public static DNFSFolder getExisting(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
         return folder;
     }
@@ -91,7 +92,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      */
     public List<DNFSFileSystemEntry> getChildren() {
         List<DNFSFileSystemEntry> entries = new ArrayList<DNFSFileSystemEntry>();
-        DNFSiNode iNode;
+        DNFSIiNode iNode;
         for (DNFSFolderEntry entry : this.childEntries.values()) {
             try {
                 iNode = this.getPeer().getINode(entry.getINodeKey());
@@ -123,7 +124,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     // TODO: There are different method doing the same thing => find way to unify it
     // Basic problem is, that i cant decide weather getting children by name or id
     public DNFSFileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrFolder, DNFSException.DNFSNetworkNoConnection {
-        DNFSiNode iNode = this.getChildINode(name);
+        DNFSIiNode iNode = this.getChildINode(name);
         if (iNode.isDir()) {
             return DNFSFolder.getExisting(iNode, this.getPeer());
 
@@ -137,7 +138,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param iNode
      * @param name
      */
-    public void addChild(DNFSiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
+    public void addChild(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
         this.addNewFolderEntry(iNode, name);
         this.updateFolderEntries();
     }
@@ -226,7 +227,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @return
      * @throws DNFSException.NoSuchFileOrFolder
      */
-    public DNFSiNode getChildINode(String name) throws DNFSException.NoSuchFileOrFolder {
+    public DNFSIiNode getChildINode(String name) throws DNFSException.NoSuchFileOrFolder {
         try {
             return this.getPeer().getINode(this.getIDOfChild(name));
         } catch (DNFSException e) {
@@ -369,7 +370,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         return 0;
     }
 
-    private void addNewFolderEntry(DNFSiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
+    private void addNewFolderEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
         String entryAsString = LINE_SEPARATOR + iNode.getId() + SEPARATOR + name;
         if(this.childEntries.size() < 1){
              entryAsString = iNode.getId() + SEPARATOR + name;

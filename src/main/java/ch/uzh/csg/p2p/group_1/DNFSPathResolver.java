@@ -5,6 +5,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import java.io.IOException;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -41,7 +42,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @return
      */
     public DNFSFolder getFolder(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotFolderException, DNFSException.DNFSNetworkNoConnection {
-        DNFSiNode iNode = this.resolve(path);
+        DNFSIiNode iNode = this.resolve(path);
         if (!iNode.isDir()) {
             throw new DNFSException.DNFSNotFolderException();
         }
@@ -54,7 +55,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @return
      */
     public DNFSFile getFile(DNFSPath path) throws DNFSException.DNFSNotFileException, DNFSException.DNFSPathNotFound {
-        DNFSiNode iNode = this.resolve(path);
+        DNFSIiNode iNode = this.resolve(path);
         if (iNode.isDir()) {
             throw new DNFSException.DNFSNotFileException();
         }
@@ -66,12 +67,12 @@ public class DNFSPathResolver implements DNFSIPathResolver {
      * @param path
      * @return
      */
-    public DNFSiNode getINode(DNFSPath path) throws DNFSException.DNFSPathNotFound {
+    public DNFSIiNode getINode(DNFSPath path) throws DNFSException.DNFSPathNotFound {
         return this.resolve(path);
     }
 
 
-    private DNFSiNode resolve(DNFSPath path) throws DNFSException.DNFSPathNotFound {
+    private DNFSIiNode resolve(DNFSPath path) throws DNFSException.DNFSPathNotFound {
         DNFSFolder currentFolder = null;
         try {
             currentFolder = this.getRootFolder();

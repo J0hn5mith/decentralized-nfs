@@ -5,6 +5,7 @@ package ch.uzh.csg.p2p.group_1.network;
  */
 
 import ch.uzh.csg.p2p.group_1.*;
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 
 import java.nio.ByteBuffer;
@@ -15,18 +16,18 @@ import java.nio.ByteBuffer;
  */
 public class DNFSBlockComposition implements DNFSIBlockComposition {
 
-    DNFSiNode iNode;
+    DNFSIiNode iNode;
     DNFSIPeer peer;
 
     public DNFSIPeer getPeer() {
         return peer;
     }
 
-    public DNFSiNode getINode() {
+    public DNFSIiNode getINode() {
         return iNode;
     }
 
-    public DNFSBlockComposition(DNFSiNode iNode, DNFSIPeer peer) {
+    public DNFSBlockComposition(DNFSIiNode iNode, DNFSIPeer peer) {
         this.iNode = iNode;
         this.peer = peer;
     }

@@ -4,6 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.fusejna.DirectoryFiller;
 import net.fusejna.ErrorCodes;
 import net.fusejna.StructFuseFileInfo;
@@ -110,7 +111,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
 
-        DNFSiNode iNode = null;
+        DNFSIiNode iNode = null;
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
@@ -216,7 +217,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int rename(String path, String newName) {
-        DNFSiNode iNode;
+        DNFSIiNode iNode;
         DNFSFolder newParentFolder;
         DNFSFolder oldParentFolder;
 

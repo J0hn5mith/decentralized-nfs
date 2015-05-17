@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.util.List;
  * Notes from meeting at 30.4
  * - Implicit updating after each change
  */
-public class DNFSiNode implements Serializable{
+public class DNFSiNode implements Serializable, DNFSIiNode {
     private static final long serialVersionUID = 2098774660703813030L;
     private boolean isDir;
     Number160 id;
@@ -28,10 +29,6 @@ public class DNFSiNode implements Serializable{
 
     public Number160 getId() {
         return id;
-    }
-
-    public void setId(Number160 id) {
-        this.id = id;
     }
 
     public void setDir(boolean isDir) {
