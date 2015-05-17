@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.network.DNFSIBlockComposition;
 import net.tomp2p.peers.Number160;
 
 import java.io.ByteArrayInputStream;
@@ -12,23 +13,30 @@ import org.apache.log4j.Logger;
 /**
  * Created by janmeier on 10.04.15.
  */
-public class DNFSBlock implements Serializable {
+public class DNFSBlock implements Serializable, DNFSIBlockComposition {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
     public static int BLOCK_SIZE = 100000;
 
     Number160 id;
+    DNFSIBlockStorage blockStorage;
     private ByteBuffer data;
 
-    public DNFSBlock(Number160 id) {
+    public DNFSBlock(Number160 id, DNFSIBlockStorage blockStorage) {
         this.id = id;
+        this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
     }
     
     
-    public DNFSBlock(Number160 id, byte[] byteArray) {
+    public DNFSBlock(Number160 id, byte[] byteArray, DNFSIBlockStorage blockStorage) {
         this.id = id;
         this.data = ByteBuffer.wrap(byteArray);
+        this.blockStorage = blockStorage;
+    }
+
+    static public long getCapacity(){
+        return BLOCK_SIZE;
     }
     
 
@@ -49,6 +57,10 @@ public class DNFSBlock implements Serializable {
 
     }
 
+    public DNFSIBlockStorage getBlockStorage() {
+        return blockStorage;
+    }
+
     public InputStream getInputStream() {
         return new ByteArrayInputStream(data.array());
     }
@@ -59,16 +71,13 @@ public class DNFSBlock implements Serializable {
     }
     
 
-    public int append(String appendString) {
+    public long append(ByteBuffer buffer, final long bufferSize) throws DNFSException.DNFSNetworkNoConnection {
         int writeOffset = this.data.array().length;
-        int bufSize = appendString.getBytes().length;
-        ByteBuffer buffer = ByteBuffer.wrap(appendString.getBytes());
-
-        return this.write(buffer, bufSize, writeOffset);
+        return this.write(buffer, bufferSize, writeOffset);
     }
 
     
-    public int write(ByteBuffer buffer, final long bufferSize, final long offset) {
+    public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
 
         final int maxWriteIndex = (int) (offset + bufferSize);
         final byte[] bytesToWrite = new byte[(int) bufferSize];
@@ -82,11 +91,17 @@ public class DNFSBlock implements Serializable {
         this.data.position((int) offset);
         this.data.put(bytesToWrite);
         this.data.position(0);
+
+        try {
+            this.getBlockStorage().updateBlock(this);
+        } catch (DNFSException.DNFSBlockStorageException e) {
+            LOGGER.error("Serious probelm. Could not update block. Updated is ignored.", e);
+        }
         return (int) bufferSize;
     }
 
     
-    public int read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
+    public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
 
         byteBuffer.position(0);
@@ -95,7 +110,7 @@ public class DNFSBlock implements Serializable {
     }
 
     
-    public int truncate(final long offset) {
+    public long truncate(final long offset) {
         if (offset < this.data.capacity()) {
             // Need to create a new, smaller buffer
             final ByteBuffer newContents = ByteBuffer.allocate((int) offset);

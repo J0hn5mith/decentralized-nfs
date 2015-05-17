@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 
 import java.util.HashMap;
@@ -14,20 +15,20 @@ import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 public class DNFSDummyPeer implements DNFSIPeer {
 
     private Map<Number160, DNFSBlock> blocks;
-    private Map<Number160, DNFSiNode> iNodes;
-    private DNFSiNode rootINode;
+    private Map<Number160, DNFSIiNode> iNodes;
+    private DNFSIiNode rootINode;
     private Random random;
 
     public DNFSDummyPeer() {
         this.blocks = new HashMap<Number160, DNFSBlock>();
-        this.iNodes = new HashMap<Number160, DNFSiNode>();
+        this.iNodes = new HashMap<Number160, DNFSIiNode>();
 
         this.random = new Random();
     }
 
     @Override
-    public DNFSiNode createINode() {
-        DNFSiNode iNode = new DNFSiNode(this.getNewINodeID());
+    public DNFSIiNode createINode() {
+        DNFSIiNode iNode = new DNFSiNode(this.getNewINodeID());
         this.iNodes.put(iNode.getId(), iNode);
         return iNode;
     }
@@ -37,8 +38,8 @@ public class DNFSDummyPeer implements DNFSIPeer {
      * @return
      * @throws DNFSException
      */
-    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
-        DNFSiNode node = this.iNodes.get(iNodeID);
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException {
+        DNFSIiNode node = this.iNodes.get(iNodeID);
         if (node == null){
             throw new DNFSException();
         }
@@ -53,7 +54,7 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
 
     @Override
-    public void updateINode(DNFSiNode iNode) {
+    public void updateINode(DNFSIiNode iNode) {
 
     }
 
@@ -61,12 +62,12 @@ public class DNFSDummyPeer implements DNFSIPeer {
      * @return
      * @throws DNFSException
      */
-    public DNFSiNode getRootINode() throws DNFSException {
+    public DNFSIiNode getRootINode() throws DNFSException {
         return this.rootINode;
     }
 
     @Override
-    public DNFSiNode createRootINode() throws DNFSException {
+    public DNFSIiNode createRootINode() throws DNFSException {
         return this.rootINode;
     }
 
@@ -82,7 +83,7 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
     @Override
     public DNFSBlock createBlock() {
-        DNFSBlock block = new DNFSBlock(this.getNewBlockID());
+        DNFSBlock block = new DNFSBlock(this.getNewBlockID(), this);
         this.blocks.put(block.getId(), block);
         return block;
     }

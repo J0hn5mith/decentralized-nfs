@@ -5,6 +5,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 import net.tomp2p.peers.Number160;
@@ -92,7 +93,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                testitest();
+                //testitest();
             }
         };
         thread.start();
@@ -118,7 +119,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             System.out.println("Created: " + block1.getId());
             
             String mydata = "Hallihallo";
-            DNFSBlock block2 = new DNFSBlock(key, mydata.getBytes());
+            DNFSBlock block2 = new DNFSBlock(key, mydata.getBytes(), peer);
             peer.updateBlock(block2);
             
             DNFSBlock block3 = peer.getBlock(key);
@@ -166,7 +167,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      */
     private void createRootFolder() {
         try {
-            DNFSiNode rootINode = this.getPeer().createRootINode();
+            DNFSIiNode rootINode = this.getPeer().createRootINode();
             DNFSFolder.createNew(rootINode, this.getPeer());
         } catch (DNFSException e) {
             LOGGER.error("Could not create root folder.", e);

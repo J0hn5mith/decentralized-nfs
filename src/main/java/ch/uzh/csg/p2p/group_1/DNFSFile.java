@@ -1,9 +1,9 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
-import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNoConnection;
 
 /**
  * Created by janmeier on 02.04.15.
@@ -16,9 +16,8 @@ public class DNFSFile extends DNFSFileSystemEntry {
      * 
      * @param iNode
      */
-    DNFSFile(DNFSiNode iNode, DNFSIPeer peer){
+    DNFSFile(DNFSIiNode iNode, DNFSIPeer peer){
         super(iNode, peer);
-        this.getINode().addBlock(this.getPeer());
     }
 
     
@@ -27,7 +26,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
     }
     
     
-    public static DNFSFile getExisting(DNFSiNode iNode, DNFSIPeer peer){
+    public static DNFSFile getExisting(DNFSIiNode iNode, DNFSIPeer peer){
         DNFSFile file = new DNFSFile(iNode, peer);
         return file;
     }
@@ -53,8 +52,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
 
     
     public int read(final ByteBuffer buffer, final long bytesToRead, final long offset) throws
-            DNFSException.DNFSBlockStorageException, DNFSNetworkNoConnection
-    {
+            DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         return (int) this.getBlockComposition().read(buffer, bytesToRead, offset);
 
     }
@@ -64,7 +62,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
         return 0;
     }
 
-    public int truncate(long offset){
+    public long truncate(long offset){
         return this.getFirstBlock().truncate(offset);
     }
 

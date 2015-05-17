@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkGetException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
 public class DNFSPeer implements DNFSIPeer {
@@ -36,7 +38,7 @@ public class DNFSPeer implements DNFSIPeer {
     @Override
     public DNFSBlock createBlock() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         Number160 id = _network.getUniqueKey();
-        DNFSBlock block = new DNFSBlock(id);
+        DNFSBlock block = new DNFSBlock(id, this);
         updateBlock(block);       
         return block;
     }
@@ -49,7 +51,7 @@ public class DNFSPeer implements DNFSIPeer {
             //TODO
             byte[] data = new byte[0];
             
-            return new DNFSBlock(id, data);
+            return new DNFSBlock(id, data, this);
             
         } catch(DNFSNetworkGetException e) {
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: " + e.getMessage());
@@ -126,20 +128,20 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public DNFSiNode createINode() throws DNFSException {
+    public DNFSIiNode createINode() throws DNFSException {
         Number160 iNodeID = _network.getUniqueKey();
-        DNFSiNode iNode = new DNFSiNode(iNodeID);
+        DNFSIiNode iNode = new DNFSiNode(iNodeID);
         Object data = (Object) iNode; // TODO do better serialization
         _network.put(iNodeID, data);
-        return iNode;
+        return new DNFSNetworkINode(iNode, this);
     }
 
     
     @Override
-    public DNFSiNode getINode(Number160 iNodeID) throws DNFSException {
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException {
         Object data = _network.get(iNodeID);
-        DNFSiNode iNode = (DNFSiNode) data; // TODO do better serialization
-        return iNode;
+        DNFSIiNode iNode = (DNFSIiNode) data; // TODO do better serialization
+        return new DNFSNetworkINode(iNode, this);
     }
 
     
@@ -150,22 +152,22 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public void updateINode(DNFSiNode iNode) throws DNFSException {
-        _network.delete(iNode.id); // TODO: change this once we have vDHT
-        Object data = (Object) iNode; // TODO do better serialization
-        _network.put(iNode.id, data);
+    public void updateINode(DNFSIiNode iNode) throws DNFSException {
+        _network.delete(iNode.getId()); // TODO: change this once we have vDHT
+        Object data = (Object) iNode.getSerializableVersion(); // TODO do better serialization
+        _network.put(iNode.getId(), data);
     }
 
     
     @Override
-    public DNFSiNode getRootINode() throws DNFSException {
+    public DNFSIiNode getRootINode() throws DNFSException {
         return getINode(ROOT_INODE_KEY);
     }
 
     
     @Override
-    public DNFSiNode createRootINode() throws DNFSException {
-        DNFSiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
+    public DNFSIiNode createRootINode() throws DNFSException {
+        DNFSIiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
         Object data = (Object) iNode; // TODO do better serialization
         _network.put(ROOT_INODE_KEY, data);
         LOGGER.info("Successfully create root iNode");

@@ -16,6 +16,8 @@ import net.tomp2p.dht.FuturePut;
 import net.tomp2p.dht.FutureRemove;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
+import net.tomp2p.dht.StorageLayer;
+import net.tomp2p.dht.StorageMemory;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDirect;
@@ -26,6 +28,7 @@ import net.tomp2p.peers.Number640;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
+import net.tomp2p.storage.Storage;
 
 
 public class DNFSNetwork {
@@ -106,7 +109,10 @@ public class DNFSNetwork {
             Number160 key = Number160.createHash(_random.nextLong());
 
             PeerBuilder builder = new PeerBuilder(key).ports(_port);
-            _peer = new PeerBuilderDHT(builder.start()).start();
+            PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
+            Storage storage = new StorageMemory();
+            StorageLayer storageLayer = new StorageLayer(storage);
+            _peer = builderDHT.storageLayer(storageLayer).start();
 
         } catch (IOException e) {
             throw new DNFSException.DNFSNetworkSetupException("IOException: " + e.getMessage());

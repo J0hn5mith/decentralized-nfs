@@ -4,6 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.fusejna.DirectoryFiller;
 import net.fusejna.ErrorCodes;
 import net.fusejna.StructFuseFileInfo;
@@ -94,7 +95,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             LOGGER.error("Could not create new file", e);
             return -1;
         }
-        targetFolder.addChild(file, fileName);
+        try {
+            targetFolder.addChild(file, fileName);
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+        }
         return 0;
     }
 
@@ -106,7 +111,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
 
-        DNFSiNode iNode = null;
+        DNFSIiNode iNode = null;
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
@@ -142,7 +147,12 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.EEXIST();
         }
 
-        targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
+        try {
+            targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
+        }
 
         return 0;
     }
@@ -178,7 +188,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNoConnection e) {
             LOGGER.error(e.toString());
-            return -ErrorCodes.ENOENT();
+            return -1;
         }
     }
 
@@ -193,6 +203,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSNotFolderException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOTDIR();
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
         }
         for (DNFSFolderEntry o : folder.getChildEntries()) {
             filler.add(o.getName());
@@ -204,7 +217,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int rename(String path, String newName) {
-        DNFSiNode iNode;
+        DNFSIiNode iNode;
         DNFSFolder newParentFolder;
         DNFSFolder oldParentFolder;
 
@@ -221,6 +234,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSException.NoSuchFileOrFolder noSuchFileOrFolder) {
             return -ErrorCodes.ENOENT();
+        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
+            dnfsNetworkNoConnection.printStackTrace();
+            return -1;
         }
 
         return 0;
