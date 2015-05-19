@@ -16,11 +16,11 @@ public class FileBasedKeyValueStorage implements KeyValueStorageInterface {
     String directory = ".";
 
 
-    public FileBasedKeyValueStorage() {
-        try {
-            this.directory = this.createTempDirectory().getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public FileBasedKeyValueStorage() throws IOException {
+        this.directory = this.createTempDirectory().getAbsolutePath();
+        Path path = Paths.get(directory + "/empty");
+        if(!Files.isWritable(path)) {
+            throw new IOException();
         }
     }
 
