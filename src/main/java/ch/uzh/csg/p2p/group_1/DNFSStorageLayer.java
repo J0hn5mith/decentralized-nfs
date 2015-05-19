@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import net.tomp2p.dht.StorageLayer;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.Number320;
@@ -66,11 +67,11 @@ public class DNFSStorageLayer extends StorageLayer {
     
     final private Storage backend;
     
-    private DNFSNetwork _network;
+    private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
 
     
-    public DNFSStorageLayer(Storage backend, DNFSNetwork network, IKeyValueStorage keyValueStorage) {
+    public DNFSStorageLayer(Storage backend, DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         super(backend);
         this.backend = backend;
         this._network = network;

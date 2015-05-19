@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
@@ -24,11 +25,11 @@ public class DNFSPeer implements DNFSIPeer {
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
-    private DNFSNetwork _network;
+    private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
     
     
-    public DNFSPeer(DNFSNetwork network, IKeyValueStorage keyValueStorage) {
+    public DNFSPeer(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
         _keyValueStorage = keyValueStorage;
     }

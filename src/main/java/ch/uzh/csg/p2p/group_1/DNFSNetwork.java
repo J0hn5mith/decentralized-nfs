@@ -11,6 +11,7 @@ import java.util.Set;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNoConnection;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
+import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.FuturePut;
 import net.tomp2p.dht.FutureRemove;
@@ -31,7 +32,7 @@ import net.tomp2p.storage.Data;
 import net.tomp2p.storage.Storage;
 
 
-public class DNFSNetwork {
+public class DNFSNetwork implements DNFSINetwork{
 
 
     private Random _random;
@@ -96,28 +97,6 @@ public class DNFSNetwork {
     }
 
 
-    /**
-     * @param port
-     * @throws DNFSException.DNFSNetworkSetupException
-     */
-    private void setupPeer(int port, IKeyValueStorage keyValueStorage) throws
-            DNFSException.DNFSNetworkSetupException {
-
-        try {
-            _port = port;
-
-            Number160 key = Number160.createHash(_random.nextLong());
-
-            PeerBuilder builder = new PeerBuilder(key).ports(_port);
-            PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
-            Storage storage = new StorageMemory();
-            StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
-            _peer = builderDHT.storageLayer(storageLayer).start();
-
-        } catch (IOException e) {
-            throw new DNFSException.DNFSNetworkSetupException("IOException: " + e.getMessage());
-        }
-    }
 
 
     /**
@@ -143,7 +122,8 @@ public class DNFSNetwork {
      * @throws DNFSException.DNFSNetworkGetException
      */
     public Number160 getUniqueKey() throws
-            DNFSException.DNFSNetworkNoConnection {
+            DNFSException.DNFSNetworkNoConnection
+    {
         
         connectionBouncer();
         
@@ -162,8 +142,9 @@ public class DNFSNetwork {
      */
     public void put(Number160 key, Object data) throws
             DNFSException.DNFSNetworkNoConnection,
-            DNFSException.DNFSNetworkPutException {
-        
+            DNFSException.DNFSNetworkPutException
+    {
+
         connectionBouncer();
         
         try {
@@ -185,7 +166,8 @@ public class DNFSNetwork {
      */
     public Object get(Number160 key) throws
             DNFSException.DNFSNetworkNoConnection,
-            DNFSException.DNFSNetworkGetException {
+            DNFSException.DNFSNetworkGetException
+    {
         
         connectionBouncer();
         
@@ -211,7 +193,8 @@ public class DNFSNetwork {
      */
     public void delete(Number160 key) throws
             DNFSException.DNFSNetworkNoConnection,
-            DNFSException.DNFSNetworkDeleteException {
+            DNFSException.DNFSNetworkDeleteException
+    {
         
         connectionBouncer();
         
@@ -224,12 +207,14 @@ public class DNFSNetwork {
 
 
     /**
+     * Returns the first responding peer which is responsible for the key.
      * @param key
      * @return
      */
     public PeerAddress getFirstResponder(Number160 key) throws
             DNFSException.DNFSNetworkNoConnection,
-            DNFSException.DNFSNetworkGetException {
+            DNFSException.DNFSNetworkGetException
+    {
         
         connectionBouncer();
         
@@ -259,7 +244,8 @@ public class DNFSNetwork {
      */
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws
             DNFSException.DNFSNetworkNoConnection,
-            DNFSException.DNFSNetworkGetException {
+            DNFSException.DNFSNetworkGetException
+    {
         
         connectionBouncer();
         
@@ -393,4 +379,26 @@ public class DNFSNetwork {
         return this._peer.peerAddress();
     }
 
+    /**
+     * @param port
+     * @throws DNFSException.DNFSNetworkSetupException
+     */
+    private void setupPeer(int port, IKeyValueStorage keyValueStorage) throws
+            DNFSException.DNFSNetworkSetupException {
+
+        try {
+            _port = port;
+
+            Number160 key = Number160.createHash(_random.nextLong());
+
+            PeerBuilder builder = new PeerBuilder(key).ports(_port);
+            PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
+            Storage storage = new StorageMemory();
+            StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
+            _peer = builderDHT.storageLayer(storageLayer).start();
+
+        } catch (IOException e) {
+            throw new DNFSException.DNFSNetworkSetupException("IOException: " + e.getMessage());
+        }
+    }
 }

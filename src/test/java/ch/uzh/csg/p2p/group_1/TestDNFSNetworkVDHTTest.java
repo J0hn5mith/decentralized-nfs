@@ -76,7 +76,7 @@ public class TestDNFSNetworkVDHTTest {
                 }
             }).start();
 
-            this.network.put(Number160.ONE, (Object) new Data("string to append."));
+//            this.network.put(Number160.ONE, (Object) new Data("string to append."));
             System.out.print("Coul put data with vDHT");
 
             cl.await();
@@ -89,8 +89,6 @@ public class TestDNFSNetworkVDHTTest {
             System.out.println("got it: " + fg.failedReason());
             System.out.println("Data: " + (String) fg.data().object());
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DNFSException.DNFSNetworkPutException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

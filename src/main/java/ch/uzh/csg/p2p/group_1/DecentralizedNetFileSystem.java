@@ -6,6 +6,8 @@ package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
+import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 
@@ -21,28 +23,28 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private DNFSPathResolver pathResolver;
     private DNFSSettings settings;
     private IKeyValueStorage keyValueStorage;
-    private DNFSNetwork network;
+    private DNFSINetwork network;
     private DNFSIPeer peer;
-    
+
 
     /**
-     * 
+     *
      */
     public DecentralizedNetFileSystem() {
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.WARN);
         this.fuseIntegration = new DNFSFuseIntegration();
     }
-    
-    
+
+
     /**
-     * 
+     *
      */
     public void setUp(DNFSSettings settings) {
-        
+
         this.settings = settings;
 
         this.setUpPeer();
-        
+
         this.pathResolver = new DNFSPathResolver(this.peer);
         this.fuseIntegration.setPathResolver(this.pathResolver);
 
@@ -50,26 +52,21 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             this.createRootFolder();
         }
     }
-    
+
 
     /**
-     * 
+     *
      */
     private void setUpPeer() {
-        
+
         if(this.settings.getUseDummyPeer()) {
             this.peer = new DNFSDummyPeer();
-            
+
         } else {
             this.keyValueStorage = new FileBasedKeyValueStorage();
             String storageDirectory = settings.getFileBasedStorageDirectory();
             ((FileBasedKeyValueStorage) this.keyValueStorage).setDirectory(storageDirectory);
-            try {
-                this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
-            } catch (DNFSNetworkSetupException e) {
-                LOGGER.error("Could not set up the network.", e);
-                System.exit(-1);
-            }
+            this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
             this.peer = new DNFSPeer(this.network, this.keyValueStorage);
         }
 
@@ -83,12 +80,12 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
 
     /**
-     * 
+     *
      */
     public void start() {
-        
+
         LOGGER.info("Starting DNFS with mountpoint \"" + this.settings.getMountPoint() + "\"");
-        
+
         try {
             this.fuseIntegration.mount(this.settings.getMountPoint());
         } catch (FuseException e) {
@@ -97,33 +94,33 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
     }
 
-    
+
     /**
-     * 
+     *
      */
     public void pause() {
         LOGGER.debug("DNFS has paused.");
     }
 
-    
+
     /**
-     * 
+     *
      */
     public void resume() {
         LOGGER.debug("DNFS has resumed.");
     }
 
-    
+
     /**
-     * 
+     *
      */
     public void shutDown() {
         LOGGER.debug("DNFS has shut down.");
     }
 
-    
+
     /**
-     * 
+     *
      */
     private void createRootFolder() {
         try {
@@ -135,8 +132,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
 
     }
-    
-    
+
+
     public DNFSIPeer getPeer() {
         return peer;
     }

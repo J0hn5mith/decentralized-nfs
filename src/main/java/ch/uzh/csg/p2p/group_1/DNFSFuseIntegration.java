@@ -116,6 +116,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
             LOGGER.warn("Could not find attrs for path: " + path);
+            LOGGER.debug("Reason: ", e);
             return -ErrorCodes.ENOENT();
         }
 

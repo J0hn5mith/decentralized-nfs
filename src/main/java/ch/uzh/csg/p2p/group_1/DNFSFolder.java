@@ -330,6 +330,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         try {
             long size = this.getBlockComposition().getSize();
             ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) size]);
+            this.getBlockComposition().read(buffer, size, 0);
             return new ByteArrayInputStream(buffer.array());
         } catch (DNFSException.DNFSBlockStorageException e) {
             throw new DNFSException.DNFSNetworkNoConnection();

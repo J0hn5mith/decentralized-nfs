@@ -87,6 +87,7 @@ public class DNFSPathResolver implements DNFSIPathResolver {
             return currentFolder.getChildINode(path.getComponent(-1));
 
         } catch (DNFSException e) {
+            LOGGER.debug("Reason for path resolver failing: ", e);
             throw new DNFSException.DNFSPathNotFound();
         }
     }
