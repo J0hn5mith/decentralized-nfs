@@ -25,10 +25,10 @@ public class DNFSPeer implements DNFSIPeer {
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
     private DNFSNetwork _network;
-    private KeyValueStorageInterface _keyValueStorage;
+    private IKeyValueStorage _keyValueStorage;
     
     
-    public DNFSPeer(DNFSNetwork network, KeyValueStorageInterface keyValueStorage) {
+    public DNFSPeer(DNFSNetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
         _keyValueStorage = keyValueStorage;
     }
@@ -128,6 +128,7 @@ public class DNFSPeer implements DNFSIPeer {
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException {
         _network.delete(iNode.getId()); // TODO: change this once we have vDHT
+
         Object data = (Object) iNode.getSerializableVersion();
         _network.put(iNode.getId(), data);
     }
@@ -145,7 +146,7 @@ public class DNFSPeer implements DNFSIPeer {
         Object data = (Object) iNode;
         _network.put(ROOT_INODE_KEY, data);
         LOGGER.info("Successfully create root iNode");
-        return iNode;
+        return new DNFSNetworkINode(iNode, this);
     }
 
     

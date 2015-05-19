@@ -46,7 +46,7 @@ public class DNFSNetwork {
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    public DNFSNetwork(int port, KeyValueStorageInterface keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
+    public DNFSNetwork(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
         setupPeer(port, keyValueStorage);
         this._connected = true;
@@ -100,7 +100,7 @@ public class DNFSNetwork {
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    private void setupPeer(int port, KeyValueStorageInterface keyValueStorage) throws
+    private void setupPeer(int port, IKeyValueStorage keyValueStorage) throws
             DNFSException.DNFSNetworkSetupException {
 
         try {

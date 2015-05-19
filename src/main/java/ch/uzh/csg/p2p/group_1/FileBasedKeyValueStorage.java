@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import net.tomp2p.peers.Number160;
 
 
-public class FileBasedKeyValueStorage implements KeyValueStorageInterface {
+public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     
     String directory = ".";
@@ -25,6 +25,8 @@ public class FileBasedKeyValueStorage implements KeyValueStorageInterface {
     }
 
     public FileBasedKeyValueStorage(String directory) {
+        //TODO: Check if folder actually exists!
+
         this.directory = directory;
     }
 
