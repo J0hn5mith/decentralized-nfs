@@ -30,7 +30,6 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      */
     private DNFSFolder(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
         super(iNode, peer);
-        this.getINode().setDir(true);
         this.updateFolderEntries();
     }
 
@@ -40,6 +39,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      */
     public static DNFSFolder createNew(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection, DNFSException.DNFSBlockStorageException {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
+        iNode.setDir(true);
         return folder;
     }
 

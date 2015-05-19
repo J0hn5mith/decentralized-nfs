@@ -42,7 +42,7 @@ import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
 public class DNFSStorageLayer extends StorageLayer {
 
     
-    private static final Logger LOG = LoggerFactory.getLogger(StorageLayer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageLayer.class);
 
 
     // Hash of public key is always preferred
@@ -67,10 +67,10 @@ public class DNFSStorageLayer extends StorageLayer {
     final private Storage backend;
     
     private DNFSNetwork _network;
-    private KeyValueStorageInterface _keyValueStorage;
+    private IKeyValueStorage _keyValueStorage;
 
     
-    public DNFSStorageLayer(Storage backend, DNFSNetwork network, KeyValueStorageInterface keyValueStorage) {
+    public DNFSStorageLayer(Storage backend, DNFSNetwork network, IKeyValueStorage keyValueStorage) {
         super(backend);
         this.backend = backend;
         this._network = network;
@@ -581,15 +581,15 @@ public class DNFSStorageLayer extends StorageLayer {
         boolean domainProtectedByOthers = backend.isDomainProtectedByOthers(key, publicKey);
         // I dont want to claim the domain
         if (!domainProtection) {
-            LOG.debug("no domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
+            LOGGER.debug("no domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
             // returns true if the domain is not protceted by others, otherwise
             // false if the domain is protected
             return !domainProtectedByOthers;
         } else {
-            LOG.debug("domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
+            LOGGER.debug("domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
             if (canClaimDomain(key, publicKey)) {
                 if (canProtectDomain(key.domainKey(), publicKey)) {
-                    LOG.debug("set domain protection");
+                    LOGGER.debug("set domain protection");
                     return backend.protectDomain(key, newPublicKey);
                 } else {
                     return true;
@@ -824,29 +824,41 @@ public class DNFSStorageLayer extends StorageLayer {
                 
                 try {
                     Object received = data.object();
-                    if(received instanceof DNFSBlockUpdateNotification) {
-                        
+                    if (received instanceof DNFSBlockUpdateNotification) {
+
                         DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
                         DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
-                        
+
                         boolean success = false;
-                        while(success) {
+                        while (success) {
                             Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
-                            
+
                             byte[] blockData = ((DNFSBlockPacket) answer).getData();
                             MessageDigest md = MessageDigest.getInstance("MD5");
                             byte[] hash = md.digest(blockData);
-                            
-                            if(Arrays.equals(hash, notification.getNewHash())) {
+
+                            if (Arrays.equals(hash, notification.getNewHash())) {
                                 _keyValueStorage.set(notification.getId(), new KeyValueData(blockData));
                                 success = true;
                             }
                         }
                     }
-                } catch (ClassNotFoundException | IOException | DNFSNetworkNoConnection | DNFSNetworkSendException | NoSuchAlgorithmException e) {
-                        // TODO How do we deal with this exception?
-                        e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (DNFSNetworkSendException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                    e.printStackTrace();
+                } catch (DNFSNetworkNoConnection e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (NoSuchAlgorithmException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (IOException e) {
+                    LOGGER.error("Could execute putConfirm", e);
                 }
+//                | IOException | DNFSNetworkNoConnection | DNFSNetworkSendException | NoSuchAlgorithmException e) {
+//                        // TODO How do we deal with this exception?
+//                        e.printStackTrace();
+//                }
                 
                 return PutStatus.OK;
             } else {

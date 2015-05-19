@@ -20,7 +20,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private DNFSFuseIntegration fuseIntegration;
     private DNFSPathResolver pathResolver;
     private DNFSSettings settings;
-    private KeyValueStorageInterface keyValueStorage;
+    private IKeyValueStorage keyValueStorage;
     private DNFSNetwork network;
     private DNFSIPeer peer;
     

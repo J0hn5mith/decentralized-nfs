@@ -4,7 +4,7 @@ package ch.uzh.csg.p2p.group_1;
 import net.tomp2p.peers.Number160;
 
 
-public interface KeyValueStorageInterface {
+public interface IKeyValueStorage {
     
     
     public boolean exists(Number160 key);

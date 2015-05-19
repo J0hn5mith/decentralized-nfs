@@ -108,7 +108,6 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
-
         byteBuffer.position(0);
         byteBuffer.put(this.data.array(), (int) offset, (int) bytesToRead);
         return (int) bytesToRead;
