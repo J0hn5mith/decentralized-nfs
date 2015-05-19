@@ -277,20 +277,6 @@ public class DNFSFolder extends DNFSFileSystemEntry {
 
 
     /**
-     * @return
-     */
-    private DNFSBlock getBlock() {
-        try {
-            return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
-        } catch (DNFSException e) {
-            // TODO: DEAL WITH THIS
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-
-    /**
      *
      */
     private void updateFolderEntries() throws DNFSException.DNFSNetworkNoConnection {
@@ -344,7 +330,6 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         try {
             long size = this.getBlockComposition().getSize();
             ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) size]);
-            long bytesRead = this.getBlockComposition().read(buffer, size, 0);
             return new ByteArrayInputStream(buffer.array());
         } catch (DNFSException.DNFSBlockStorageException e) {
             throw new DNFSException.DNFSNetworkNoConnection();

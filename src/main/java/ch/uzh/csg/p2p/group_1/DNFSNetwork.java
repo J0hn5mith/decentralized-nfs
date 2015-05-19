@@ -46,9 +46,9 @@ public class DNFSNetwork {
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    public DNFSNetwork(int port) throws DNFSException.DNFSNetworkSetupException {
+    public DNFSNetwork(int port, KeyValueStorageInterface keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
-        setupPeer(port);
+        setupPeer(port, keyValueStorage);
         this._connected = true;
     }
     
@@ -100,7 +100,7 @@ public class DNFSNetwork {
      * @param port
      * @throws DNFSException.DNFSNetworkSetupException
      */
-    private void setupPeer(int port) throws
+    private void setupPeer(int port, KeyValueStorageInterface keyValueStorage) throws
             DNFSException.DNFSNetworkSetupException {
 
         try {
@@ -111,7 +111,7 @@ public class DNFSNetwork {
             PeerBuilder builder = new PeerBuilder(key).ports(_port);
             PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
             Storage storage = new StorageMemory();
-            StorageLayer storageLayer = new StorageLayer(storage);
+            StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
             _peer = builderDHT.storageLayer(storageLayer).start();
 
         } catch (IOException e) {
@@ -282,7 +282,7 @@ public class DNFSNetwork {
     }
     
     
-public Object sendTo(PeerAddress address, Object data) throws DNFSNetworkNoConnection, DNFSNetworkSendException {
+    public Object sendTo(PeerAddress address, Object data) throws DNFSNetworkNoConnection, DNFSNetworkSendException {
         
         connectionBouncer();
        
@@ -386,6 +386,11 @@ public Object sendTo(PeerAddress address, Object data) throws DNFSNetworkNoConne
      */
     public PeerDHT getPeer() {
         return this._peer;
+    }
+    
+    
+    public PeerAddress getPeerAddress() {
+        return this._peer.peerAddress();
     }
 
 }

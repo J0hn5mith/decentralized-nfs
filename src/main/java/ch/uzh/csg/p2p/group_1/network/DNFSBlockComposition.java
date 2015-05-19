@@ -44,12 +44,7 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
 
     public long getCapacity(){
 
-        long maxCapacity = 0;
-        for (Number160 blockID : iNode.getBlockIDs()) {
-            maxCapacity += DNFSBlock.BLOCK_SIZE;
-        }
-
-        return maxCapacity;
+        return DNFSBlock.BLOCK_SIZE * iNode.getBlockIDs().size();
     }
 
     @Override
