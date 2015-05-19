@@ -226,16 +226,19 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             iNode = this.pathResolver.getINode(new DNFSPath(path));
             oldParentFolder = this.pathResolver.getFolder(new DNFSPath(path).getParent());
             newParentFolder = this.pathResolver.getFolder(new DNFSPath(newName).getParent());
-            newParentFolder.addChild(iNode, new DNFSPath(newName).getSubPath(-1).toString());
-            oldParentFolder.removeChild(new DNFSPath(path).getSubPath(-1).toString());
-        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+            newParentFolder.addChild(iNode, new DNFSPath(newName).getFilerName());
+            oldParentFolder.removeChild(new DNFSPath(path).getFilerName().toString());
+        } catch (DNFSException.DNFSPathNotFound e) {
+            LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotFolderException e) {
+            LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOTDIR();
-        } catch (DNFSException.NoSuchFileOrFolder noSuchFileOrFolder) {
+        } catch (DNFSException.NoSuchFileOrFolder e) {
+            LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOENT();
-        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
-            dnfsNetworkNoConnection.printStackTrace();
+        } catch (DNFSException.DNFSNetworkNoConnection e) {
+            LOGGER.warn("Rename failed.", e);
             return -1;
         }
 

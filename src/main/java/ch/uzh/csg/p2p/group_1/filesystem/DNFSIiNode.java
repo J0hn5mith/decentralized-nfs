@@ -30,6 +30,8 @@ public interface DNFSIiNode {
 
     public DNFSBlock addBlock(DNFSBlock block);
     public DNFSBlock addBlock(DNFSBlock block, DNFSBlock after);
+    public void removeBlock(DNFSBlock block);
+    public void removeBlockID(Number160 id);
     public List<Number160> getBlockIDs();
     public int getNumBlocks();
 

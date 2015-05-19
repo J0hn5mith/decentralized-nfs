@@ -286,8 +286,8 @@ public class DNFSNetwork {
         
         connectionBouncer();
        
-        ArrayList<Object> responses = new ArrayList<Object>();
-        ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
+        final ArrayList<Object> responses = new ArrayList<Object>();
+        final ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
         
         FutureDirect direct = _peer.peer().sendDirect(address).object(data).start();
         direct.addListener(new BaseFutureListener<FutureDirect>() {
@@ -331,8 +331,8 @@ public class DNFSNetwork {
         connectionBouncer();
         
         ArrayList<FutureDirect> directs = new ArrayList<FutureDirect>();
-        ArrayList<Object> responses = new ArrayList<Object>();
-        ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
+        final ArrayList<Object> responses = new ArrayList<Object>();
+        final ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
         
         for(PeerAddress address : addresses) {
             FutureDirect direct = _peer.peer().sendDirect(address).object(data).start();

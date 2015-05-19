@@ -70,7 +70,7 @@ public class DNFSPath {
     }
 
     public List<String> getComponents(int from) {
-        return this.pathAsList.subList(from, this.pathAsList.size());
+        return this.getComponents(from, this.pathAsList.size());
     }
 
     /**
@@ -84,7 +84,7 @@ public class DNFSPath {
         if (to < 0) {
             return this.pathAsList.subList(from, this.pathAsList.size() + to);
         } else {
-            return this.pathAsList.subList(from, to);
+            return this.pathAsList.subList(this.pathAsList.size() + from, to);
         }
     }
 
@@ -107,6 +107,10 @@ public class DNFSPath {
 
     public DNFSPath getParent(){
         return this.getSubPath(0, -1);
+    }
+
+    public String getFilerName(){
+        return this.getComponent(-1).toString();
     }
 
 }
