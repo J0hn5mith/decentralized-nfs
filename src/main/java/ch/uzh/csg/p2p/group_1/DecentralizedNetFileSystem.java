@@ -4,6 +4,8 @@
 
 package ch.uzh.csg.p2p.group_1;
 
+import java.io.IOException;
+
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
@@ -63,10 +65,19 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             this.peer = new DNFSDummyPeer();
 
         } else {
-            this.keyValueStorage = new FileBasedKeyValueStorage();
-            String storageDirectory = settings.getFileBasedStorageDirectory();
-            ((FileBasedKeyValueStorage) this.keyValueStorage).setDirectory(storageDirectory);
-            this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
+
+            try {
+                this.keyValueStorage = new FileBasedKeyValueStorage();
+                String storageDirectory = settings.getFileBasedStorageDirectory();
+                ((FileBasedKeyValueStorage) this.keyValueStorage).setDirectory(storageDirectory);
+                this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
+            } catch (DNFSNetworkSetupException e) {
+                LOGGER.error("Could not set up the network.", e);
+                System.exit(-1);
+            } catch (IOException e) {
+                LOGGER.error("Could not set up the file-based key/value storage.", e);
+                System.exit(-1);
+            }
             this.peer = new DNFSPeer(this.network, this.keyValueStorage);
         }
 
