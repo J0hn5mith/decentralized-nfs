@@ -1,6 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
-import ch.uzh.csg.p2p.group_1.network.DNFSIBlockComposition;
+import ch.uzh.csg.p2p.group_1.network.DNFSIBlock;
 import net.tomp2p.peers.Number160;
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by janmeier on 10.04.15.
  */
-public class DNFSBlock implements Serializable, DNFSIBlockComposition {
+public class DNFSBlock implements Serializable, DNFSIBlock {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
     public static int BLOCK_SIZE = 100000;
@@ -76,7 +76,12 @@ public class DNFSBlock implements Serializable, DNFSIBlockComposition {
         return this.write(buffer, bufferSize, writeOffset);
     }
 
-    
+    @Override
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        this.blockStorage.deleteBlock(this.getId());
+    }
+
+
     public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
 
         final int maxWriteIndex = (int) (offset + bufferSize);

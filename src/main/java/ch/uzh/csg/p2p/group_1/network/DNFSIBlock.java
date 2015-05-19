@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by janmeier on 14.05.15.
  */
-public interface DNFSIBlockComposition {
+public interface DNFSIBlock {
 
 
     public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection;
@@ -15,5 +15,6 @@ public interface DNFSIBlockComposition {
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection;
     public long truncate(final long offset);
     public long append(ByteBuffer byteBuffer, final long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection;
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection;
 }
 

@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * Wrapper class for iNodes so DNFSFile and DNFSFolder don't have to bother with
  * getting/ and writing blocks
  */
-public class DNFSBlockComposition implements DNFSIBlockComposition {
+public class DNFSBlockComposition implements DNFSIBlock {
 
     DNFSIiNode iNode;
     DNFSIPeer peer;
@@ -120,6 +120,14 @@ public class DNFSBlockComposition implements DNFSIBlockComposition {
     @Override
     public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
         return this.write(byteBuffer, bufferSize, this.getSize());
+    }
+
+    @Override
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        for (Number160 blockID : this.getINode().getBlockIDs()) {
+           this.getINode().removeBlockID(blockID);
+           this.getPeer().deleteBlock(blockID);
+        }
     }
 
 
