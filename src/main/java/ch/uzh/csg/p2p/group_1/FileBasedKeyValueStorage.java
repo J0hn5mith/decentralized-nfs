@@ -18,10 +18,10 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
 
     public FileBasedKeyValueStorage() throws IOException {
         this.directory = this.createTempDirectory().getAbsolutePath();
-        Path path = Paths.get(directory + "/empty");
-        if(!Files.isWritable(path)) {
+        Path path = Paths.get(this.directory + "/empty");
+        /*if(!Files.(path)) {
             throw new IOException();
-        }
+        }*/
     }
 
     public FileBasedKeyValueStorage(String directory) {
