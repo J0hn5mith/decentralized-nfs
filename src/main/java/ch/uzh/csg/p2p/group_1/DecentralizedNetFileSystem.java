@@ -4,12 +4,13 @@
 
 package ch.uzh.csg.p2p.group_1;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
-import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 
@@ -74,8 +75,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             } catch (DNFSNetworkSetupException e) {
                 LOGGER.error("Could not set up the network.", e);
                 System.exit(-1);
-            } catch (IOException e) {
-                LOGGER.error("Could not set up the file-based key/value storage.", e);
+            } catch (Exception e) {
+                LOGGER.error("Could not set up the file-based key-value storage.", e);
                 System.exit(-1);
             }
             this.peer = new DNFSPeer(this.network, this.keyValueStorage);
@@ -98,6 +99,11 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         LOGGER.info("Starting DNFS with mountpoint \"" + this.settings.getMountPoint() + "\"");
 
         try {
+            String mountPoint = this.settings.getMountPoint();
+            if(!Files.exists(Paths.get(mountPoint))) {
+                File newDirectory = new File(mountPoint);
+                newDirectory.mkdirs();
+            }
             this.fuseIntegration.mount(this.settings.getMountPoint());
         } catch (FuseException e) {
             LOGGER.error("Failed to mount the fuse file system.");

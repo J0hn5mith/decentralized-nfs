@@ -16,19 +16,36 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     String directory = ".";
 
 
-    public FileBasedKeyValueStorage() throws IOException {
-        this.directory = this.createTempDirectory().getAbsolutePath();
-        Path path = Paths.get(this.directory + "/empty");
-        /*if(!Files.(path)) {
-            throw new IOException();
-        }*/
+    public FileBasedKeyValueStorage() throws Exception {
+        try {
+            this.directory = this.createTempDirectory().getAbsolutePath();
+        } catch(IOException e) {
+            throw new Exception("Unable to create file-based key-value storage temporary folder.");
+        }
+        checkWritability();
     }
+    
 
-    public FileBasedKeyValueStorage(String directory) {
-        //TODO: Check if folder actually exists!
-
+    public FileBasedKeyValueStorage(String directory) throws Exception {
         this.directory = directory;
+        if(!Files.exists(Paths.get(this.directory))) {
+            File newDirectory = new File(this.directory);
+            newDirectory.mkdirs();
+        }
+        checkWritability();
     }
+    
+    
+    private void checkWritability() throws Exception {
+        try {
+            File empty = new File(this.directory + "/empty");
+            empty.createNewFile();
+            empty.delete();
+        } catch(IOException | OutOfMemoryError | SecurityException e) {
+            throw new Exception("Cannot write to file-based key-value storage folder.");
+        }
+    }
+    
 
     public void setDirectory(String path) {
         directory = path;
@@ -49,11 +66,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             Files.write(path, value.getData());
             return true;
             
-        } catch(IOException e) {
-            return false;
-        } catch(OutOfMemoryError e) {
-            return false;
-        } catch(SecurityException e) {
+        } catch(IOException | OutOfMemoryError | SecurityException e) {
             return false;
         }
     }
@@ -93,17 +106,17 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
         return false;
     }
 
-    public File createTempDirectory()
-            throws IOException {
+    
+    public File createTempDirectory() throws IOException {
         final File temp;
 
         temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
 
-        if (!(temp.delete())) {
+        if(!(temp.delete())) {
             throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
         }
 
-        if (!(temp.mkdir())) {
+        if(!(temp.mkdir())) {
             throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
         }
 
