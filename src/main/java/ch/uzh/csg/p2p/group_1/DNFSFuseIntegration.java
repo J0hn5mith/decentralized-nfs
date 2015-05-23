@@ -180,7 +180,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         DNFSPath dnfsPath = new DNFSPath(path);
         try {
             DNFSFile file = this.pathResolver.getFile(dnfsPath);
-            return file.read(buffer, size, offset);
+            int bytesRead = file.read(buffer, size, offset);
+            LOGGER.warn(String.format("%d bytes requested and %d bytes read.", size, bytesRead));
+            return bytesRead;
+
         } catch (DNFSException.DNFSNotFileException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.EISDIR();

@@ -1,6 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import net.tomp2p.peers.Number160;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -46,7 +47,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
     {
         int bytesWritten = (int) this.getBlockComposition().write(buffer, bufSize, writeOffset);
 
-        this.getINode().setSize((int) this.getFirstBlock().getSize());
+        this.getINode().setSize((int) this.getBlockComposition().getSize());
         return bytesWritten;
     }
 

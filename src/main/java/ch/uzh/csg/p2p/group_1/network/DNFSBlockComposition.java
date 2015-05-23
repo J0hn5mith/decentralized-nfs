@@ -48,7 +48,6 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     public long getCapacity(){
-
         return DNFSBlock.BLOCK_SIZE * iNode.getBlockIDs().size();
     }
 
@@ -61,7 +60,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
         long additionalCapacity = this.getSize() + bufferSize - this.getCapacity();
         if (additionalCapacity > 0){
-            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()));
+            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getMaxCapacity()));
             for (int i = 0; i < numAdditionalBlocks; i++) {
                 DNFSBlock block = this.addNewBlockToINode();
             }
@@ -72,7 +71,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         DNFSBlock block = offset.getBlock();
         long numBytesRemaining = bufferSize;
 
-        numBytesRemaining -= block.write(byteBuffer, bufferSize, offsetInBytes);
+        numBytesRemaining -= block.write(byteBuffer, bufferSize, offset.getOffset());
         while (numBytesRemaining != 0){
             block = this.getNextBlock(block);
             numBytesRemaining -= block.write(byteBuffer, numBytesRemaining, 0 );
@@ -91,26 +90,27 @@ public class DNFSBlockComposition implements DNFSIBlock {
         // First block
 //        TODO: Double check this code!!!
         long summedUpSize = 0;
-        long bytesNotRead = bytesToRead;
+        long bytesLeft = bytesToRead;
+        long bytesReadTotal = 0;
         for (Number160 blockId : this.getINode().getBlockIDs()) {
             DNFSBlock block = this.getPeer().getBlock(blockId);
 
             long blockSize = block.getSize();
             if (summedUpSize + blockSize > offset){
-                long bytesRead = block.read(byteBuffer, bytesNotRead, Math.max(0, offset - summedUpSize));
+                long bytesRead = block.read(byteBuffer, bytesLeft, Math.max(0, offset - summedUpSize));
                 summedUpSize += bytesRead;
+                bytesReadTotal += bytesRead;
+                bytesLeft -= bytesRead;
             }
             else{
                 summedUpSize += blockSize;
-
             }
             if (summedUpSize > offset + bytesToRead){
                 break;
             }
         }
+        return bytesReadTotal;
 
-        return summedUpSize - offset;
-//        return bytesToRead;
     }
 
 
