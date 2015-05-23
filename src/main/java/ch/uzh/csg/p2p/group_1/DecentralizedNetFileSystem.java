@@ -58,7 +58,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         this.fuseIntegration = new DNFSFuseIntegration();
 
         this.settings = settings;
-        
+
         this.setConnectionTimeout();
 
         this.setUpPeer();
@@ -125,9 +125,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             } catch (DNFSNetworkSetupException e) {
                 LOGGER.error("Could not set up the network.", e);
                 System.exit(-1);
-            } catch (Exception e) {
+            } catch (DNFSException.DNFSKeyValueStorageException e) {
                 LOGGER.error("Could not set up the file-based key-value storage.", e);
                 System.exit(-1);
+                e.printStackTrace();
             }
             this.peer = new DNFSPeer(this.network, this.keyValueStorage);
         }
@@ -207,7 +208,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void shutDown() {
         try {
             this.keyValueStorage.shutDown();
-        } catch (Exception e) {
+        } catch (DNFSException.DNFSKeyValueStorageException e) {
             LOGGER.error("Could not remove temporary folder of the file-based key-value storage.", e);
         }
         System.out.println("DWARFS file system shut down.");

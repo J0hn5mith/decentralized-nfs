@@ -16,16 +16,16 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     String directory;
 
 
-    public FileBasedKeyValueStorage() throws Exception {
+    public FileBasedKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
         try {
             this.directory = this.createTempDirectory().getAbsolutePath();
         } catch(IOException e) {
-            throw new Exception("Unable to create file-based key-value storage temporary folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Unable to create file-based key-value storage temporary folder.");
         }
     }
     
 
-    public FileBasedKeyValueStorage(String directory) throws Exception {
+    public FileBasedKeyValueStorage(String directory){
         this.directory = directory;
         if(!Files.exists(Paths.get(this.directory))) {
             File newDirectory = new File(this.directory);
@@ -35,23 +35,23 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     
     @Override
-    public void startUp() throws Exception {
+    public void startUp() throws DNFSException.DNFSKeyValueStorageException {
         try {
             File empty = new File(this.directory + "/empty");
             empty.createNewFile();
             empty.delete();
         } catch(IOException e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         } catch(OutOfMemoryError e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         } catch(SecurityException e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         }
     }
 
 
     @Override
-    public void shutDown() throws Exception {
+    public void shutDown(){
         File folder = new File(this.directory);
         File[] files = folder.listFiles();
         if(files != null) {

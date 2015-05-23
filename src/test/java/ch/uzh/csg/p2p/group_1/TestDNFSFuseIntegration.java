@@ -21,7 +21,12 @@ public class TestDNFSFuseIntegration {
     public void setUp(){
         this.dnfs = new DecentralizedNetFileSystem();
 
-        DNFSSettings settings = new DNFSSettings("./conf/settings.xml", null);
+        DNFSSettings settings = null;
+        try {
+            settings = new DNFSSettings("./conf/settings.xml", null);
+        } catch (DNFSException.DNFSSettingsException e) {
+            e.printStackTrace();
+        }
         this.dnfs.setUp(settings);
         this.dnfs.start();
 

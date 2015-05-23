@@ -13,8 +13,15 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, ParseException {
 
         CommandLine cmd = parseCommandLineArguments(args);
-        DNFSSettings settings = new DNFSSettings("./conf/settings.xml", cmd);
-        
+        DNFSSettings settings = null;
+        try {
+            settings = new DNFSSettings("./conf/settings.xml", cmd);
+        } catch (DNFSException.DNFSSettingsException e) {
+            System.err.println("Could not set up settings.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
         dnfs.setUp(settings);
         dnfs.start();

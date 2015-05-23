@@ -48,7 +48,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     public long getCapacity(){
-        return DNFSBlock.BLOCK_SIZE * iNode.getBlockIDs().size();
+        return DNFSBlock.getMaxCapacity() * iNode.getBlockIDs().size();
     }
 
     @Override
@@ -87,11 +87,10 @@ public class DNFSBlockComposition implements DNFSIBlock {
     @Override
     public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
 
-        // First block
-//        TODO: Double check this code!!!
         long summedUpSize = 0;
         long bytesLeft = bytesToRead;
         long bytesReadTotal = 0;
+
         for (Number160 blockId : this.getINode().getBlockIDs()) {
             DNFSBlock block = this.getPeer().getBlock(blockId);
 
@@ -110,7 +109,6 @@ public class DNFSBlockComposition implements DNFSIBlock {
             }
         }
         return bytesReadTotal;
-
     }
 
 
@@ -121,7 +119,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
         int indexOfBlock = this.getINode().getBlockIDs().indexOf(offset.getBlock().getId()) + 1;
         if(this.getINode().getBlockIDs().size() == indexOfBlock){
-            return 0;
+            return bytesTruncated;
         }
 
         List<Number160> blocksToDelete = this.getINode().getBlockIDs().subList(indexOfBlock, this.getINode().getNumBlocks());
@@ -132,7 +130,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         }
 
 
-        return 0;
+        return bytesTruncated;
     }
 
     @Override

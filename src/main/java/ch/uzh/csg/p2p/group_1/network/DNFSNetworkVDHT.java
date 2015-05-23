@@ -53,8 +53,9 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         } catch (DNFSException.DNFSNetworkSetupException e) {
             LOGGER.error("FATAL ERROR", e);
         }
+
         // use indirect replication
-        new IndirectReplication(_peer).start();
+//        new IndirectReplication(_peer).start();
         this._initialized = true;
     }
 
