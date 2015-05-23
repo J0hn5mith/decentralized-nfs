@@ -25,6 +25,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     final private static Logger LOGGER = Logger.getLogger(DNFSNetworkVDHT.class.getName());
     private boolean _initialized = false;
     private DNFSNetwork network;
+    
 
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         this.network = new DNFSNetwork(port, keyValueStorage);
@@ -63,7 +64,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         } catch (IOException e) {
             throw new DNFSException.DNFSNetworkPutException("Failed to convert object into data object.");
         }
-        ;
 
         if (!this.keyExists(key)) {
             this.putFirstTime(key, data);
@@ -115,7 +115,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     @Override
     public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException {
         return sendToAll(addresses, data);
-
     }
 
     

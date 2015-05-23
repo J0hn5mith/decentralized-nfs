@@ -218,6 +218,53 @@ public class DNFSStorageLayer extends StorageLayer {
                 // handle timeout
                 backend.addTimeout(key, expiration);
                 
+                try {
+                    Object received = newData.object();
+                    if (received instanceof DNFSBlockUpdateNotification) {
+                        
+                        System.out.println("PUT (NORMAL) OF TYPE BLOCK UPDATE NOTE."); // TODO
+                        
+                        DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
+                        DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
+                        
+                        System.out.println("RECEIVED PUT (NORMAL): " + notification.getId()); // TODO
+                        
+                        if(!_keyValueStorage.exists(notification.getId())) {
+                            
+                            System.out.println("DOESN'T HAVE KEY In PUT (NORMAL): " + notification.getId()); // TODO
+                            
+                            boolean success = false;
+                            while (!success) {
+                                System.out.println("SENDING REQUEST FOR: " + notification.getNewHash()); //TODO
+                                Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
+
+                                byte[] blockData = ((DNFSBlockPacket) answer).getData();
+                                MessageDigest md = MessageDigest.getInstance("MD5");
+                                byte[] hash = md.digest(blockData);
+                                
+                                System.out.println("GOT DATA WITH HASH: " + hash + " / CHECK: " + notification.getNewHash()); //TODO
+
+                                if (Arrays.equals(hash, notification.getNewHash())) {
+                                    _keyValueStorage.set(notification.getId(), new KeyValueData(blockData));
+                                    success = true;
+                                }
+                            }
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (DNFSNetworkSendException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                    e.printStackTrace();
+                } catch (DNFSNetworkNotInit e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (NoSuchAlgorithmException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (IOException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                }
+                
+                
                 if(newData.hasPrepareFlag()) {
                     retVal.put(key, PutStatus.OK_PREPARED);
                 } else {
@@ -256,6 +303,7 @@ public class DNFSStorageLayer extends StorageLayer {
         dataMap.put(key, newData);
         Map<Number640, Enum<?>> putStatus = putAll(dataMap, publicKey, putIfAbsent, domainProtection, sendSelf);
         Enum<?> retVal = putStatus.get(key);
+        
         if(retVal == null) {
             return PutStatus.FAILED;
         } else {
@@ -849,7 +897,7 @@ public class DNFSStorageLayer extends StorageLayer {
                         
                         if(!blockUpToDate) {
                             boolean success = false;
-                            while (success) {
+                            while (!success) {
                                 Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
 
                                 byte[] blockData = ((DNFSBlockPacket) answer).getData();
