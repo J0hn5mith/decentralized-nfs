@@ -44,6 +44,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     private boolean _initialized = false;
     private PeerDHT _peer;
+    
 
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) {
         _random = new Random(System.currentTimeMillis());

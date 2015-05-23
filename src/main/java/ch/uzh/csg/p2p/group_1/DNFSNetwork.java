@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -47,6 +48,8 @@ public class DNFSNetwork implements DNFSINetwork{
 
     private boolean _initialized = false;
     private PeerDHT _peer;
+    private HashMap<Integer, Boolean> _locks;
+    private int _nextLock;
 
 
     /**
@@ -56,6 +59,8 @@ public class DNFSNetwork implements DNFSINetwork{
     public DNFSNetwork(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
         setupPeer(port, keyValueStorage);
+        _locks = new HashMap<Integer, Boolean>();
+        _nextLock = 0;
      // use indirect replication
         //new IndirectReplication(_peer).start();
         this._initialized = true;
@@ -156,6 +161,7 @@ public class DNFSNetwork implements DNFSINetwork{
         initializationBouncer();
         
         try {
+            
             FuturePut futurePut = _peer.put(key).data(new Data(data)).start();
             futurePut.awaitUninterruptibly();
             if (!futurePut.isSuccess()) {
@@ -283,22 +289,37 @@ public class DNFSNetwork implements DNFSINetwork{
         final ArrayList<Object> responses = new ArrayList<Object>();
         final ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
         
+        final Integer lockIndex = _nextLock;
+        _nextLock++;
+        _locks.put(lockIndex, true);
+        
         FutureDirect direct = _peer.peer().sendDirect(address).object(data).start();
         direct.addListener(new BaseFutureListener<FutureDirect>() {
 
             @Override
             public void exceptionCaught(Throwable exception) throws Exception {
                 exceptions.add(exception);
+                _locks.put(lockIndex, false);
             }
 
             @Override
             public void operationComplete(FutureDirect response) throws Exception {
                 responses.add(response.object());
+                _locks.put(lockIndex, false);
             }
             
         });
         
-        direct.awaitUninterruptibly();
+        try {
+            while(_locks.get(lockIndex).equals(true)) {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());
+        }
+        
+        _locks.remove(lockIndex);
+        
         if(!direct.isSuccess()) {
             throw new DNFSException.DNFSNetworkSendException("Direct send failed.");
         }
