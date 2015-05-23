@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import net.tomp2p.peers.Number160;
@@ -19,6 +21,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
 
 
     public FileBasedKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
+        LOGGER.setLevel(Level.DEBUG);
         try {
             this.directory = this.createTempDirectory().getAbsolutePath();
         } catch(IOException e) {
@@ -91,13 +94,11 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     @Override
     public boolean set(Number160 key, KeyValueData value) {
-        
         try {
-            
             Path path = Paths.get(directory + "/" + key.toString());
             Files.write(path, value.getData());
+            LOGGER.info("Wrote file");
             return true;
-            
         } catch(IOException | OutOfMemoryError | SecurityException e) {
             LOGGER.error("Could not set data.");
             return false;

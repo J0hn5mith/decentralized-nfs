@@ -19,6 +19,7 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     Number160 id;
     List<Number160> blockIds;
     int size = 10;
+    int userID = -1;
 
 
     public DNFSiNode(Number160 id) {
@@ -50,6 +51,12 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
 
     public int getUseID() {
         return 10;
+    }
+
+    @Override
+    public void setUserID(int id) {
+        this.userID = id;
+
     }
 
     public int getGroupID() {

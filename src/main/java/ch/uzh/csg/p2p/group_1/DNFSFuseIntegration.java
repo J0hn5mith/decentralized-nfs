@@ -99,6 +99,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -1;
         }
         try {
+            this.setAccessRights(mode, file.getINode());
             targetFolder.addChild(file, fileName);
         } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
             DNFSNetworkNotInit.printStackTrace();
@@ -127,8 +128,17 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
+            TypeMode.ModeWrapper modeWrapper = new TypeMode.ModeWrapper(007);
+            modeWrapper.setMode(TypeMode.NodeType.FILE);
             DNFSFile file = DNFSFile.getExisting(iNode, this.pathResolver.getPeer());
-            stat.setMode(TypeMode.NodeType.FILE).size(file.getINode().getSize());
+            stat.setMode(
+                    TypeMode.NodeType.FILE,
+                    false, false, false,
+                    false, true, false,
+                    false, false, false
+                    )
+                    .size(file.getINode().getSize())
+            ;
             return 0;
         }
     }
@@ -315,5 +325,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -ErrorCodes.ENOENT();
         }
         return 0;
+    }
+
+
+    private void setAccessRights(TypeMode.ModeWrapper mode, DNFSIiNode iNode){
+        iNode.setAccessRights(mode.mode());
+
     }
 }

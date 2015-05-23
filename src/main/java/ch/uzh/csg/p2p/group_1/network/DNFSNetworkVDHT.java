@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class DNFSNetworkVDHT implements DNFSINetwork {
@@ -25,16 +26,10 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     private boolean _initialized = false;
     private DNFSNetwork network;
 
-
-        LOGGER.setLevel(Level.DEBUG);
-        try {
-            setupPeer(port, keyValueStorage);
-        } catch (DNFSException.DNFSNetworkSetupException e) {
-            LOGGER.error("FATAL ERROR", e);
-        }
-        // use indirect replication
-        //new IndirectReplication(_peer).start();
+    public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
+        this.network = new DNFSNetwork(port, keyValueStorage);
         this._initialized = true;
+        LOGGER.setLevel(Level.INFO);
     }
 
     public void registerObjectDataReply(ObjectDataReply reply) {
@@ -73,8 +68,8 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         if (!this.keyExists(key)) {
             this.putFirstTime(key, data);
             return;
-
         }
+
         VersionKey oldVersionKey = null;
         VersionKey versionKey = null;
         boolean prepared = false;
@@ -153,7 +148,11 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         for (FutureGetRawData fgData : latestData) {
             if (last != null) {
                 if (!last.equals(fgData)) {
+
+                    LOGGER.info("Found different file versions.");
+
                     return null;
+
                 }
             }
             last = fgData;

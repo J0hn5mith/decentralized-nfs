@@ -56,6 +56,12 @@ public class DNFSNetworkINode implements DNFSIiNode {
     }
 
     @Override
+    public void setUserID(int id) {
+        this.setUserID(id);
+
+    }
+
+    @Override
     public int getGroupID() {
         return this.iNode.getGroupID();
     }
