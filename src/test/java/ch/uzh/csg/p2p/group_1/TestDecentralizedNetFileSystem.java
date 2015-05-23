@@ -29,8 +29,8 @@ public class TestDecentralizedNetFileSystem {
 
 //        this.decentralizedNetFileSystem.setUp("./conf/settings.xml", null);
         this.decentralizedNetFileSystem.start();
-        this.decentralizedNetFileSystem.pause();
-        this.decentralizedNetFileSystem.resume();
+//        this.decentralizedNetFileSystem.pause();
+//        this.decentralizedNetFileSystem.resume();
         this.decentralizedNetFileSystem.shutDown();
     }
 }

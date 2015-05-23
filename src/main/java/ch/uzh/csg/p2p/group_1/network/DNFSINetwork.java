@@ -55,4 +55,6 @@ public interface DNFSINetwork {
     
     public void disconnect() throws DNFSException.DNFSNetworkNotInit;
 
+    public void setConnectionTimeout(int connectionTimeOut);
+    
 }

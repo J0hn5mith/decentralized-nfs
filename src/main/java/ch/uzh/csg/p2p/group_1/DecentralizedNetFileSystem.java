@@ -4,9 +4,7 @@
 
 package ch.uzh.csg.p2p.group_1;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Scanner;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
@@ -15,6 +13,9 @@ import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.peers.PeerMapChangeListener;
+import net.tomp2p.peers.PeerStatistic;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -33,13 +34,14 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private int connectionTimeOut;
     private int checkConnectionFrequency;
     private int checkConnectionInterval;
+    private boolean _connectedToOtherPeers = false;    
+
 
     /**
      *
      */
     public DecentralizedNetFileSystem() {
-        LOGGER.setLevel(Level.WARN);
-        this.fuseIntegration = new DNFSFuseIntegration();
+        LOGGER.setLevel(Level.DEBUG);
     }
 
 
@@ -47,10 +49,14 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      *
      */
     public void setUp(DNFSSettings settings) {
+        
+        System.out.println("Setting up DWARFS file system...");
+        
+        this.fuseIntegration = new DNFSFuseIntegration();
 
         this.settings = settings;
         
-        setConnectionTimeout();
+        this.setConnectionTimeout();
 
         this.setUpPeer();
 
@@ -74,19 +80,45 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         } else {
 
             try {
-                this.keyValueStorage = new FileBasedKeyValueStorage();
-                String storageDirectory = settings.getFileBasedStorageDirectory();
-                ((FileBasedKeyValueStorage) this.keyValueStorage).setDirectory(storageDirectory);
+                if(this.settings.getUseCustomStorageDirectory()) {
+                    this.keyValueStorage = new FileBasedKeyValueStorage(this.settings.getCustomStorageDirectory());
+                } else {
+                    this.keyValueStorage = new FileBasedKeyValueStorage();
+                }
+                this.keyValueStorage.startUp();
+                
                 if(this.settings.useVDHT()){
                     this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
-                }
-                else{
+                } else {
                     this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
                 }
 
+                this.network.registerPeerChangeListener(new PeerMapChangeListener() {
+                    
+                    public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
+                    
+                    public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
+                        /////////////////////////////
+                        //  
+                        //  TODO
+                        //  Send lost copies of files 
+                        //  to other nodes
+                        //
+                        /////////////////////////////   
+                        
+                        System.out.println("Peer timed out: " + peerAddress);
+                    }
+                    
+                    public void peerInserted(PeerAddress peerAddress, boolean verified) {
+                        System.out.println("Inserted Peer: "+peerAddress);
+                        _connectedToOtherPeers = true;
+                    }
+                });
+                
                 if(!this.settings.getStartNewServer()){
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
                 }
+                
             } catch (DNFSNetworkSetupException e) {
                 LOGGER.error("Could not set up the network.", e);
                 System.exit(-1);
@@ -104,7 +136,35 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             System.exit(-1);
         }
         
+        this.peer.setConnectionTimeout(connectionTimeOut);
         startConnectionChecking();
+    }
+    
+    
+    /**
+     * 
+     */
+    private void startInputScanner() {
+        final DecentralizedNetFileSystem dnfs = this;
+        Thread thread = new Thread() {
+            private Scanner scanner;
+            public void run() {
+                scanner = new Scanner(System.in);
+                while(true) {
+                    String command = scanner.next();
+                    
+                    if(command.equals("shutdown")) {
+                        dnfs.shutDown();
+                        
+                    } else {
+                        System.out.println("Unknown command: " + command);
+                        System.out.println("Valid command:");
+                        System.out.println("\tshutdown : Unmount and shut down DWARFS file system");
+                    }
+                }
+            }
+        };
+        thread.start();
     }
 
 
@@ -112,36 +172,25 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      *
      */
     public void start() {
+        
+        final String mountPoint = this.settings.getMountPoint();
+        final DNFSFuseIntegration fuseIntegration = this.fuseIntegration;
 
-        LOGGER.info("Starting DNFS with mountpoint \"" + this.settings.getMountPoint() + "\"");
-
-        try {
-            String mountPoint = this.settings.getMountPoint();
-            if(!Files.exists(Paths.get(mountPoint))) {
-                File newDirectory = new File(mountPoint);
-                newDirectory.mkdirs();
+        Thread thread = new Thread() {
+            public void run() {
+                try {
+                    fuseIntegration.mount(mountPoint);
+                } catch (FuseException e) {
+                    LOGGER.error("Failed to mount the fuse file system.");
+                    e.printStackTrace();
+                }
             }
-            this.fuseIntegration.mount(this.settings.getMountPoint());
-        } catch (FuseException e) {
-            LOGGER.error("Failed to mount the fuse file system.");
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     *
-     */
-    public void pause() {
-        LOGGER.debug("DNFS has paused.");
-    }
-
-
-    /**
-     *
-     */
-    public void resume() {
-        LOGGER.debug("DNFS has resumed.");
+        };
+        thread.start();
+        
+        startInputScanner();
+        
+        System.out.println("DWARFS file system started.");
     }
 
 
@@ -149,7 +198,13 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      *
      */
     public void shutDown() {
-        LOGGER.debug("DNFS has shut down.");
+        try {
+            this.keyValueStorage.shutDown();
+        } catch (Exception e) {
+            LOGGER.error("Could not remove temporary folder of the file-based key-value storage.", e);
+        }
+        System.out.println("DWARFS file system shut down.");
+        System.exit(0);
     }
 
 
@@ -167,31 +222,24 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
 
     }
     
-    private void startConnectionChecking(){
-        new Thread(){
-            public void run(){
+    
+    private void startConnectionChecking() {
+    	final DecentralizedNetFileSystem dnfs = this;
+        new Thread() {
+            public void run() {
                 int failedChecks = 0;
                 boolean checking = true;
                 while(checking){
                     try {
-                        if(!peer.isConnected()){    
+                        if(_connectedToOtherPeers && !peer.isConnected()) {    
                             failedChecks++;
                             
-                            if(failedChecks >= checkConnectionFrequency){
-                                System.out.println("Lost connection to all peers!");
-                                
-                                /////////////////////////////
-                                //  
-                                //  TODO
-                                //  Shut down and delete 
-                                //  temporary files
-                                //
-                                /////////////////////////////          
-                                
+                            if(failedChecks >= checkConnectionFrequency) {
+                                System.out.println("Lost connection to all peers.");
+                                dnfs.shutDown();
                                 checking = false;
                             }
-                        }
-                        else{
+                        } else {
                             failedChecks = 0;
                         }
                     } catch (DNFSNetworkNotInit e) {
@@ -207,14 +255,16 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
           }.start();
     }
     
-    private void setConnectionTimeout(){
+    
+    private void setConnectionTimeout() {
         this.connectionTimeOut = this.settings.getConnectionTimeOut();
         this.checkConnectionFrequency = this.settings.getCheckConnectionFrequency();
         
-        if(checkConnectionFrequency!=0)
+        if(checkConnectionFrequency != 0) {
             this.checkConnectionInterval = this.connectionTimeOut/this.checkConnectionFrequency;
-        else
+        } else {
             this.checkConnectionInterval = this.connectionTimeOut;
+        }
     }
 
 
@@ -222,7 +272,4 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         return peer;
     }
 
-    public void setPeer(DNFSIPeer peer) {
-        this.peer = peer;
-    }
 }

@@ -17,4 +17,6 @@ public interface DNFSIPeer extends DNFSIBlockStorage, DNFSIiNodeStorage{
     public boolean isConnected() throws DNFSNetworkNotInit;
     
     public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit;
+    
+    public void setConnectionTimeout(int connectionTimeOut);
 }

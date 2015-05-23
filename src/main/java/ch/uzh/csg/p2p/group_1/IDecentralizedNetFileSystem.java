@@ -9,8 +9,6 @@ public interface IDecentralizedNetFileSystem {
 
     public void setUp(DNFSSettings settings);
     public void start();
-    public void pause();
-    public void resume();
     public void shutDown();
     
 }

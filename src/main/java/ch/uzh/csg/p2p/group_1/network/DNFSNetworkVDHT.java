@@ -4,7 +4,6 @@
 package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
-import ch.uzh.csg.p2p.group_1.DNFSNetwork;
 import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
 import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
 import net.tomp2p.connection.ChannelCreator;
@@ -34,7 +33,6 @@ import net.tomp2p.storage.Storage;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.lf5.LogLevel;
 
 public class DNFSNetworkVDHT implements DNFSINetwork {
     final private static Logger LOGGER = Logger.getLogger(DNFSNetworkVDHT.class.getName());
@@ -58,8 +56,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         // use indirect replication
         new IndirectReplication(_peer).start();
         this._initialized = true;
-
-        System.out.println("STARTED WITHOUT CONNECTING");
     }
 
     @Override
@@ -94,9 +90,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         }
 
         this._initialized = true;
-
-
-        System.out.println("CONNECTED TO "+masterIpAddress+":"+masterPort);
     }
 
     @Override
@@ -550,5 +543,9 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         _peer.peer().announceShutdown().start().awaitUninterruptibly();
         _peer.shutdown().awaitListenersUninterruptibly();
         this._initialized = false;  
+    }
+    
+    public void setConnectionTimeout(int connectionTimeOut){
+        _peer.peer().connectionBean().DEFAULT_CONNECTION_TIMEOUT_TCP = connectionTimeOut;
     }
 }

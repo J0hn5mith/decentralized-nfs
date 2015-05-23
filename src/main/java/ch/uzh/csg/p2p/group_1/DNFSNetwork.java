@@ -102,8 +102,6 @@ public class DNFSNetwork implements DNFSINetwork{
         }
 
         this._initialized = true;
-        
-        System.out.println("CONNECTED TO "+masterIpAddress+":"+masterPort);
     }
 
 
@@ -456,6 +454,10 @@ public class DNFSNetwork implements DNFSINetwork{
         _peer.peer().announceShutdown().start().awaitUninterruptibly();
         _peer.shutdown().awaitListenersUninterruptibly();
         this._initialized = false;  
+    }
+    
+    public void setConnectionTimeout(int connectionTimeOut){
+        _peer.peer().connectionBean().DEFAULT_CONNECTION_TIMEOUT_TCP = connectionTimeOut;
     }
 }
 

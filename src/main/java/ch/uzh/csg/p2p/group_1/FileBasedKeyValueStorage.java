@@ -13,7 +13,7 @@ import net.tomp2p.peers.Number160;
 public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     
-    String directory = ".";
+    String directory;
 
 
     public FileBasedKeyValueStorage() throws Exception {
@@ -22,7 +22,6 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
         } catch(IOException e) {
             throw new Exception("Unable to create file-based key-value storage temporary folder.");
         }
-        checkWritability();
     }
     
 
@@ -32,11 +31,11 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             File newDirectory = new File(this.directory);
             newDirectory.mkdirs();
         }
-        checkWritability();
     }
     
     
-    private void checkWritability() throws Exception {
+    @Override
+    public void startUp() throws Exception {
         try {
             File empty = new File(this.directory + "/empty");
             empty.createNewFile();
@@ -49,19 +48,46 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             throw new Exception("Cannot write to file-based key-value storage folder.");
         }
     }
-    
 
-    public void setDirectory(String path) {
-        directory = path;
+
+    @Override
+    public void shutDown() throws Exception {
+        File folder = new File(this.directory);
+        File[] files = folder.listFiles();
+        if(files != null) {
+            for(File file : files) {
+                file.delete();
+            }
+        }
+        folder.delete();
     }
     
     
+    private File createTempDirectory() throws IOException {
+        final File temp;
+
+        temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+
+        if(!(temp.delete())) {
+            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+        }
+
+        if(!(temp.mkdir())) {
+            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
+
+        return (temp);
+    }
+    
+    
+    @Override
     public boolean exists(Number160 key) {
         Path path = Paths.get(directory + "/" + key.toString());
         return Files.exists(path);
     }
 
     
+    @Override
     public boolean set(Number160 key, KeyValueData value) {
         
         try {
@@ -76,6 +102,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     }
 
     
+    @Override
     public KeyValueData get(Number160 key) {
         
         try {
@@ -94,6 +121,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     }
 
     
+    @Override
     public boolean delete(Number160 key) {
         
         try {
@@ -109,21 +137,5 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
         }
         return false;
     }
-
     
-    public File createTempDirectory() throws IOException {
-        final File temp;
-
-        temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
-
-        if(!(temp.delete())) {
-            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
-        }
-
-        if(!(temp.mkdir())) {
-            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
-        }
-
-        return (temp);
-    }
 }
