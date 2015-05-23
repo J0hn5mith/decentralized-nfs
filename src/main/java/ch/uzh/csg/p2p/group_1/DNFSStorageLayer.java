@@ -803,6 +803,8 @@ public class DNFSStorageLayer extends StorageLayer {
     }
 
     public Enum<?> putConfirm(PublicKey publicKey, Number640 key, Data newData) {
+        
+        System.out.println("PUT_CONFIRM"); // TODO
         RangeLock<Number640>.Range lock = lock(key);
         try {
             if (!securityEntryCheck(key.locationAndDomainAndContentKey(), publicKey, newData.publicKey(),
@@ -826,9 +828,13 @@ public class DNFSStorageLayer extends StorageLayer {
                 try {
                     Object received = data.object();
                     if (received instanceof DNFSBlockUpdateNotification) {
-
+                        
+                        System.out.println("PUT_CONFIRM OF TYPE BLOCK UPDATE NOTE."); // TODO
+                        
                         DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
                         DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
+                        
+                        System.out.println("RECEIVED PUT: " + notification.getId()); // TODO
 
                         MessageDigest md = MessageDigest.getInstance("MD5");
                         

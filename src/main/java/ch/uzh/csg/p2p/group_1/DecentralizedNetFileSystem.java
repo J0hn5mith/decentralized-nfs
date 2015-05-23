@@ -96,7 +96,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                     this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
                 }
 
-                this.network.registerPeerChangeListener(new PeerMapChangeListener() {
+                /*this.network.registerPeerChangeListener(new PeerMapChangeListener() { TODO
                     
                     public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
                     
@@ -116,7 +116,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                         System.out.println("Inserted Peer: "+peerAddress);
                         _connectedToOtherPeers = true;
                     }
-                });
+                });*/
                 
                 if(!this.settings.getStartNewServer()) {
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());

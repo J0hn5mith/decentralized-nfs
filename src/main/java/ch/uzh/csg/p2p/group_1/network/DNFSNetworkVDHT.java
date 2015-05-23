@@ -4,6 +4,7 @@
 package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
 import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
 import net.tomp2p.connection.ChannelCreator;
@@ -54,7 +55,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
             LOGGER.error("FATAL ERROR", e);
         }
         // use indirect replication
-        new IndirectReplication(_peer).start();
+        //new IndirectReplication(_peer).start();
         this._initialized = true;
     }
 
@@ -226,7 +227,12 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
             @Override
             public void operationComplete(FutureDirect response) throws Exception {
-                responses.add(response.object());
+                if(response.object() != null) {
+                    responses.add(response.object());
+                } else {
+                    throw new Exception("Direct send returned null");
+                }
+                
             }
 
         });
@@ -286,11 +292,13 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return responses;
     }
 
+    
     @Override
     public PeerAddress getPeerAddress() {
         return this._peer.peerAddress();
     }
 
+    
     @Override
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
         initializationBouncer();
@@ -313,6 +321,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         }
     }
 
+    
     /**
      * Returns the VersionKey for the specified object in the dht of the latest version if they are all the same.
      * null is returned, if there are different versions.
@@ -338,8 +347,11 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return last.getVersionKey();
     }
 
+    
     private boolean setPrepare(Number160 key, Data data, VersionKey versionKey) {
 
+        System.out.println("setPrepared()" + key); // TODO
+        
         data.prepareFlag();
         FuturePut fp = this._peer
                 .put(key)
@@ -366,7 +378,11 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return true;
     }
 
+    
     private void confirm(Number160 key, VersionKey versionKey) {
+        
+        System.out.println("confirm()" + key); //TODO
+        
         FuturePut fp = this._peer.put(key)
                 .versionKey(versionKey.getVersionKey()).putConfirm()
                 .data(new Data()).start().awaitUninterruptibly();
@@ -501,10 +517,10 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     }
 
     public void registerPeerChangeListener(PeerMapChangeListener listener) {
-        _peer.peerBean().peerMap().addPeerMapChangeListener(listener);
+        //_peer.peerBean().peerMap().addPeerMapChangeListener(listener);
     }
     
-    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit
+    /*public boolean isConnected() throws DNFSException.DNFSNetworkNotInit
     {
         initializationBouncer();
         
@@ -517,9 +533,33 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         }
         // if no one answered we are not connected to anyone
         return false;
+    }*/
+    
+    @Override
+    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit {
+        return true;
+    }
+
+    @Override
+    public boolean isConnected(PeerAddress peerAddress)
+            throws DNFSNetworkNotInit {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public void disconnect() throws DNFSNetworkNotInit {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setConnectionTimeout(int connectionTimeOut) {
+        // TODO Auto-generated method stub
+        
     }
     
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit
+    /*public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit
     {
         initializationBouncer();
         
@@ -547,5 +587,5 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     
     public void setConnectionTimeout(int connectionTimeOut){
         _peer.peer().connectionBean().DEFAULT_CONNECTION_TIMEOUT_TCP = connectionTimeOut;
-    }
+    }*/
 }
