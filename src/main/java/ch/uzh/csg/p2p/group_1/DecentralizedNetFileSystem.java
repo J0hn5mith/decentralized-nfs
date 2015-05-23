@@ -70,7 +70,16 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 this.keyValueStorage = new FileBasedKeyValueStorage();
                 String storageDirectory = settings.getFileBasedStorageDirectory();
                 ((FileBasedKeyValueStorage) this.keyValueStorage).setDirectory(storageDirectory);
-                this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
+                if(this.settings.useVDHT()){
+                    this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
+                }
+                else{
+                    this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
+                }
+
+                if(!this.settings.getStartNewServer()){
+                    this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
+                }
             } catch (DNFSNetworkSetupException e) {
                 LOGGER.error("Could not set up the network.", e);
                 System.exit(-1);

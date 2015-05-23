@@ -18,7 +18,7 @@ import org.apache.commons.cli.*;
 
 public class DNFSTestBed {
 
-    final static int NUM_PEERS = 10;
+    final static int NUM_PEERS = 1;
     final static int BASE_PORT = 10000;
     final static int PORT_INTERVAL = 10;
 
@@ -53,9 +53,9 @@ public class DNFSTestBed {
         }
 
 
-        if (NUM_PEERS_SHUTDOWN > 0) {
-            shutDownProcess();
-        }
+//        if (NUM_PEERS_SHUTDOWN > 0) {
+//            shutDownProcess();
+//        }
 
 
         return;
@@ -78,13 +78,14 @@ public class DNFSTestBed {
 
     static private void createDnfsInstance() {
         CommandLineParser parser = new GnuParser();
-        String[] args = new String[5];
+        String[] args = new String[6];
         args[0] = "-p";
         args[1] = getNextPort().toString();
-
         args[2] = "-m";
         args[3] = getNextMountPoint();
-        args[4] = "-d";
+        args[4] = "-a";
+        args[5] = "127.0.0.1:1337";
+
         CommandLine cmd;
         try {
             cmd = parser.parse(DNFSCommandLineOptionsFactory.getOptions(), args);

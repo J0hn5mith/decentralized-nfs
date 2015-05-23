@@ -39,12 +39,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     private boolean _connected = false;
     private PeerDHT _peer;
 
-//    public DNFSNetworkVDHT(DNFSNetwork connection) {
-//        LOGGER.setLevel(Level.INFO);
-//        this.connection = connection;
-//    }
-
-
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) {
         _random = new Random(System.currentTimeMillis());
 
@@ -119,13 +113,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     @Override
     public void put(Number160 key, Object object) throws DNFSException.DNFSNetworkPutException, DNFSException.DNFSNetworkNoConnection {
-//        Data data;
-//        try {
-//            data = (Data) object;
-//        } catch (Exception e) {
-//            LOGGER.error("Can only put objects of class Data");
-//            return;
-//        }
         Data data ;
 
         try {
@@ -155,6 +142,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
             }
         }
         confirm(key, versionKey);
+        LOGGER.debug("Data has been successfully putted.");
         return;
     }
 
