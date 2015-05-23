@@ -38,7 +38,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     @Override
-    public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.peer.getBlock(blockID);
@@ -55,7 +55,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     @Override
     public long write(ByteBuffer byteBuffer, long bufferSize, long offsetInBytes) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNoConnection
+            DNFSException.DNFSNetworkNotInit
     {
         LOGGER.debug(String.format("Write %d bytes with with offset %d", bufferSize, offsetInBytes));
 
@@ -80,13 +80,13 @@ public class DNFSBlockComposition implements DNFSIBlock {
         return bufferSize;
     }
 
-    private DNFSBlock getNextBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    private DNFSBlock getNextBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         int nextIndex = this.getINode().getBlockIDs().indexOf(block.getId()) + 1;
         return this.getPeer().getBlock(this.getINode().getBlockIDs().get(nextIndex));
     }
 
     @Override
-    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
 
         // First block
 //        TODO: Double check this code!!!
@@ -136,12 +136,12 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     @Override
-    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         return this.write(byteBuffer, bufferSize, this.getSize());
     }
 
     @Override
-    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         for (Number160 blockID : this.getINode().getBlockIDs()) {
            this.getINode().removeBlockID(blockID);
            this.getPeer().deleteBlock(blockID);
@@ -149,7 +149,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
 
-    private DNFSBlockCompositionOffset seek(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    private DNFSBlockCompositionOffset seek(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
 
         long bytesLeft = offset;
         for (Number160 blockID : iNode.getBlockIDs()) {
@@ -165,7 +165,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     private DNFSBlock splitBlock(DNFSBlock block) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNoConnection
+            DNFSException.DNFSNetworkNotInit
     {
         DNFSBlock newBlock = this.getPeer().createBlock();
 
@@ -179,7 +179,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     }
 
-    private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         DNFSBlock newBlock = this.getPeer().createBlock();
         this.getINode().addBlock(newBlock);
 //        TODO: Why do I have to call this, should be done automatically

@@ -71,18 +71,18 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     }
     
 
-    public long append(ByteBuffer buffer, final long bufferSize) throws DNFSException.DNFSNetworkNoConnection {
+    public long append(ByteBuffer buffer, final long bufferSize) throws DNFSException.DNFSNetworkNotInit {
         int writeOffset = this.data.array().length;
         return this.write(buffer, bufferSize, writeOffset);
     }
 
     @Override
-    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         this.blockStorage.deleteBlock(this.getId());
     }
 
 
-    public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNoConnection {
+    public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNotInit {
         final int maxWriteIndex = (int) (offset + bufferSize);
 
         int numBytesPossibleToWrite = (int) Math.min(bufferSize, this.getCapacity());
