@@ -35,7 +35,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.blockStorage = blockStorage;
     }
 
-    static public long getCapacity(){
+    static public long getMaxCapacity(){
         return BLOCK_SIZE;
     }
     
@@ -83,14 +83,12 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNotInit {
-        final int maxWriteIndex = (int) (offset + bufferSize);
+        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getMaxCapacity() - offset));
 
-        int numBytesPossibleToWrite = (int) Math.min(bufferSize, this.getCapacity());
+        final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
-        final byte[] bytesToWrite = new byte[(int) bufferSize];
-
-        if (maxWriteIndex > data.capacity()) {
-            final ByteBuffer newContents = ByteBuffer.allocate(maxWriteIndex);
+        if (numBytesPossibleToWrite > data.capacity()) {
+            final ByteBuffer newContents = ByteBuffer.allocate((int) (numBytesPossibleToWrite+offset));
             newContents.put(this.data);
             this.data = newContents;
         }
@@ -110,9 +108,9 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
-        bytesToRead = Math.min(this.data.capacity() - offset, bytesToRead);
-        byteBuffer.position(0);
-        byteBuffer.put(this.data.array(), (int) offset, (int) bytesToRead);
+        int bufferSize = this.data.capacity();
+        int maxBytesReadable = (int) Math.min(this.getMaxCapacity() - offset, bytesToRead);
+        byteBuffer.put(this.data.array(), (int) offset, (int) maxBytesReadable);
         return (int) bytesToRead;
     }
 

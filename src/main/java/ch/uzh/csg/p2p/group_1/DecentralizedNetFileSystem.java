@@ -16,6 +16,9 @@ import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.peers.PeerMapChangeListener;
+import net.tomp2p.peers.PeerStatistic;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -34,6 +37,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private int connectionTimeOut;
     private int checkConnectionFrequency;
     private int checkConnectionInterval;
+    private boolean _connectedToOtherPeers = false;    
 
 
     /**
@@ -91,6 +95,28 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 } else {
                     this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
                 }
+
+                this.network.registerPeerChangeListener(new PeerMapChangeListener() {
+                    
+                    public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
+                    
+                    public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
+                        /////////////////////////////
+                        //  
+                        //  TODO
+                        //  Send lost copies of files 
+                        //  to other nodes
+                        //
+                        /////////////////////////////   
+                        
+                        System.out.println("Peer timed out: " + peerAddress);
+                    }
+                    
+                    public void peerInserted(PeerAddress peerAddress, boolean verified) {
+                        System.out.println("Inserted Peer: "+peerAddress);
+                        _connectedToOtherPeers = true;
+                    }
+                });
                 
                 if(!this.settings.getStartNewServer()) {
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
@@ -212,7 +238,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 boolean checking = true;
                 while(checking){
                     try {
-                        if(!peer.isConnected()) {    
+                        if(_connectedToOtherPeers && !peer.isConnected()) {    
                             failedChecks++;
                             
                             if(failedChecks >= checkConnectionFrequency) {
