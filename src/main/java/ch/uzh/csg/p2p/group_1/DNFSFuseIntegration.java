@@ -43,8 +43,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
 
     @Override
-    public int access(final String path, final int access)
-    {
+    public int access(final String path, final int access) {
         return 0;
     }
 
@@ -52,7 +51,15 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
      * Change the permission bits of a file.
      */
     @Override
-    public int chmod(String path, TypeMode.ModeWrapper mode) {
+    public int chmod(String pathAsString, TypeMode.ModeWrapper mode) {
+        DNFSPath path = new DNFSPath(pathAsString);
+
+        try{
+            DNFSIiNode iNode = this.pathResolver.getINode(path);
+            this.setAccessRights(mode, iNode);
+        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+            dnfsPathNotFound.printStackTrace();
+        }
         LOGGER.debug("chmod() was called");
         return 0;
     }
@@ -131,13 +138,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             TypeMode.ModeWrapper modeWrapper = new TypeMode.ModeWrapper(007);
             modeWrapper.setMode(TypeMode.NodeType.FILE);
             DNFSFile file = DNFSFile.getExisting(iNode, this.pathResolver.getPeer());
-            stat.setMode(
-                    TypeMode.NodeType.FILE,
-                    false, false, false,
-                    false, true, false,
-                    false, false, false
-                    )
+            stat.setMode(TypeMode.NodeType.FILE)
                     .size(file.getINode().getSize())
+                    .mode(file.getINode().getAccessRights())
             ;
             return 0;
         }
@@ -175,8 +178,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
      *
      */
     @Override
-    public int open(final String path, final StructFuseFileInfo.FileInfoWrapper info)
-    {
+    public int open(final String path, final StructFuseFileInfo.FileInfoWrapper info) {
         return 0;
     }
 
@@ -276,8 +278,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     }
 
     @Override
-    public int truncate(final String pathString, final long offset)
-    {
+    public int truncate(final String pathString, final long offset) {
         DNFSPath path;
         try {
             path = new DNFSPath(pathString);
@@ -295,7 +296,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
         try {
             DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
-            int bytesWritten =  file.write(buf, bufSize, writeOffset);
+            int bytesWritten = file.write(buf, bufSize, writeOffset);
             LOGGER.warn("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
             return bytesWritten;
 
@@ -309,7 +310,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     public int unlink(String path) {
         try {
 
-            if(path.equals("/")){
+            if (path.equals("/")) {
                 return -1;
             }
 
@@ -328,7 +329,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     }
 
 
-    private void setAccessRights(TypeMode.ModeWrapper mode, DNFSIiNode iNode){
+    private void setAccessRights(TypeMode.ModeWrapper mode, DNFSIiNode iNode) {
         iNode.setAccessRights(mode.mode());
 
     }

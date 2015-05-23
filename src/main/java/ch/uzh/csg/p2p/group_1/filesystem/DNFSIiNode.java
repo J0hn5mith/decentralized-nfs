@@ -23,6 +23,7 @@ public interface DNFSIiNode {
     public int getUseID();
     public void setUserID(int id);
 
+    public long getAccessRights();
     public void setAccessRights(long rights);
 
     public int getGroupID();
