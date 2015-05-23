@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.log4j.Logger;
 
 import net.tomp2p.peers.Number160;
 
 
 public class FileBasedKeyValueStorage implements IKeyValueStorage {
-    
+    final private static Logger LOGGER = Logger.getLogger(FileBasedKeyValueStorage.class);
+
     
     String directory;
 
@@ -97,6 +99,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             return true;
             
         } catch(IOException | OutOfMemoryError | SecurityException e) {
+            LOGGER.error("Could not set data.");
             return false;
         }
     }
