@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.peers.PeerMapChangeListener;
+import net.tomp2p.peers.PeerStatistic;
 import net.tomp2p.rpc.ObjectDataReply;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkGetException;
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
@@ -23,7 +26,7 @@ public class DNFSPeer implements DNFSIPeer {
     
     private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
-    
+    private boolean _connectedToOtherPeers = false;    
     
     public DNFSPeer(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
@@ -32,7 +35,7 @@ public class DNFSPeer implements DNFSIPeer {
     
 
     @Override
-    public DNFSBlock createBlock() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public DNFSBlock createBlock() throws DNFSException.DNFSBlockStorageException, DNFSNetworkNotInit {
         Number160 id = _network.getUniqueKey();
         DNFSBlock block = new DNFSBlock(id, this);
         updateBlock(block);       
@@ -41,7 +44,7 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         try {
             PeerAddress responder = _network.getFirstResponder(id);
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, id);
@@ -58,7 +61,7 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public void updateBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void updateBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         
         try {
             
@@ -84,7 +87,7 @@ public class DNFSPeer implements DNFSIPeer {
 
     
     @Override
-    public void deleteBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void deleteBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         try {
             ArrayList<PeerAddress> responders = _network.getAllResponders(id);
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.DELETE, id);
@@ -169,6 +172,47 @@ public class DNFSPeer implements DNFSIPeer {
             }
             
         });
+        
+_network.registerPeerChangeListener(new PeerMapChangeListener() {
+            
+            public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
+            
+            public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
+                /////////////////////////////
+                //  
+                //  TODO
+                //  Send lost copies of files 
+                //  to other nodes
+                //
+                /////////////////////////////   
+                
+                System.out.println("Peer timed out: " + peerAddress);
+            }
+            
+            public void peerInserted(PeerAddress peerAddress, boolean verified) {
+                System.out.println("Inserted Peer: "+peerAddress);
+                _connectedToOtherPeers = true;
+            }
+        });
+
+    }
+
+    public void shutdown() throws DNFSNetworkNotInit
+    {
+        _network.disconnect();
+    }
+
+    public boolean isConnected() throws DNFSNetworkNotInit {
+            return _connectedToOtherPeers ? _network.isConnected() : true;
+    }
+    
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit {
+        return _network.isConnected(peerAddress);
+    }
+
+    @Override
+    public void setConnectionTimeout(int connectionTimeOut){
+        _network.setConnectionTimeout(connectionTimeOut);
     }
 
 }

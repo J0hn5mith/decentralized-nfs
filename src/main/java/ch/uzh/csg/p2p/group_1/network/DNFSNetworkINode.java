@@ -92,6 +92,12 @@ public class DNFSNetworkINode implements DNFSIiNode {
     }
 
     @Override
+    public void removeBlocks(List<Number160> blocks) {
+       this.iNode.removeBlocks(blocks);
+        this.update();
+    }
+
+    @Override
     public void removeBlockID(Number160 id) {
         this.iNode.removeBlockID(id);
         this.update();

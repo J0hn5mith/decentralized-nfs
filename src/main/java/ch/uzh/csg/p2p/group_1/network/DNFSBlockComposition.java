@@ -7,14 +7,18 @@ package ch.uzh.csg.p2p.group_1.network;
 import ch.uzh.csg.p2p.group_1.*;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * Wrapper class for iNodes so DNFSFile and DNFSFolder don't have to bother with
  * getting/ and writing blocks
  */
 public class DNFSBlockComposition implements DNFSIBlock {
+    final private static Logger LOGGER = Logger.getLogger(DNFSBlockComposition .class.getName());
 
     DNFSIiNode iNode;
     DNFSIPeer peer;
@@ -30,10 +34,11 @@ public class DNFSBlockComposition implements DNFSIBlock {
     public DNFSBlockComposition(DNFSIiNode iNode, DNFSIPeer peer) {
         this.iNode = iNode;
         this.peer = peer;
+        LOGGER.setLevel(Level.DEBUG);
     }
 
     @Override
-    public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.peer.getBlock(blockID);
@@ -50,36 +55,38 @@ public class DNFSBlockComposition implements DNFSIBlock {
     @Override
     public long write(ByteBuffer byteBuffer, long bufferSize, long offsetInBytes) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNoConnection
+            DNFSException.DNFSNetworkNotInit
     {
+        LOGGER.debug(String.format("Write %d bytes with with offset %d", bufferSize, offsetInBytes));
 
         long additionalCapacity = this.getSize() + bufferSize - this.getCapacity();
         if (additionalCapacity > 0){
-            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()/2));
+            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()));
             for (int i = 0; i < numAdditionalBlocks; i++) {
-                DNFSBlock block = this.getPeer().createBlock();
-                this.getINode().addBlock(block);
-            }
-            try {
-                this.getPeer().updateINode(this.getINode());
-            } catch (DNFSException e) {
-                e.printStackTrace();
+                DNFSBlock block = this.addNewBlockToINode();
             }
         }
-        DNFSBlockCompositionOffset offset = findPosition(offsetInBytes);
+
+        byteBuffer.position(0);
+        DNFSBlockCompositionOffset offset = seek(offsetInBytes);
         DNFSBlock block = offset.getBlock();
+        long numBytesRemaining = bufferSize;
 
-//        TODO: Handle the case when bufferSize is larger than half a block
-        if (bufferSize > offset.getBlock().getFreeSize()){
-            this.splitBlock(block);
+        numBytesRemaining -= block.write(byteBuffer, bufferSize, offsetInBytes);
+        while (numBytesRemaining != 0){
+            block = this.getNextBlock(block);
+            numBytesRemaining -= block.write(byteBuffer, numBytesRemaining, 0 );
         }
+        return bufferSize;
+    }
 
-        long bytesWritten = block.write(byteBuffer, bufferSize, offsetInBytes);
-        return bytesWritten;
+    private DNFSBlock getNextBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+        int nextIndex = this.getINode().getBlockIDs().indexOf(block.getId()) + 1;
+        return this.getPeer().getBlock(this.getINode().getBlockIDs().get(nextIndex));
     }
 
     @Override
-    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
 
         // First block
 //        TODO: Double check this code!!!
@@ -97,28 +104,44 @@ public class DNFSBlockComposition implements DNFSIBlock {
                 summedUpSize += blockSize;
 
             }
-
-
             if (summedUpSize > offset + bytesToRead){
                 break;
             }
         }
 
         return summedUpSize - offset;
+//        return bytesToRead;
     }
 
+
     @Override
-    public long truncate(long offset) {
+    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+        DNFSBlockCompositionOffset offset = this.seek((int)offsetInBytes);
+        long bytesTruncated = offset.getBlock().truncate(offset.getOffset());
+
+        int indexOfBlock = this.getINode().getBlockIDs().indexOf(offset.getBlock().getId()) + 1;
+        if(this.getINode().getBlockIDs().size() == indexOfBlock){
+            return 0;
+        }
+
+        List<Number160> blocksToDelete = this.getINode().getBlockIDs().subList(indexOfBlock, this.getINode().getNumBlocks());
+        this.getINode().removeBlocks(blocksToDelete);
+
+        for (Number160 number160 : blocksToDelete) {
+            this.getPeer().deleteBlock(number160);
+        }
+
+
         return 0;
     }
 
     @Override
-    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         return this.write(byteBuffer, bufferSize, this.getSize());
     }
 
     @Override
-    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         for (Number160 blockID : this.getINode().getBlockIDs()) {
            this.getINode().removeBlockID(blockID);
            this.getPeer().deleteBlock(blockID);
@@ -126,7 +149,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
 
-    private DNFSBlockCompositionOffset findPosition(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    private DNFSBlockCompositionOffset seek(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
 
         long bytesLeft = offset;
         for (Number160 blockID : iNode.getBlockIDs()) {
@@ -142,7 +165,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     private DNFSBlock splitBlock(DNFSBlock block) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNoConnection
+            DNFSException.DNFSNetworkNotInit
     {
         DNFSBlock newBlock = this.getPeer().createBlock();
 
@@ -150,9 +173,22 @@ public class DNFSBlockComposition implements DNFSIBlock {
         ByteBuffer contentNewBlock = ByteBuffer.wrap(new byte[(int) halfSize]);
         block.read(contentNewBlock, halfSize, halfSize);
         block.truncate(halfSize);
-        newBlock.write(contentNewBlock, halfSize, halfSize);
+        newBlock.write(contentNewBlock, halfSize, 0);
         this.getINode().addBlock(newBlock, block);
         return block;
+
+    }
+
+    private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+        DNFSBlock newBlock = this.getPeer().createBlock();
+        this.getINode().addBlock(newBlock);
+//        TODO: Why do I have to call this, should be done automatically
+        try {
+            this.getPeer().updateINode(this.getINode());
+        } catch (DNFSException e) {
+            e.printStackTrace();
+        }
+        return newBlock;
 
     }
 
@@ -174,4 +210,5 @@ public class DNFSBlockComposition implements DNFSIBlock {
             return offset;
         }
     }
+
 }

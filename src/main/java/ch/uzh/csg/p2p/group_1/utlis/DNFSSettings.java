@@ -51,6 +51,16 @@ public class DNFSSettings {
     }
 
     
+    public int getConnectionTimeOut(){
+        return this.config.getInt("ConnectionTimeOut", 1000);
+    }
+    
+    
+    public int getCheckConnectionFrequency(){
+        return this.config.getInt("CheckConnectionFrequency", 4);
+    }
+    
+    
     public boolean getStartNewServer() {
         return this.startNewServer;
     }

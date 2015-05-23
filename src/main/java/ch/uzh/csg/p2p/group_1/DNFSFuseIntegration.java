@@ -4,6 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.fusejna.DirectoryFiller;
 import net.fusejna.ErrorCodes;
@@ -11,6 +12,7 @@ import net.fusejna.StructFuseFileInfo;
 import net.fusejna.StructStat;
 import net.fusejna.types.TypeMode;
 import net.fusejna.util.FuseFilesystemAdapterAssumeImplemented;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -18,6 +20,7 @@ import java.nio.ByteBuffer;
 
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
+
     final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegration.class.getName());
 
     private DNFSPathResolver pathResolver;
@@ -97,8 +100,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
         try {
             targetFolder.addChild(file, fileName);
-        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
-            dnfsNetworkNoConnection.printStackTrace();
+        } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
+            DNFSNetworkNotInit.printStackTrace();
         }
         return 0;
     }
@@ -115,7 +118,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
-            LOGGER.warn("Could not find attrs for path: " + path);
+            LOGGER.info("Could not find attrs for path: " + path);
             LOGGER.debug("Reason: ", e);
             return -ErrorCodes.ENOENT();
         }
@@ -150,8 +153,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
         try {
             targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
-        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
-            dnfsNetworkNoConnection.printStackTrace();
+        } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
+            DNFSNetworkNotInit.printStackTrace();
             return -1;
         }
 
@@ -187,7 +190,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSBlockStorageException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
-        } catch (DNFSException.DNFSNetworkNoConnection e) {
+        } catch (DNFSException.DNFSNetworkNotInit e) {
             LOGGER.error(e.toString());
             return -1;
         }
@@ -204,9 +207,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.DNFSNotFolderException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOTDIR();
-        } catch (DNFSException.DNFSNetworkNoConnection dnfsNetworkNoConnection) {
-            dnfsNetworkNoConnection.printStackTrace();
-            return -1;
+        } catch (DNFSNetworkNotInit e) {
+            LOGGER.error(e.toString());
         }
         for (DNFSFolderEntry o : folder.getChildEntries()) {
             filler.add(o.getName());
@@ -238,7 +240,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         } catch (DNFSException.NoSuchFileOrFolder e) {
             LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOENT();
-        } catch (DNFSException.DNFSNetworkNoConnection e) {
+        } catch (DNFSException.DNFSNetworkNotInit e) {
             LOGGER.warn("Rename failed.", e);
             return -1;
         }
@@ -280,7 +282,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
         try {
             DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
-            return file.write(buf, bufSize, writeOffset);
+            int bytesWritten =  file.write(buf, bufSize, writeOffset);
+            LOGGER.warn("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
+            return bytesWritten;
 
         } catch (DNFSException e) {
             LOGGER.error(e.toString());
@@ -288,5 +292,25 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
     }
 
+    @Override
+    public int unlink(String path) {
+        try {
 
+            if(path.equals("/")){
+                return -1;
+            }
+
+            DNFSPath entryPath = new DNFSPath(path);
+            DNFSPath parentPath = entryPath.getParent();
+            DNFSFolder parentFolder = this.pathResolver.getFolder(parentPath);
+
+            parentFolder.removeChild(entryPath.getFilerName());
+
+        } catch (DNFSException e) {
+            LOGGER.warn("Faild to remove file");
+            LOGGER.error(e.toString());
+            return -ErrorCodes.ENOENT();
+        }
+        return 0;
+    }
 }

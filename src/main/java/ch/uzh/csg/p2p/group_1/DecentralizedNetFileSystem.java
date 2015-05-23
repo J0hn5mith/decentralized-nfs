@@ -6,6 +6,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import java.util.Scanner;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
@@ -27,6 +28,9 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private IKeyValueStorage keyValueStorage;
     private DNFSINetwork network;
     private DNFSIPeer peer;
+    private int connectionTimeOut;
+    private int checkConnectionFrequency;
+    private int checkConnectionInterval;
 
 
     /**
@@ -47,6 +51,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         this.fuseIntegration = new DNFSFuseIntegration();
 
         this.settings = settings;
+        
+        this.setConnectionTimeout();
 
         this.setUpPeer();
 
@@ -104,7 +110,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             System.exit(-1);
         }
         
-        startInputScanner();
+        this.peer.setConnectionTimeout(connectionTimeOut);
+        startConnectionChecking();
     }
     
     
@@ -155,6 +162,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         };
         thread.start();
         
+        startInputScanner();
+        
         System.out.println("DWARFS file system started.");
     }
 
@@ -185,6 +194,51 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             return;
         }
 
+    }
+    
+    
+    private void startConnectionChecking() {
+    	final DecentralizedNetFileSystem dnfs = this;
+        new Thread() {
+            public void run() {
+                int failedChecks = 0;
+                boolean checking = true;
+                while(checking){
+                    try {
+                        if(!peer.isConnected()) {    
+                            failedChecks++;
+                            
+                            if(failedChecks >= checkConnectionFrequency) {
+                                System.out.println("Lost connection to all peers.");
+                                dnfs.shutDown();
+                                checking = false;
+                            }
+                        } else {
+                            failedChecks = 0;
+                        }
+                    } catch (DNFSNetworkNotInit e) {
+                        LOGGER.error("Network not initialized:" + e);
+                    }
+                    try {
+                        Thread.sleep(checkConnectionInterval);
+                    } catch (InterruptedException e) {
+                        LOGGER.error("Connection checking was interrupted:" + e);
+                    }
+                }
+            }
+          }.start();
+    }
+    
+    
+    private void setConnectionTimeout() {
+        this.connectionTimeOut = this.settings.getConnectionTimeOut();
+        this.checkConnectionFrequency = this.settings.getCheckConnectionFrequency();
+        
+        if(checkConnectionFrequency != 0) {
+            this.checkConnectionInterval = this.connectionTimeOut/this.checkConnectionFrequency;
+        } else {
+            this.checkConnectionInterval = this.connectionTimeOut;
+        }
     }
 
 

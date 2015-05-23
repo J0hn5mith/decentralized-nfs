@@ -35,11 +35,11 @@ public class DNFSException extends Throwable {
         }
     }
 
-    static public class DNFSNetworkNoConnection extends DNFSException {
-        private static final long serialVersionUID = -8588410288139270989L;
+    static public class DNFSNetworkNotInit extends DNFSException {
+        private static final long serialVersionUID = 8895499485868404342L;
 
-        public DNFSNetworkNoConnection() {
-            super("Your network is not connected.");
+        public DNFSNetworkNotInit() {
+            super("Your network is not initialized.");
         }
     }
 
