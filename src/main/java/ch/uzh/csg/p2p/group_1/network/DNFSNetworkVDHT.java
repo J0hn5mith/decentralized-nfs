@@ -4,131 +4,67 @@
 package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
-import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
+import ch.uzh.csg.p2p.group_1.DNFSNetwork;
 import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
-import net.tomp2p.connection.ChannelCreator;
-import net.tomp2p.connection.DefaultConnectionConfiguration;
 import net.tomp2p.dht.*;
-import net.tomp2p.futures.BaseFutureListener;
-import net.tomp2p.futures.FutureBootstrap;
-import net.tomp2p.futures.FutureChannelCreator;
-import net.tomp2p.futures.FutureDirect;
-import net.tomp2p.futures.FutureDiscover;
-import net.tomp2p.futures.FutureResponse;
-import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.Number640;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMapChangeListener;
-import net.tomp2p.replication.IndirectReplication;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.*;
-import java.util.Map.Entry;
 
-import net.tomp2p.storage.Storage;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class DNFSNetworkVDHT implements DNFSINetwork {
     final private static Logger LOGGER = Logger.getLogger(DNFSNetworkVDHT.class.getName());
-
-    private Random _random;
-
-    private int _port = 0;
-
     private boolean _initialized = false;
-    private PeerDHT _peer;
+    private DNFSNetwork network;
 
-    public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) {
-        _random = new Random(System.currentTimeMillis());
 
-        LOGGER.setLevel(Level.DEBUG);
-        try {
-            setupPeer(port, keyValueStorage);
-        } catch (DNFSException.DNFSNetworkSetupException e) {
-            LOGGER.error("FATAL ERROR", e);
-        }
-
-        // use indirect replication
-//        new IndirectReplication(_peer).start();
+    public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
+        this.network = new DNFSNetwork(port, keyValueStorage);
         this._initialized = true;
     }
 
-    @Override
     public void registerObjectDataReply(ObjectDataReply reply) {
-        _peer.peer().objectDataReply(reply);
-
+        this.network.registerObjectDataReply(reply);
     }
 
-    @Override
     public void connectToNetwork(int port, String masterIpAddress, int masterPort) throws DNFSException.DNFSNetworkSetupException {
         this._initialized = false;
-
-        try {
-            InetAddress masterInetAddress = InetAddress.getByName(masterIpAddress);
-            PeerAddress masterAddress = new PeerAddress(Number160.ZERO, masterInetAddress, masterPort, masterPort);
-
-            FutureDiscover futureDiscover = _peer.peer().discover().peerAddress(masterAddress).start();
-            futureDiscover.awaitUninterruptibly();
-            if (!futureDiscover.isSuccess()) {
-                throw new DNFSException.DNFSNetworkSetupException("Discover failed because peer is probably behind a NAT: " + futureDiscover.failedReason());
-            }
-
-            PeerAddress bootstrapAddress = futureDiscover.reporter();
-            FutureBootstrap futureBootstrap = _peer.peer().bootstrap().peerAddress(bootstrapAddress).start();
-            futureBootstrap.awaitUninterruptibly();
-            if (!futureBootstrap.isSuccess()) {
-                throw new DNFSException.DNFSNetworkSetupException("Failed to connect");
-            }
-
-        } catch (Exception e) {
-            throw new DNFSException.DNFSNetworkSetupException(e.getMessage());
-        }
-
+        this.network.connectToNetwork(port, masterIpAddress, masterPort);
         this._initialized = true;
     }
 
-    @Override
     public boolean keyExists(Number160 key) throws
             DNFSException.DNFSNetworkNotInit {
-        initializationBouncer();
-
-        try {
-            return get(key) != null;
-        } catch (DNFSException.DNFSNetworkGetException e) {
-            return false;
-        }
+        return this.network.keyExists(key);
     }
 
     @Override
     public Number160 getUniqueKey() throws
             DNFSException.DNFSNetworkNotInit {
+        return this.network.getUniqueKey();
 
-        initializationBouncer();
-
-        Number160 key = Number160.createHash(_random.nextLong());
-        while (keyExists(key)) {
-            key = Number160.createHash(_random.nextLong());
-        }
-        return key;
     }
 
     @Override
     public void put(Number160 key, Object object) throws DNFSException.DNFSNetworkPutException, DNFSException.DNFSNetworkNotInit {
-        Data data ;
+        Data data;
 
         try {
             data = new Data(object);
         } catch (IOException e) {
             throw new DNFSException.DNFSNetworkPutException("Failed to convert object into data object.");
-        };
+        }
+        ;
 
-        if(!this.keyExists(key)){
+        if (!this.keyExists(key)) {
             this.putFirstTime(key, data);
             return;
 
@@ -157,161 +93,38 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     public Object get(Number160 key) throws
             DNFSException.DNFSNetworkNotInit,
             DNFSException.DNFSNetworkGetException {
-
-        initializationBouncer();
-
-        try {
-            FutureGet futureGet = _peer.get(key).start();
-            futureGet.awaitUninterruptibly();
-            if (futureGet.isSuccess() && !futureGet.isEmpty()) {
-                return futureGet.data().object();
-            } else {
-                throw new DNFSException.DNFSNetworkGetException("Could not get data.");
-            }
-        } catch (IOException e) {
-            throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new DNFSException.DNFSNetworkGetException("ClassNotFoundException: " + e.getMessage());
-        }
+        return this.network.get(key);
     }
 
     @Override
     public void delete(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkDeleteException {
-        initializationBouncer();
-
-        FutureRemove futureRemove = _peer.remove(key).start();
-        futureRemove.awaitUninterruptibly();
-        if (!futureRemove.isSuccess()) {
-            throw new DNFSException.DNFSNetworkDeleteException("Could not delete data.");
-        }
-
+        this.network.delete(key);
     }
 
     @Override
     public PeerAddress getFirstResponder(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
-        initializationBouncer();
-
-        FutureGet futureGet = _peer.get(key).start();
-        futureGet.awaitUninterruptibly();
-        if (futureGet.isSuccess() && !futureGet.isEmpty()) {
-
-            PeerAddress responder = futureGet.rawData().entrySet().iterator().next().getKey();
-
-            // ZU TESTZWECKEN (to make sure other peer answers)
-            Iterator<Entry<PeerAddress, Map<Number640, Data>>> x = futureGet.rawData().entrySet().iterator();
-            while (x.hasNext() && _peer.peerAddress().equals(responder)) {
-                responder = x.next().getKey();
-            }
-            // ENDE ZU TESTZWECKEN
-            return responder;
-
-        } else {
-            throw new DNFSException.DNFSNetworkGetException("Could not get response.");
-        }
+        return this.network.getFirstResponder(key);
     }
 
     @Override
     public Object sendTo(PeerAddress address, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException {
-        initializationBouncer();
-
-        final ArrayList<Object> responses = new ArrayList<Object>();
-        final ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
-
-        FutureDirect direct = _peer.peer().sendDirect(address).object(data).start();
-        direct.addListener(new BaseFutureListener<FutureDirect>() {
-
-            @Override
-            public void exceptionCaught(Throwable exception) throws Exception {
-                exceptions.add(exception);
-            }
-
-            @Override
-            public void operationComplete(FutureDirect response) throws Exception {
-                responses.add(response.object());
-            }
-
-        });
-
-        direct.awaitUninterruptibly();
-        if(!direct.isSuccess()) {
-            throw new DNFSException.DNFSNetworkSendException("Direct send failed.");
-        }
-        if(exceptions.size() > 0) {
-            throw new DNFSException.DNFSNetworkSendException("Exception while direct send: " + exceptions.get(0).getMessage());
-        }
-        if(responses.size() != 1) {
-            throw new DNFSException.DNFSNetworkSendException("Didn't receive an answer.");
-        }
-        return responses.get(0);
+        return this.network.sendTo(address, data);
     }
 
     @Override
     public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException {
-        initializationBouncer();
+        return sendToAll(addresses, data);
 
-        ArrayList<FutureDirect> directs = new ArrayList<FutureDirect>();
-        final ArrayList<Object> responses = new ArrayList<Object>();
-        final ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
-
-        for(PeerAddress address : addresses) {
-            FutureDirect direct = _peer.peer().sendDirect(address).object(data).start();
-
-            direct.addListener(new BaseFutureListener<FutureDirect>() {
-
-                @Override
-                public void exceptionCaught(Throwable exception) throws Exception {
-                    exceptions.add(exception);
-                }
-
-                @Override
-                public void operationComplete(FutureDirect response) throws Exception {
-                    responses.add(response.object());
-                }
-
-            });
-            directs.add(direct);
-        }
-
-        for(FutureDirect direct : directs) {
-            direct.awaitUninterruptibly();
-            if(!direct.isSuccess()) {
-                throw new DNFSException.DNFSNetworkSendException("Direct send failed.");
-            }
-        }
-        if(exceptions.size() > 0) {
-            throw new DNFSException.DNFSNetworkSendException("Exception while direct send: " + exceptions.get(0).getMessage());
-        }
-        if(directs.size() != responses.size()) {
-            throw new DNFSException.DNFSNetworkSendException("Didn't receive all answers.");
-        }
-        return responses;
     }
 
     @Override
     public PeerAddress getPeerAddress() {
-        return this._peer.peerAddress();
+        return this.network.getPeerAddress();
     }
 
     @Override
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
-        initializationBouncer();
-
-        FutureGet futureGet = _peer.get(key).start();
-        futureGet.awaitUninterruptibly();
-        if(futureGet.isSuccess() && !futureGet.isEmpty()) {
-
-            ArrayList<PeerAddress> responders = new ArrayList<PeerAddress>();
-
-            Set<Entry<PeerAddress, Map<Number640, Data>>> responderSet = futureGet.rawData().entrySet();
-            for(Entry<PeerAddress, Map<Number640, Data>> responderEntry : responderSet) {
-                responders.add(responderEntry.getKey());
-            }
-
-            return responders;
-
-        } else {
-            throw new DNFSException.DNFSNetworkGetException("Could not get response.");
-        }
+        return this.getAllResponders(key);
     }
 
     /**
@@ -342,7 +155,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     private boolean setPrepare(Number160 key, Data data, VersionKey versionKey) {
 
         data.prepareFlag();
-        FuturePut fp = this._peer
+        FuturePut fp = this.network.getPeer()
                 .put(key)
                 .data(
                         Number160.ZERO,
@@ -357,7 +170,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
             if (last != null) {
                 if (!last.equals(fgData)) {
-                    this._peer.remove(key).versionKey(versionKey.getVersionKey()).start()
+                    this.network.getPeer().remove(key).versionKey(versionKey.getVersionKey()).start()
                             .awaitUninterruptibly();
                     return false;
                 }
@@ -368,7 +181,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     }
 
     private void confirm(Number160 key, VersionKey versionKey) {
-        FuturePut fp = this._peer.put(key)
+        FuturePut fp = this.network.getPeer().put(key)
                 .versionKey(versionKey.getVersionKey()).putConfirm()
                 .data(new Data()).start().awaitUninterruptibly();
         LOGGER.info("Confirmed put in dht" + fp.failedReason());
@@ -376,7 +189,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
 
     private List<FutureGetRawData> getLatestData(Number160 key) {
-        FutureGet fg = this._peer.get(key).contentKey(Number160.ZERO).getLatest().start()
+        FutureGet fg = this.network.getPeer().get(key).contentKey(Number160.ZERO).getLatest().start()
                 .awaitUninterruptibly();
         return FutureGetRawData.listFromRawData(fg.rawData());
     }
@@ -470,83 +283,31 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     }
 
 
-    /**
-     * @param port
-     * @throws DNFSException.DNFSNetworkSetupException
-     */
-    private void setupPeer(int port, IKeyValueStorage keyValueStorage) throws
-            DNFSException.DNFSNetworkSetupException {
+    private void putFirstTime(Number160 key, Data data) {
 
-        try {
-            _port = port;
-
-            Number160 key = Number160.createHash(_random.nextLong());
-
-            PeerBuilder builder = new PeerBuilder(key).ports(_port);
-            PeerBuilderDHT builderDHT = new PeerBuilderDHT(builder.start());
-            Storage storage = new StorageMemory();
-            StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
-            _peer = builderDHT.storageLayer(storageLayer).start();
-
-        } catch (IOException e) {
-            throw new DNFSException.DNFSNetworkSetupException("IOException: " + e.getMessage());
-        }
-    }
-
-    private void putFirstTime(Number160 key, Data data){
-
-        this._peer.put(key)
+        this.network.getPeer().put(key)
                 .data(Number160.ZERO, data)
                 .start()
                 .awaitUninterruptibly();
     }
 
     public void registerPeerChangeListener(PeerMapChangeListener listener) {
-        _peer.peerBean().peerMap().addPeerMapChangeListener(listener);
+        this.network.registerPeerChangeListener(listener);
     }
-    
-    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit
-    {
-        initializationBouncer();
-        
-        Iterator<PeerAddress> iterator = _peer.peerBean().peerMap().all().iterator();
-        while (iterator.hasNext()) {
-            if (isConnected(iterator.next())) {
-                // as soon as we get a response from at least one other peer we are connected
-                return true;
-            }
-        }
-        // if no one answered we are not connected to anyone
-        return false;
-    }
-    
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit
-    {
-        initializationBouncer();
-        
-        FutureChannelCreator fcc = _peer.peer().connectionBean().reservation().create(1, 1);
-        fcc.awaitUninterruptibly();
 
-        ChannelCreator cc = fcc.channelCreator();
-
-        FutureResponse fr = _peer.peer().pingRPC().pingUDP(peerAddress, cc, new DefaultConnectionConfiguration());
-        fr.awaitUninterruptibly();
-
-        if (fr.isSuccess()) {
-            return true;
-        }
-        return false;
+    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit {
+        return this.network.isConnected();
     }
-    
-    public void disconnect() throws DNFSException.DNFSNetworkNotInit {    
-        initializationBouncer();
-        
-        _peer.peer().announceShutdown().start().awaitUninterruptibly();
-        _peer.shutdown().awaitListenersUninterruptibly();
-        this._initialized = false;  
+
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit {
+        return this.network.isConnected(peerAddress);
     }
-    
-    public void setConnectionTimeout(int connectionTimeOut){
-        _peer.peer().connectionBean().DEFAULT_CONNECTION_TIMEOUT_TCP = connectionTimeOut;
+
+    public void disconnect() throws DNFSException.DNFSNetworkNotInit {
+        this.network.disconnect();
+    }
+
+    public void setConnectionTimeout(int connectionTimeOut) {
+        this.network.setConnectionTimeout(connectionTimeOut);
     }
 }

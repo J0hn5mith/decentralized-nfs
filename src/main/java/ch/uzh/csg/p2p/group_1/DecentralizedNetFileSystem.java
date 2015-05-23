@@ -96,28 +96,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                     this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
                 }
 
-                this.network.registerPeerChangeListener(new PeerMapChangeListener() {
-                    
-                    public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
-                    
-                    public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
-                        /////////////////////////////
-                        //  
-                        //  TODO
-                        //  Send lost copies of files 
-                        //  to other nodes
-                        //
-                        /////////////////////////////   
-                        
-                        System.out.println("Peer timed out: " + peerAddress);
-                    }
-                    
-                    public void peerInserted(PeerAddress peerAddress, boolean verified) {
-                        System.out.println("Inserted Peer: "+peerAddress);
-                        _connectedToOtherPeers = true;
-                    }
-                });
-                
+//                this.setPeerChangeListener();
+
                 if(!this.settings.getStartNewServer()) {
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
                 }
@@ -142,6 +122,31 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         
         this.peer.setConnectionTimeout(connectionTimeOut);
         startConnectionChecking();
+    }
+
+
+    private void setPeerChangeListener(){
+        this.network.registerPeerChangeListener(new PeerMapChangeListener() {
+
+            public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
+
+            public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
+                /////////////////////////////
+                //
+                //  TODO
+                //  Send lost copies of files
+                //  to other nodes
+                //
+                /////////////////////////////
+
+                System.out.println("Peer timed out: " + peerAddress);
+            }
+
+            public void peerInserted(PeerAddress peerAddress, boolean verified) {
+                _connectedToOtherPeers = true;
+            }
+        });
+
     }
     
     
