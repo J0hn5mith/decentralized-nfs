@@ -41,7 +41,11 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             File empty = new File(this.directory + "/empty");
             empty.createNewFile();
             empty.delete();
-        } catch(IOException | OutOfMemoryError | SecurityException e) {
+        } catch(IOException e) {
+            throw new Exception("Cannot write to file-based key-value storage folder.");
+        } catch(OutOfMemoryError e) {
+            throw new Exception("Cannot write to file-based key-value storage folder.");
+        } catch(SecurityException e) {
             throw new Exception("Cannot write to file-based key-value storage folder.");
         }
     }

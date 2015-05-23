@@ -117,7 +117,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         try {
             iNode = this.pathResolver.getINode(new DNFSPath(path));
         } catch (DNFSException e) {
-            LOGGER.warn("Could not find attrs for path: " + path);
+            LOGGER.info("Could not find attrs for path: " + path);
             LOGGER.debug("Reason: ", e);
             return -ErrorCodes.ENOENT();
         }
@@ -281,7 +281,9 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
         try {
             DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
-            return file.write(buf, bufSize, writeOffset);
+            int bytesWritten =  file.write(buf, bufSize, writeOffset);
+            LOGGER.warn("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
+            return bytesWritten;
 
         } catch (DNFSException e) {
             LOGGER.error(e.toString());
