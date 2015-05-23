@@ -9,8 +9,6 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
 
-import org.apache.log4j.Logger;
-
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkGetException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
@@ -19,10 +17,8 @@ import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
 public class DNFSPeer implements DNFSIPeer {
-    
-    
-    final private static Logger LOGGER = Logger.getLogger(DNFSPeer.class.getName());
 
+    
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
     
     private DNFSINetwork _network;
@@ -146,7 +142,6 @@ public class DNFSPeer implements DNFSIPeer {
         DNFSIiNode iNode = new DNFSiNode(ROOT_INODE_KEY);
         Object data = (Object) iNode;
         _network.put(ROOT_INODE_KEY, data);
-        LOGGER.info("Successfully create root iNode");
         return new DNFSNetworkINode(iNode, this);
     }
 

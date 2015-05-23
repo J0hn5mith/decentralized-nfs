@@ -15,6 +15,7 @@ public class DNFSCommandLineOptionsFactory {
         options.addOption("a", "ip-address", true, "provide the ip of an existing server");
         options.addOption("d", "dummy-peer", false, "use a dummy peer that requires no network connection");
         options.addOption("m", "mount-point", true, "specify a custom mount point");
+        options.addOption("s", "storage-directory", true, "specify a custom directory for the temporary storage");
         return options;
     }
 

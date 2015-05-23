@@ -4,5 +4,4 @@
     <!--Don't set it to ./ . This will 'erase' you project folder. After reboot the folder is back to normal.-->
         <MountPoint>./testfs</MountPoint>
         <Port>2020</Port>
-        <FileBasedStorageDirectory>./storage</FileBasedStorageDirectory>
 </web-app>

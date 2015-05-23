@@ -7,15 +7,12 @@ import net.tomp2p.peers.Number160;
 public interface IKeyValueStorage {
     
     
-    public boolean exists(Number160 key);
+    public void startUp() throws Exception;
+    public void shutDown() throws Exception;
     
-    
+    public boolean exists(Number160 key);    
     public boolean set(Number160 key, KeyValueData value);
-    
-    
     public KeyValueData get(Number160 key);
-    
-    
     public boolean delete(Number160 key);
 
 }

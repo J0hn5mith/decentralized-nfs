@@ -4,7 +4,6 @@
 package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
-import ch.uzh.csg.p2p.group_1.DNFSNetwork;
 import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
 import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
 import net.tomp2p.dht.*;
@@ -27,7 +26,6 @@ import java.util.Map.Entry;
 import net.tomp2p.storage.Storage;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.lf5.LogLevel;
 
 public class DNFSNetworkVDHT implements DNFSINetwork {
     final private static Logger LOGGER = Logger.getLogger(DNFSNetworkVDHT.class.getName());
