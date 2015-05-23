@@ -79,7 +79,7 @@ public class DNFSNetwork implements DNFSINetwork{
             FutureDiscover futureDiscover = _peer.peer().discover().peerAddress(masterAddress).start();
             futureDiscover.awaitUninterruptibly();
             if (!futureDiscover.isSuccess()) {
-                throw new DNFSException.DNFSNetworkSetupException("Discover failed because peer is probably behind a NAT: " + futureDiscover.failedReason());
+                throw new DNFSException.DNFSNetworkSetupException("Discover failed because peer is probably behind a NAT:  " + futureDiscover.failedReason());
             }
 
             PeerAddress bootstrapAddress = futureDiscover.reporter();
