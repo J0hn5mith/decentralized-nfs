@@ -115,7 +115,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
 
     @Override
-    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         DNFSBlockCompositionOffset offset = this.seek((int)offsetInBytes);
         long bytesTruncated = offset.getBlock().truncate(offset.getOffset());
 

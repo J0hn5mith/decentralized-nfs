@@ -59,8 +59,6 @@ public class DNFSNetwork implements DNFSINetwork{
      // use indirect replication
         new IndirectReplication(_peer).start();
         this._initialized = true;
-
-        System.out.println("STARTED WITHOUT CONNECTING");
     }
     
     
