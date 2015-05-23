@@ -14,6 +14,7 @@ public class DNFSBlockPacket implements Serializable {
         DELIVER,
         DELETE,
         DELETE_ACK,
+        FAILURE
     }
     
     

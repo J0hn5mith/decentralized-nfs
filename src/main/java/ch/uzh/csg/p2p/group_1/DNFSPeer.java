@@ -46,6 +46,7 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         try {
             PeerAddress responder = _network.getFirstResponder(id);
+            System.out.println("NOW REQUESTING FOR GET: " + id);
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, id);
             Object answer = _network.sendTo(responder, packet);
             byte[] data = ((DNFSBlockPacket) answer).getData();
@@ -68,6 +69,7 @@ public class DNFSPeer implements DNFSIPeer {
             byte[] data = block.getByteArray();
             
             _keyValueStorage.set(id, new KeyValueData(data));
+            System.out.println("SAVED: " + id); // TODO
             
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] hash = md.digest(data);
@@ -75,6 +77,7 @@ public class DNFSPeer implements DNFSIPeer {
             PeerAddress localAddress = _network.getPeerAddress();
             
             DNFSBlockUpdateNotification notification = new DNFSBlockUpdateNotification(id, localAddress, hash);
+            System.out.println("NOW PUTTING: " + id); // TODO
             _network.put(id, (Object) notification);
             
         } catch(DNFSNetworkPutException e) {
@@ -155,18 +158,29 @@ public class DNFSPeer implements DNFSIPeer {
 
             @Override
             public Object reply(PeerAddress sender, Object request) throws Exception {
+                
                 DNFSBlockPacket requestPacket = (DNFSBlockPacket) request;
                 
-                if(requestPacket.is(DNFSBlockPacket.Type.REQUEST)) {
-                    KeyValueData keyValue = _keyValueStorage.get(requestPacket.getId());
-                    return new DNFSBlockPacket(DNFSBlockPacket.Type.DELIVER, requestPacket.getId(), keyValue.getData());
-                
-                } else if(requestPacket.is(DNFSBlockPacket.Type.DELETE)) {
-                    _keyValueStorage.delete(requestPacket.getId());
-                    return new DNFSBlockPacket(DNFSBlockPacket.Type.DELETE_ACK, requestPacket.getId());
-                
+                try {
+                    
+                    if(requestPacket.is(DNFSBlockPacket.Type.REQUEST)) {
+                        KeyValueData keyValue = _keyValueStorage.get(requestPacket.getId());
+                        if(keyValue == null) {
+                            System.out.println("DIDNT FIND: " + requestPacket.getId()); // TODO
+                            throw new Exception();
+                        }
+                        System.out.println("DEVLIVERING: " + requestPacket.getId()); //TODO
+                        return new DNFSBlockPacket(DNFSBlockPacket.Type.DELIVER, requestPacket.getId(), keyValue.getData());
+                    
+                    } else if(requestPacket.is(DNFSBlockPacket.Type.DELETE)) {
+                        _keyValueStorage.delete(requestPacket.getId());
+                        return new DNFSBlockPacket(DNFSBlockPacket.Type.DELETE_ACK, requestPacket.getId());
+                    
+                    }
+                } catch(Exception e) {
+                    return new DNFSBlockPacket(DNFSBlockPacket.Type.FAILURE, requestPacket.getId());
                 }
-                
+                 
                 return null;
             }
             

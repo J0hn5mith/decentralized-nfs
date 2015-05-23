@@ -57,7 +57,7 @@ public class DNFSNetwork implements DNFSINetwork{
         _random = new Random(System.currentTimeMillis());
         setupPeer(port, keyValueStorage);
      // use indirect replication
-        new IndirectReplication(_peer).start();
+        //new IndirectReplication(_peer).start();
         this._initialized = true;
     }
     

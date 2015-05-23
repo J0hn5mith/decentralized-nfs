@@ -26,8 +26,14 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     private DNFSNetwork network;
 
 
-    public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
-        this.network = new DNFSNetwork(port, keyValueStorage);
+        LOGGER.setLevel(Level.DEBUG);
+        try {
+            setupPeer(port, keyValueStorage);
+        } catch (DNFSException.DNFSNetworkSetupException e) {
+            LOGGER.error("FATAL ERROR", e);
+        }
+        // use indirect replication
+        //new IndirectReplication(_peer).start();
         this._initialized = true;
     }
 
@@ -117,16 +123,19 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     }
 
+    
     @Override
     public PeerAddress getPeerAddress() {
         return this.network.getPeerAddress();
     }
 
+    
     @Override
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
         return this.getAllResponders(key);
     }
 
+    
     /**
      * Returns the VersionKey for the specified object in the dht of the latest version if they are all the same.
      * null is returned, if there are different versions.
@@ -152,8 +161,11 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return last.getVersionKey();
     }
 
+    
     private boolean setPrepare(Number160 key, Data data, VersionKey versionKey) {
 
+        System.out.println("setPrepared()" + key); // TODO
+        
         data.prepareFlag();
         FuturePut fp = this.network.getPeer()
                 .put(key)
@@ -180,6 +192,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return true;
     }
 
+    
     private void confirm(Number160 key, VersionKey versionKey) {
         FuturePut fp = this.network.getPeer().put(key)
                 .versionKey(versionKey.getVersionKey()).putConfirm()
