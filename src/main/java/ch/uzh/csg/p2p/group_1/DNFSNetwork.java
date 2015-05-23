@@ -102,8 +102,6 @@ public class DNFSNetwork implements DNFSINetwork{
         }
 
         this._initialized = true;
-        
-        System.out.println("CONNECTED TO "+masterIpAddress+":"+masterPort);
     }
 
 

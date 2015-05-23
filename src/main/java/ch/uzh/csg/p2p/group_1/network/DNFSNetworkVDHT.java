@@ -58,8 +58,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         // use indirect replication
         new IndirectReplication(_peer).start();
         this._initialized = true;
-
-        System.out.println("STARTED WITHOUT CONNECTING");
     }
 
     @Override
@@ -94,9 +92,6 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         }
 
         this._initialized = true;
-
-
-        System.out.println("CONNECTED TO "+masterIpAddress+":"+masterPort);
     }
 
     @Override
