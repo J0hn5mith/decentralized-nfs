@@ -830,17 +830,29 @@ public class DNFSStorageLayer extends StorageLayer {
                         DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
                         DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
 
-                        boolean success = false;
-                        while (success) {
-                            Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
+                        MessageDigest md = MessageDigest.getInstance("MD5");
+                        
+                        boolean blockUpToDate = false;
+                        if(_keyValueStorage.exists(notification.getId())) {
+                            byte[] existingData = _keyValueStorage.get(notification.getId()).getData();
+                            byte[] existingHash = md.digest(existingData);
+                            if(Arrays.equals(existingHash, notification.getNewHash())) {
+                                blockUpToDate = true;
+                            }
+                        }
+                        
+                        if(!blockUpToDate) {
+                            boolean success = false;
+                            while (success) {
+                                Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
 
-                            byte[] blockData = ((DNFSBlockPacket) answer).getData();
-                            MessageDigest md = MessageDigest.getInstance("MD5");
-                            byte[] hash = md.digest(blockData);
+                                byte[] blockData = ((DNFSBlockPacket) answer).getData();
+                                byte[] hash = md.digest(blockData);
 
-                            if (Arrays.equals(hash, notification.getNewHash())) {
-                                _keyValueStorage.set(notification.getId(), new KeyValueData(blockData));
-                                success = true;
+                                if (Arrays.equals(hash, notification.getNewHash())) {
+                                    _keyValueStorage.set(notification.getId(), new KeyValueData(blockData));
+                                    success = true;
+                                }
                             }
                         }
                     }
@@ -856,11 +868,6 @@ public class DNFSStorageLayer extends StorageLayer {
                 } catch (IOException e) {
                     LOGGER.error("Could execute putConfirm", e);
                 }
-//                | IOException | DNFSNetworkNoConnection | DNFSNetworkSendException | NoSuchAlgorithmException e) {
-//                        // TODO How do we deal with this exception?
-//                        e.printStackTrace();
-//                }
-                
                 return PutStatus.OK;
             } else {
                 return PutStatus.NOT_FOUND;
