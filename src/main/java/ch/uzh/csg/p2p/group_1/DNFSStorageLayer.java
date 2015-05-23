@@ -37,7 +37,7 @@ import net.tomp2p.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNoConnection;
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSendException;
 
 public class DNFSStorageLayer extends StorageLayer {
@@ -861,7 +861,7 @@ public class DNFSStorageLayer extends StorageLayer {
                 } catch (DNFSNetworkSendException e) {
                     LOGGER.error("Could execute putConfirm", e);
                     e.printStackTrace();
-                } catch (DNFSNetworkNoConnection e) {
+                } catch (DNFSNetworkNotInit e) {
                     LOGGER.error("Could execute putConfirm", e);
                 } catch (NoSuchAlgorithmException e) {
                     LOGGER.error("Could execute putConfirm", e);

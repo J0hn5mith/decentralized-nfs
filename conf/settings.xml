@@ -5,4 +5,6 @@
         <MountPoint>./testfs</MountPoint>
         <Port>2020</Port>
         <FileBasedStorageDirectory>./storage</FileBasedStorageDirectory>
+        <ConnectionTimeOut>1000</ConnectionTimeOut>
+        <CheckConnectionFrequency>4</CheckConnectionFrequency>
 </web-app>

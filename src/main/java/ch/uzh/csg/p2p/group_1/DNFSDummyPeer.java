@@ -1,7 +1,9 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,5 +117,18 @@ public class DNFSDummyPeer implements DNFSIPeer {
 
         DNFSFolder testFolder = DNFSFolder.createNew(this);
         rootFolder.addChild(testFolder, "test_folder");
+    }
+    
+    public void shutdown() throws DNFSNetworkNotInit
+    {
+        
+    }
+    
+    public boolean isConnected() throws DNFSNetworkNotInit {
+        return true;
+    }
+    
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit {
+        return true;
     }
 }

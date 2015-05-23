@@ -42,7 +42,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
     
     public int write(final ByteBuffer buffer, final long bufSize, final long writeOffset) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNoConnection
+            DNFSException.DNFSNetworkNotInit
     {
         int bytesWritten = (int) this.getBlockComposition().write(buffer, bufSize, writeOffset);
 
@@ -52,7 +52,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
 
     
     public int read(final ByteBuffer buffer, final long bytesToRead, final long offset) throws
-            DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+            DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         return (int) this.getBlockComposition().read(buffer, bytesToRead, offset);
 
     }

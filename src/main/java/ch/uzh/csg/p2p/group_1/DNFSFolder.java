@@ -28,7 +28,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * @param iNode
      */
-    private DNFSFolder(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
+    private DNFSFolder(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit {
         super(iNode, peer);
         this.updateFolderEntries();
     }
@@ -37,7 +37,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * Factory method for creating new folders with a given iNode.
      */
-    public static DNFSFolder createNew(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection, DNFSException.DNFSBlockStorageException {
+    public static DNFSFolder createNew(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
         iNode.setDir(true);
         return folder;
@@ -63,7 +63,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param peer
      * @return
      */
-    public static DNFSFolder getExisting(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNoConnection {
+    public static DNFSFolder getExisting(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit {
         DNFSFolder folder = new DNFSFolder(iNode, peer);
         return folder;
     }
@@ -116,14 +116,14 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param entry
      * @param name
      */
-    public void addChild(DNFSFileSystemEntry entry, String name) throws DNFSException.DNFSNetworkNoConnection {
+    public void addChild(DNFSFileSystemEntry entry, String name) throws DNFSException.DNFSNetworkNotInit {
         this.addChild(entry.getINode(), name);
     }
 
 
     // TODO: There are different method doing the same thing => find way to unify it
     // Basic problem is, that i cant decide weather getting children by name or id
-    public DNFSFileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrFolder, DNFSException.DNFSNetworkNoConnection {
+    public DNFSFileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrFolder, DNFSException.DNFSNetworkNotInit {
         DNFSIiNode iNode = this.getChildINode(name);
         if (iNode.isDir()) {
             return DNFSFolder.getExisting(iNode, this.getPeer());
@@ -138,7 +138,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param iNode
      * @param name
      */
-    public void addChild(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
+    public void addChild(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
         this.addNewFolderEntry(iNode, name);
         this.updateFolderEntries();
     }
@@ -148,7 +148,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param name
      * @throws DNFSException.NoSuchFileOrFolder
      */
-    public void removeChild(String name) throws DNFSException.NoSuchFileOrFolder, DNFSException.DNFSNetworkNoConnection {
+    public void removeChild(String name) throws DNFSException.NoSuchFileOrFolder, DNFSException.DNFSNetworkNotInit {
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
         String newContent = "";
         DNFSFileSystemEntry child = this.getChild(name);
@@ -172,7 +172,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         try {
             this.getBlockComposition().write(ByteBuffer.wrap(newContent.getBytes()), newContent.getBytes().length, 0);
         } catch (DNFSException.DNFSBlockStorageException e) {
-            throw new DNFSException.DNFSNetworkNoConnection();
+            throw new DNFSException.DNFSNetworkNotInit();
         }
         this.updateFolderEntries();
     }
@@ -191,7 +191,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
      * @param oldName
      * @param newName
      */
-    public void renameChild(String oldName, String newName) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+    public void renameChild(String oldName, String newName) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
         String newContent = "";
         try {
@@ -279,7 +279,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      *
      */
-    private void updateFolderEntries() throws DNFSException.DNFSNetworkNoConnection {
+    private void updateFolderEntries() throws DNFSException.DNFSNetworkNotInit {
         this.childEntries = this.extractFolderEntries();
     }
 
@@ -287,7 +287,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * @return
      */
-    private HashMap<String, DNFSFolderEntry> extractFolderEntries() throws DNFSException.DNFSNetworkNoConnection {
+    private HashMap<String, DNFSFolderEntry> extractFolderEntries() throws DNFSException.DNFSNetworkNotInit {
         HashMap<String, DNFSFolderEntry> list = new HashMap<String, DNFSFolderEntry>();
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getFolderFileData()));
 
@@ -323,7 +323,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
     /**
      * @return
      */
-    private InputStream getFolderFileData() throws DNFSException.DNFSNetworkNoConnection {
+    private InputStream getFolderFileData() throws DNFSException.DNFSNetworkNotInit {
         if (this.getINode().getNumBlocks() < 1) {
             return new ByteArrayInputStream("".getBytes());
         }
@@ -333,7 +333,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             this.getBlockComposition().read(buffer, size, 0);
             return new ByteArrayInputStream(buffer.array());
         } catch (DNFSException.DNFSBlockStorageException e) {
-            throw new DNFSException.DNFSNetworkNoConnection();
+            throw new DNFSException.DNFSNetworkNotInit();
         }
     }
 
@@ -356,7 +356,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         return 0;
     }
 
-    private void addNewFolderEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNoConnection {
+    private void addNewFolderEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
         String entryAsString = LINE_SEPARATOR + iNode.getId() + SEPARATOR + name;
         if(this.childEntries.size() < 1){
              entryAsString = iNode.getId() + SEPARATOR + name;
