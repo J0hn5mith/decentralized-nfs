@@ -62,6 +62,12 @@ public class DNFSNetworkINode implements DNFSIiNode {
     }
 
     @Override
+    public void setAccessRights(long rights) {
+        this.iNode.setAccessRights(rights);
+
+    }
+
+    @Override
     public int getGroupID() {
         return this.iNode.getGroupID();
     }

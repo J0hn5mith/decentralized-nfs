@@ -20,6 +20,7 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     List<Number160> blockIds;
     int size = 10;
     int userID = -1;
+    long accessRights = 000;
 
 
     public DNFSiNode(Number160 id) {
@@ -56,6 +57,12 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     @Override
     public void setUserID(int id) {
         this.userID = id;
+
+    }
+
+    @Override
+    public void setAccessRights(long rights) {
+        this.accessRights = rights;
 
     }
 
