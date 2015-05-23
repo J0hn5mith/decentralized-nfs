@@ -4,9 +4,7 @@ import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.tomp2p.peers.Number160;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by janmeier on 06.04.15.
@@ -81,6 +79,11 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     @Override
     public void removeBlock(DNFSBlock block) {
         this.removeBlockID(block.getId());
+    }
+
+    @Override
+    public void removeBlocks(List<Number160> blocks) {
+        this.blockIds.removeAll(blocks);
     }
 
     @Override

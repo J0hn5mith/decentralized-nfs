@@ -11,6 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * Wrapper class for iNodes so DNFSFile and DNFSFolder don't have to bother with
@@ -108,13 +109,29 @@ public class DNFSBlockComposition implements DNFSIBlock {
             }
         }
 
-//        return summedUpSize - offset;
-        return bytesToRead;
+        return summedUpSize - offset;
+//        return bytesToRead;
     }
 
 
     @Override
-    public long truncate(long offset) {
+    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNoConnection {
+        DNFSBlockCompositionOffset offset = this.seek((int)offsetInBytes);
+        long bytesTruncated = offset.getBlock().truncate(offset.getOffset());
+
+        int indexOfBlock = this.getINode().getBlockIDs().indexOf(offset.getBlock().getId()) + 1;
+        if(this.getINode().getBlockIDs().size() == indexOfBlock){
+            return 0;
+        }
+
+        List<Number160> blocksToDelete = this.getINode().getBlockIDs().subList(indexOfBlock, this.getINode().getNumBlocks());
+        this.getINode().removeBlocks(blocksToDelete);
+
+        for (Number160 number160 : blocksToDelete) {
+            this.getPeer().deleteBlock(number160);
+        }
+
+
         return 0;
     }
 

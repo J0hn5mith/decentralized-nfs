@@ -168,9 +168,9 @@ public class DNFSFolder extends DNFSFileSystemEntry {
             e.printStackTrace();
         }
 
-        this.getBlockComposition().truncate(0);
         try {
-            this.getBlockComposition().write(ByteBuffer.wrap(newContent.getBytes()), newContent.getBytes().length, 0);
+            int bytesWritten = (int) this.getBlockComposition().write(ByteBuffer.wrap(newContent.getBytes()), newContent.getBytes().length, 0);
+            this.getBlockComposition().truncate(bytesWritten);
         } catch (DNFSException.DNFSBlockStorageException e) {
             throw new DNFSException.DNFSNetworkNoConnection();
         }

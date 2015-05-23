@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 
 
 public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
+
     final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegration.class.getName());
 
     private DNFSPathResolver pathResolver;
@@ -290,5 +291,25 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
     }
 
+    @Override
+    public int unlink(String path) {
+        try {
 
+            if(path.equals("/")){
+                return -1;
+            }
+
+            DNFSPath entryPath = new DNFSPath(path);
+            DNFSPath parentPath = entryPath.getParent();
+            DNFSFolder parentFolder = this.pathResolver.getFolder(parentPath);
+
+            parentFolder.removeChild(entryPath.getFilerName());
+
+        } catch (DNFSException e) {
+            LOGGER.warn("Faild to remove file");
+            LOGGER.error(e.toString());
+            return -ErrorCodes.ENOENT();
+        }
+        return 0;
+    }
 }
