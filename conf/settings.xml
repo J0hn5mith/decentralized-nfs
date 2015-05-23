@@ -6,5 +6,5 @@
         <Port>2020</Port>
         <ConnectionTimeOut>1000</ConnectionTimeOut>
         <CheckConnectionFrequency>4</CheckConnectionFrequency>
-        <UseVDHT>4</UseVDHT>
+        <UseVDHT>True</UseVDHT>
 </web-app>
