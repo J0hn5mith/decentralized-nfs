@@ -104,6 +104,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             System.exit(-1);
         }
         
+        this.peer.setConnectionTimeout(connectionTimeOut);
+        
         startConnectionChecking();
     }
 

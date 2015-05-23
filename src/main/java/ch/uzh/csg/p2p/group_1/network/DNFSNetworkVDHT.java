@@ -551,4 +551,8 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         _peer.shutdown().awaitListenersUninterruptibly();
         this._initialized = false;  
     }
+    
+    public void setConnectionTimeout(int connectionTimeOut){
+        _peer.peer().connectionBean().DEFAULT_CONNECTION_TIMEOUT_TCP = connectionTimeOut;
+    }
 }

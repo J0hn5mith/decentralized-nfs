@@ -131,4 +131,9 @@ public class DNFSDummyPeer implements DNFSIPeer {
     public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit {
         return true;
     }
+
+    @Override
+    public void setConnectionTimeout(int connectionTimeOut){
+      
+    }
 }

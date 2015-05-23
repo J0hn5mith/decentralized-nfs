@@ -30,12 +30,7 @@ public class DNFSPeer implements DNFSIPeer {
     
     private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
-    private boolean _connectedToOtherPeers = false;
-    private DNFSSettings settings;
-    private int connectionTimeOut;
-    private int checkConnectionFrequency;
-    private int checkConnectionInterval;
-    
+    private boolean _connectedToOtherPeers = false;    
     
     public DNFSPeer(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
@@ -162,10 +157,6 @@ public class DNFSPeer implements DNFSIPeer {
     @Override
     public void setUp(DNFSSettings settings) throws DNFSException {
         
-        this.settings = settings;
-        
-        setConnectionTimeout();
-        
         _network.registerObjectDataReply(new ObjectDataReply() {
 
             @Override
@@ -192,49 +183,15 @@ _network.registerPeerChangeListener(new PeerMapChangeListener() {
             public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
             
             public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
-                System.out.println("Removed Peer: "+peerAddress);
+                /////////////////////////////
+                //  
+                //  TODO
+                //  Send lost copies of files 
+                //  to other nodes
+                //
+                /////////////////////////////   
                 
-                final PeerAddress pa = peerAddress;
-                
-                new Thread(){
-                    public void run(){
-                        int failedChecks = 0;
-                        boolean checking = true;
-                        while(checking){
-                            try {
-                                if(!isConnected(pa)){   
-                                    failedChecks++;
-                                    
-                                    if(failedChecks >= checkConnectionFrequency){
-                                        
-                                        /////////////////////////////
-                                        //  
-                                        //  TODO
-                                        //  Send lost copies of files 
-                                        //  to other nodes
-                                        //
-                                        /////////////////////////////   
-                                        
-                                        System.out.println("Peer timed out: " + pa);
-                                        
-                                        checking = false;
-                                        
-                                    }
-                                }
-                                else{
-                                    checking = false;
-                                }
-                            } catch (DNFSNetworkNotInit e) {
-                                LOGGER.error("Network not initialized:" + e);
-                            }
-                            try {
-                                Thread.sleep(checkConnectionInterval);
-                            } catch (InterruptedException e) {
-                                LOGGER.error("Connection checking was interrupted:" + e);
-                            }
-                        }
-                    }
-                  }.start();
+                System.out.println("Peer timed out: " + peerAddress);
             }
             
             public void peerInserted(PeerAddress peerAddress, boolean verified) {
@@ -257,15 +214,10 @@ _network.registerPeerChangeListener(new PeerMapChangeListener() {
     public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit {
         return _network.isConnected(peerAddress);
     }
-    
-    private void setConnectionTimeout(){
-        this.connectionTimeOut = this.settings.getConnectionTimeOut();
-        this.checkConnectionFrequency = this.settings.getCheckConnectionFrequency();
-        
-        if(checkConnectionFrequency!=0)
-            this.checkConnectionInterval = this.connectionTimeOut/this.checkConnectionFrequency;
-        else
-            this.checkConnectionInterval = this.connectionTimeOut;
+
+    @Override
+    public void setConnectionTimeout(int connectionTimeOut){
+        _network.setConnectionTimeout(connectionTimeOut);
     }
 
 }
