@@ -26,7 +26,6 @@ public class DNFSPeer implements DNFSIPeer {
     
     private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
-    private boolean _connectedToOtherPeers = false;    
     
     public DNFSPeer(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
@@ -172,28 +171,6 @@ public class DNFSPeer implements DNFSIPeer {
             }
             
         });
-        
-_network.registerPeerChangeListener(new PeerMapChangeListener() {
-            
-            public void peerUpdated(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {}
-            
-            public void peerRemoved(PeerAddress peerAddress,PeerStatistic storedPeerAddress) {
-                /////////////////////////////
-                //  
-                //  TODO
-                //  Send lost copies of files 
-                //  to other nodes
-                //
-                /////////////////////////////   
-                
-                System.out.println("Peer timed out: " + peerAddress);
-            }
-            
-            public void peerInserted(PeerAddress peerAddress, boolean verified) {
-                System.out.println("Inserted Peer: "+peerAddress);
-                _connectedToOtherPeers = true;
-            }
-        });
 
     }
 
@@ -203,7 +180,7 @@ _network.registerPeerChangeListener(new PeerMapChangeListener() {
     }
 
     public boolean isConnected() throws DNFSNetworkNotInit {
-            return _connectedToOtherPeers ? _network.isConnected() : true;
+            return _network.isConnected();
     }
     
     public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit {
