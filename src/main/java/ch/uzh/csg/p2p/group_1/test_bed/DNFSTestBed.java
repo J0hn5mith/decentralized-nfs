@@ -3,6 +3,7 @@
  */
 package ch.uzh.csg.p2p.group_1.test_bed;
 
+import ch.uzh.csg.p2p.group_1.DNFSException;
 import ch.uzh.csg.p2p.group_1.DecentralizedNetFileSystem;
 
 import java.io.File;
@@ -94,8 +95,15 @@ public class DNFSTestBed {
             System.exit(-1);
             return;
         }
-        
-        DNFSSettings settings = new DNFSSettings("./conf/settings.xml", cmd);
+
+        DNFSSettings settings = null;
+        try {
+            settings = new DNFSSettings("./conf/settings.xml", cmd);
+        } catch (DNFSException.DNFSSettingsException e) {
+            System.err.println("Could not set up settings.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
         DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
         dnfs.setUp(settings);

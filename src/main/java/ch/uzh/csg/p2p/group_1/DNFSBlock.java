@@ -87,13 +87,13 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
-        if (numBytesPossibleToWrite > data.capacity()) {
+        if (numBytesPossibleToWrite + offset > data.capacity()) {
             final ByteBuffer newContents = ByteBuffer.allocate((int) (numBytesPossibleToWrite+offset));
             newContents.put(this.data);
             this.data = newContents;
         }
 
-        buffer.get(bytesToWrite, 0, (int) numBytesPossibleToWrite);
+        buffer.get(bytesToWrite, 0, numBytesPossibleToWrite);
         this.data.position((int) offset);
         this.data.put(bytesToWrite);
         this.data.position(0);

@@ -7,25 +7,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import net.tomp2p.peers.Number160;
 
 
 public class FileBasedKeyValueStorage implements IKeyValueStorage {
-    
+    final private static Logger LOGGER = Logger.getLogger(FileBasedKeyValueStorage.class);
+
     
     String directory;
 
 
-    public FileBasedKeyValueStorage() throws Exception {
+    public FileBasedKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
+        LOGGER.setLevel(Level.DEBUG);
         try {
             this.directory = this.createTempDirectory().getAbsolutePath();
         } catch(IOException e) {
-            throw new Exception("Unable to create file-based key-value storage temporary folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Unable to create file-based key-value storage temporary folder.");
         }
     }
     
 
-    public FileBasedKeyValueStorage(String directory) throws Exception {
+    public FileBasedKeyValueStorage(String directory){
         this.directory = directory;
         if(!Files.exists(Paths.get(this.directory))) {
             File newDirectory = new File(this.directory);
@@ -35,23 +40,23 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     
     @Override
-    public void startUp() throws Exception {
+    public void startUp() throws DNFSException.DNFSKeyValueStorageException {
         try {
             File empty = new File(this.directory + "/empty");
             empty.createNewFile();
             empty.delete();
         } catch(IOException e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         } catch(OutOfMemoryError e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         } catch(SecurityException e) {
-            throw new Exception("Cannot write to file-based key-value storage folder.");
+            throw new DNFSException.DNFSKeyValueStorageException("Cannot write to file-based key-value storage folder.");
         }
     }
 
 
     @Override
-    public void shutDown() throws Exception {
+    public void shutDown(){
         File folder = new File(this.directory);
         File[] files = folder.listFiles();
         if(files != null) {
@@ -89,14 +94,13 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
     
     @Override
     public boolean set(Number160 key, KeyValueData value) {
-        
         try {
-            
             Path path = Paths.get(directory + "/" + key.toString());
             Files.write(path, value.getData());
+            LOGGER.info("Wrote file");
             return true;
-            
         } catch(IOException | OutOfMemoryError | SecurityException e) {
+            LOGGER.error("Could not set data.");
             return false;
         }
     }

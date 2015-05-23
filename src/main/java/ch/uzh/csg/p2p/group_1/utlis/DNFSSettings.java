@@ -3,6 +3,7 @@
  */
 package ch.uzh.csg.p2p.group_1.utlis;
 
+import ch.uzh.csg.p2p.group_1.DNFSException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.configuration.XMLConfiguration;
 
@@ -21,9 +22,10 @@ public class DNFSSettings {
     private InetSocketAddress masterIP;
     private boolean useCustomStorageDirectory;
     private String customStorageDirectory;
+    private boolean useVDHT = true;
 
 
-    public DNFSSettings(String configFile, CommandLine cmd) {
+    public DNFSSettings(String configFile, CommandLine cmd) throws DNFSException.DNFSSettingsException {
 
         this.config = new XMLConfiguration();
         this.config.setFileName(configFile);
@@ -42,7 +44,7 @@ public class DNFSSettings {
         this.setUseDummyPeer();
         this.setStartNewServer();
         this.setMasterIP();
-
+        this.setUsevDHT();
     }
 
     
@@ -131,10 +133,9 @@ public class DNFSSettings {
         }
     }
 
-    
-    private void setMasterIP() {
+    private void setMasterIP() throws DNFSException.DNFSSettingsException {
         String addressString = null;
-        if (cmd.hasOption("m")) {
+        if (cmd.hasOption("a")) {
             addressString = cmd.getOptionValue("a");
         } else {
             addressString = this.config.getString("MasterIP");
@@ -142,6 +143,21 @@ public class DNFSSettings {
         if(addressString != null) {
             int port = Integer.parseInt(addressString.substring(addressString.lastIndexOf(":") + 1, addressString.length()));
             this.masterIP = new InetSocketAddress(addressString.substring(0, addressString.lastIndexOf(":")), port);
+        }
+        else{
+            if (!this.getStartNewServer()){
+                throw new DNFSException.DNFSSettingsException("Unabeld to set master IP");
+            }
+        }
+
+    }
+
+
+    private void setUsevDHT(){
+        if (cmd.hasOption("m")) {
+            this.useVDHT = true;
+        } else {
+            this.useVDHT = Boolean.parseBoolean(this.config.getString("UseVDHT"));
         }
 
     }

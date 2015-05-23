@@ -97,5 +97,16 @@ public class DNFSException extends Throwable {
         super(message);
     }
 
+    static public class DNFSKeyValueStorageException extends DNFSException{
+        public DNFSKeyValueStorageException(String message) {
+            super(message);
+        }
+    }
+
+    static public class DNFSSettingsException extends DNFSException {
+        public DNFSSettingsException(String message) {
+            super(message);
+        }
+    }
 }
 

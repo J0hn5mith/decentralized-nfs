@@ -7,8 +7,8 @@ import net.tomp2p.peers.Number160;
 public interface IKeyValueStorage {
     
     
-    public void startUp() throws Exception;
-    public void shutDown() throws Exception;
+    public void startUp() throws DNFSException.DNFSKeyValueStorageException;
+    public void shutDown() throws DNFSException.DNFSKeyValueStorageException;
     
     public boolean exists(Number160 key);    
     public boolean set(Number160 key, KeyValueData value);
