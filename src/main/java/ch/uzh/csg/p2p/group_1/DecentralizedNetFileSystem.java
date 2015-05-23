@@ -4,6 +4,9 @@
 
 package ch.uzh.csg.p2p.group_1;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
@@ -88,8 +91,8 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
                 } else {
                     this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
                 }
-
-                if(!this.settings.getStartNewServer()){
+                
+                if(!this.settings.getStartNewServer()) {
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
                 }
                 
@@ -148,6 +151,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void start() {
         
         final String mountPoint = this.settings.getMountPoint();
+        if(!Files.exists(Paths.get(mountPoint))) {
+            File newDirectory = new File(mountPoint);
+            newDirectory.mkdirs();
+        }
         final DNFSFuseIntegration fuseIntegration = this.fuseIntegration;
 
         Thread thread = new Thread() {
