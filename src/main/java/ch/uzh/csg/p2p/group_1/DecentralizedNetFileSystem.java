@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
+import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 
