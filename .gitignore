@@ -7,6 +7,5 @@
 target/
 testfs/*
 storage/*
-dnfs_2/hello.txt
-dnfs_2/hello_10.txt
-src/main/java/ch/uzh/csg/p2p/group_1/DecentralizedNetFileSystem.java.orig
+dnfs_2/*
+dnfs_3/*

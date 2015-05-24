@@ -135,12 +135,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             stat.setMode(TypeMode.NodeType.DIRECTORY);
             return 0;
         } else {
-            TypeMode.ModeWrapper modeWrapper = new TypeMode.ModeWrapper(007);
-            modeWrapper.setMode(TypeMode.NodeType.FILE);
             DNFSFile file = DNFSFile.getExisting(iNode, this.pathResolver.getPeer());
             stat.setMode(TypeMode.NodeType.FILE)
                     .size(file.getINode().getSize())
-                    .mode(file.getINode().getAccessRights())
+//                    .mode(file.getINode().getAccessRights())
             ;
             return 0;
         }

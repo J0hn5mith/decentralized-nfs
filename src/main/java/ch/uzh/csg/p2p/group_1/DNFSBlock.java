@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,7 +17,8 @@ import org.apache.log4j.Logger;
 public class DNFSBlock implements Serializable, DNFSIBlock {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
-    public static int BLOCK_SIZE = 65536;
+//    public static int BLOCK_SIZE = 65536;
+    public static int BLOCK_SIZE = 10000;
 
     Number160 id;
     DNFSIBlockStorage blockStorage;
@@ -26,6 +28,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.id = id;
         this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
+        LOGGER.setLevel(Level.DEBUG);
     }
     
     
@@ -84,6 +87,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNotInit {
         int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getMaxCapacity() - offset));
+        LOGGER.debug(String.format("Block is abel to write %d bytes.", numBytesPossibleToWrite));
 
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
@@ -108,10 +112,10 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
-        int bufferSize = this.data.capacity();
-        int maxBytesReadable = (int) Math.min(this.getMaxCapacity() - offset, bytesToRead);
-        byteBuffer.put(this.data.array(), (int) offset, (int) maxBytesReadable);
-        return (int) bytesToRead;
+        int maxBytesReadable = (int) Math.min(this.data.capacity() - offset, bytesToRead);
+        LOGGER.debug(String.format("Read %d bytes with with offset %d", maxBytesReadable, offset));
+        byteBuffer.put(this.data.array(), (int) offset, maxBytesReadable);
+        return maxBytesReadable;
     }
 
     

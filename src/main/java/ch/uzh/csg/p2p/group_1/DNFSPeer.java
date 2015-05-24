@@ -46,7 +46,7 @@ public class DNFSPeer implements DNFSIPeer {
     public DNFSBlock getBlock(Number160 id) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
         try {
             PeerAddress responder = _network.getFirstResponder(id);
-            System.out.println("NOW REQUESTING FOR GET: " + id);
+//            System.out.println("NOW REQUESTING FOR GET: " + id);
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, id);
             Object answer = _network.sendTo(responder, packet);
             byte[] data = ((DNFSBlockPacket) answer).getData();
@@ -166,10 +166,10 @@ public class DNFSPeer implements DNFSIPeer {
                     if(requestPacket.is(DNFSBlockPacket.Type.REQUEST)) {
                         KeyValueData keyValue = _keyValueStorage.get(requestPacket.getId());
                         if(keyValue == null) {
-                            System.out.println("DIDNT FIND: " + requestPacket.getId()); // TODO
+//                            System.out.println("DIDNT FIND: " + requestPacket.getId()); // TODO
                             throw new Exception();
                         }
-                        System.out.println("DEVLIVERING: " + requestPacket.getId()); //TODO
+//                        System.out.println("DEVLIVERING: " + requestPacket.getId()); //TODO
                         return new DNFSBlockPacket(DNFSBlockPacket.Type.DELIVER, requestPacket.getId(), keyValue.getData());
                     
                     } else if(requestPacket.is(DNFSBlockPacket.Type.DELETE)) {
