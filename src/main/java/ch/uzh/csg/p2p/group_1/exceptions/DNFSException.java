@@ -3,7 +3,7 @@ package ch.uzh.csg.p2p.group_1.exceptions;
 /**
  * Created by janmeier on 10.04.15.
  */
-public class DNFSException extends Throwable {
+public class DNFSException extends Exception {
 
     private static final long serialVersionUID = 2740073990296063507L;
 
@@ -32,6 +32,21 @@ public class DNFSException extends Throwable {
         
         public DNFSBlockStorageException(String message) {
             super(message);
+        }
+
+        public DNFSBlockStorageException(String message, Exception e) {
+
+        }
+
+    }
+
+    static public class INodeStorageException extends DNFSException {
+
+        public INodeStorageException(String message) {
+            super(message);
+        }
+        public INodeStorageException(String message, Exception e) {
+            super(message, e);
         }
     }
 
@@ -97,6 +112,10 @@ public class DNFSException extends Throwable {
         super(message);
     }
 
+    public DNFSException(String message, Exception e) {
+        super(message, e);
+    }
+
     static public class DNFSKeyValueStorageException extends DNFSException{
         private static final long serialVersionUID = -5687156715217687765L;
 
@@ -112,5 +131,12 @@ public class DNFSException extends Throwable {
             super(message);
         }
     }
+
+    static public class NetworkException extends DNFSException {
+        public NetworkException(String message) {
+            super(message);
+        }
+    }
+
 }
 

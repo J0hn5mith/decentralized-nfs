@@ -5,6 +5,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.XMLConfiguration;
 
 import java.net.InetSocketAddress;
@@ -45,6 +46,10 @@ public class DNFSSettings {
         this.setStartNewServer();
         this.setMasterIP();
         this.setUsevDHT();
+    }
+
+    public Configuration getConfig(){
+        return this.config;
     }
 
     

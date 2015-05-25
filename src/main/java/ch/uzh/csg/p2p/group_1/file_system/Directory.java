@@ -30,12 +30,12 @@ public class Directory extends FileSystemEntry {
     /**
      * @param iNode
      */
-    private Directory(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSNetworkNotInit {
+    private Directory(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSBlockStorageException {
         super(iNode, storage);
         this.updateINodeMap();
     }
-    
-    
+
+
     /**
      * Factory method for creating the root directory
      */
@@ -58,11 +58,11 @@ public class Directory extends FileSystemEntry {
     /**
      * Factory method for creating objects for existing directories.
      */
-    public static Directory getExisting(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSNetworkNotInit {
+    public static Directory getExisting(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSBlockStorageException {
         return new Directory(iNode, storage);
     }
-    
-    
+
+
     public DNFSIiNode getChildINode(String name) throws DNFSException.NoSuchFileOrDirectory {
         try {
             Number160 iNodeId = this.getIdOfChild(name);
@@ -73,18 +73,18 @@ public class Directory extends FileSystemEntry {
     }
 
 
-    public FileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrDirectory, DNFSException.DNFSNetworkNotInit {
+    public FileSystemEntry getChild(String name) throws DNFSException.NoSuchFileOrDirectory, DNFSException.DNFSBlockStorageException {
         DNFSIiNode iNode = this.getChildINode(name);
-        if(iNode.isDir()) {
+        if (iNode.isDir()) {
             return Directory.getExisting(iNode, this.getStorage());
 
         } else {
             return File.getExisting(iNode, this.getStorage());
         }
     }
-    
-    
-    public Directory getChildDirectory(String name) throws DNFSException.NoSuchFileOrDirectory, DNFSException.DNFSNetworkNotInit {
+
+
+    public Directory getChildDirectory(String name) throws DNFSException.NoSuchFileOrDirectory, DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
         DNFSIiNode iNode = this.getChildINode(name);
         return Directory.getExisting(iNode, this.getStorage());
     }
@@ -94,29 +94,29 @@ public class Directory extends FileSystemEntry {
         this.getChildINode(name);
         return File.createNew(this.getStorage());
     }
-    
-    
+
+
     public boolean hasChild(String name) {
         return this.childEntries.containsKey(name);
     }
 
 
-    public void addChild(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
+    public void addChild(DNFSIiNode iNode, String name) throws DNFSException.DNFSBlockStorageException {
         this.addINodeMapEntry(iNode, name);
         this.updateINodeMap();
     }
 
 
     public void removeChild(String name) throws DNFSException.NoSuchFileOrDirectory, DNFSException.DNFSNetworkNotInit, DNFSException {
-        
+
         try {
-            
+
             FileSystemEntry child = this.getChild(name);
             child.delete();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(this.getINodeMapDataStream()));
             String newContent = "";
-            
+
             String line;
             DirectoryINodeMapEntry entry;
             while ((line = br.readLine()) != null) {
@@ -130,12 +130,12 @@ public class Directory extends FileSystemEntry {
 
             int bytesWritten = (int) this.getBlockComposition().write(ByteBuffer.wrap(newContent.getBytes()), newContent.getBytes().length, 0);
             this.getBlockComposition().truncate(bytesWritten);
-            
+
             this.updateINodeMap();
-        
+
         } catch (DNFSException.DNFSBlockStorageException e) {
             throw new DNFSException.DNFSNetworkNotInit();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -190,8 +190,8 @@ public class Directory extends FileSystemEntry {
     /**
      *
      */
-    private void updateINodeMap() throws DNFSException.DNFSNetworkNotInit {
-        
+    private void updateINodeMap() throws DNFSException.DNFSBlockStorageException {
+
         HashMap<String, DirectoryINodeMapEntry> list = new HashMap<String, DirectoryINodeMapEntry>();
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getINodeMapDataStream()));
 
@@ -213,8 +213,8 @@ public class Directory extends FileSystemEntry {
                         } else {
                             list.put(name, new DirectoryINodeMapEntry(inodeId, name));
                         }
-                        
-                    } catch(IllegalArgumentException e) {
+
+                    } catch (IllegalArgumentException e) {
                         System.out.println("ILLEGAL LINE COMPONENTS : \"" + lineComponents[0] + "\", \"" + lineComponents[1] + "\""); // TODO
                         e.printStackTrace(); // TODO
                     }
@@ -225,11 +225,11 @@ public class Directory extends FileSystemEntry {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         this.childEntries = list;
     }
-    
-    
+
+
     public List<FileSystemEntry> getChildren() {
         List<FileSystemEntry> entries = new ArrayList<FileSystemEntry>();
         DNFSIiNode iNode;
@@ -249,71 +249,67 @@ public class Directory extends FileSystemEntry {
         }
         return entries;
     }
-    
-    
+
+
     public List<DirectoryINodeMapEntry> getINodeMap() {
-        
+
         List<DirectoryINodeMapEntry> result = new ArrayList<DirectoryINodeMapEntry>(this.childEntries.values());
 
-        if(this.selfEntry != null) {
+        if (this.selfEntry != null) {
             result.add(0, this.selfEntry);
         }
-        if(this.parentEntry != null) {
+        if (this.parentEntry != null) {
             result.add(1, this.parentEntry);
         }
         return result;
     }
 
 
-    private InputStream getINodeMapDataStream() throws DNFSException.DNFSNetworkNotInit {
-        
-        try {
-            
-            if(this.getINode().getNumBlocks() == 0) {
-                return new ByteArrayInputStream("".getBytes());
-            }
-            
-            long size = this.getBlockComposition().getSize();
-            ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) size]);
-            this.getBlockComposition().read(buffer, size, 0);
-            
-            return new ByteArrayInputStream(buffer.array());
-            
-        } catch (DNFSException.DNFSBlockStorageException e) {
-            throw new DNFSException.DNFSNetworkNotInit();
+    private InputStream getINodeMapDataStream() throws DNFSException.DNFSBlockStorageException {
+
+
+        if (this.getINode().getNumBlocks() == 0) {
+            return new ByteArrayInputStream("".getBytes());
         }
+
+        long size = this.getBlockComposition().getSize();
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) size]);
+        this.getBlockComposition().read(buffer, size, 0);
+
+        return new ByteArrayInputStream(buffer.array());
+
     }
 
 
     @Override
     public void delete() throws DNFSException {
-        for(FileSystemEntry entry : this.getChildren()) {
+        for (FileSystemEntry entry : this.getChildren()) {
             entry.delete();
         }
         this.getStorage().deleteINode(this.getINode().getId());
     }
 
-    
-    private void addINodeMapEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
-        
+
+    private void addINodeMapEntry(DNFSIiNode iNode, String name){
+
         try {
-            
+
             String entryAsString = iNode.getId() + SEPARATOR + name;
-            if(this.childEntries.size() > 0) {
-                 entryAsString = LINE_SEPARATOR + entryAsString;
+            if (this.childEntries.size() > 0) {
+                entryAsString = LINE_SEPARATOR + entryAsString;
             }
-            
+
             System.out.println("+++++++++++++ADDED ENTRY: " + entryAsString); // TODO
-            
+
             byte[] entryAsByteArray = entryAsString.getBytes();
             int entryLength = entryAsByteArray.length;
             ByteBuffer entry = ByteBuffer.wrap(entryAsByteArray);
-            
+
             this.getBlockComposition().append(entry, entryLength);
-            
+
         } catch (DNFSException.DNFSBlockStorageException e) {
             e.printStackTrace();
         }
     }
-    
+
 }

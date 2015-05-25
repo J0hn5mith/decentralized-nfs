@@ -22,7 +22,7 @@ public class File extends FileSystemEntry {
     }
 
     
-    public static File createNew(IStorage storage) throws DNFSException {
+    public static File createNew(IStorage storage) throws DNFSException.INodeStorageException {
         return new File(storage.createINode(), storage);
     }
     

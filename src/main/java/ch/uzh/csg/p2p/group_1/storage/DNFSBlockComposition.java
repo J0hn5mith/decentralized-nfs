@@ -40,7 +40,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     @Override
-    public long getSize() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    public long getSize() throws DNFSException.DNFSBlockStorageException {
         long totalSize = 0;
         for (Number160 blockID : iNode.getBlockIDs()) {
             DNFSBlock block = this.peer.getBlock(blockID);
@@ -55,8 +55,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     @Override
     public long write(ByteBuffer byteBuffer, long bufferSize, long offsetInBytes) throws
-            DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNotInit
+            DNFSException.DNFSBlockStorageException
     {
         LOGGER.debug(String.format("Write %d bytes with with offset %d", bufferSize, offsetInBytes));
 
@@ -86,7 +85,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
     
-    private DNFSBlock getNextBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    private DNFSBlock getNextBlock(DNFSBlock block) throws DNFSException.DNFSBlockStorageException {
         
         List<Number160> blockIDs = this.getINode().getBlockIDs();
         int nextIndex = blockIDs.indexOf(block.getId()) + 1;
@@ -100,7 +99,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     
     @Override
-    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    public long read(ByteBuffer byteBuffer, long bytesToRead, long offset) throws DNFSException.DNFSBlockStorageException {
 
         DNFSBlockCompositionOffset blockOffset = this.seek(offset);
         if(blockOffset == null) {
@@ -123,7 +122,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
 
     @Override
-    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    public long truncate(long offsetInBytes) throws DNFSException.DNFSBlockStorageException {
         
         DNFSBlockCompositionOffset offset = this.seek((int) offsetInBytes);
         if(offset == null) {
@@ -149,13 +148,13 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
     
     @Override
-    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    public long append(ByteBuffer byteBuffer, long bufferSize) throws DNFSException.DNFSBlockStorageException {
         return this.write(byteBuffer, bufferSize, this.getSize());
     }
 
     
     @Override
-    public void delete() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    public void delete() throws DNFSException.DNFSBlockStorageException {
         for (Number160 blockID : this.getINode().getBlockIDs()) {
            this.getINode().removeBlockID(blockID);
            this.getPeer().deleteBlock(blockID);
@@ -163,7 +162,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
 
-    private DNFSBlockCompositionOffset seek(final long offset) throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    private DNFSBlockCompositionOffset seek(final long offset) throws DNFSException.DNFSBlockStorageException{
 
         final long blockCapacity = DNFSBlock.getCapacity();
         int blockIndex = (int) Math.floor((float) offset / blockCapacity);
@@ -182,7 +181,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     }
 
 
-    private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException, DNFSException.DNFSNetworkNotInit {
+    private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException{
         DNFSBlock newBlock = this.getPeer().createBlock();
         this.getINode().addBlock(newBlock);
 //        TODO: Why do I have to call this, should be done automatically

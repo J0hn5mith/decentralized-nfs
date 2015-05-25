@@ -63,8 +63,8 @@ public class DWARFS implements IDNFS {
     public void setUp(DNFSSettings settings) {
         
         LOGGER.info("Setting up DWARFS File System...");
-        this.fuseIntegration = new FuseIntegration();
         this.settings = settings;
+        this.fuseIntegration = new FuseIntegration().setUp(settings);
         this.setConnectionTimeout();
         this.setUpStorage();
         this.pathResolver = new PathResolver(this.storage);
@@ -206,8 +206,8 @@ public class DWARFS implements IDNFS {
             this.storage.shutdown();
         } catch (DNFSException.DNFSKeyValueStorageException e) {
             LOGGER.error("Could not remove temporary directory of the file-based key-value storage.", e);
-        } catch (DNFSNetworkNotInit e) {
-            LOGGER.error("Network not initialized", e);
+        } catch (DNFSException.NetworkException e) {
+            e.printStackTrace();
         }
         System.out.println("DWARFS File System shut down.");
         System.exit(0);
@@ -246,8 +246,8 @@ public class DWARFS implements IDNFS {
                         } else {
                             failedChecks = 0;
                         }
-                    } catch (DNFSNetworkNotInit e) {
-                        LOGGER.error("Network not initialized:" + e);
+                    } catch (DNFSException.NetworkException e) {
+                        e.printStackTrace();
                     }
                     try {
                         Thread.sleep(checkConnectionInterval);

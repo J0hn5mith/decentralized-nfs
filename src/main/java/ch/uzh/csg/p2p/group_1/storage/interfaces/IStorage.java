@@ -12,11 +12,11 @@ public interface IStorage extends DNFSIBlockStorage, DNFSIiNodeStorage {
 
     public void setUp(DNFSSettings settings) throws DNFSException;
     
-    public void shutdown() throws DNFSNetworkNotInit;
+    public void shutdown() throws DNFSException.NetworkException;
     
-    public boolean isConnected() throws DNFSNetworkNotInit;
+    public boolean isConnected() throws  DNFSException.NetworkException;
     
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit;
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit, DNFSException.NetworkException;
     
     public void setConnectionTimeout(int connectionTimeOut);
 }
