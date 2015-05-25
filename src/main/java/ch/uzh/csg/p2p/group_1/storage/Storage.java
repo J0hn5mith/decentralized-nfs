@@ -155,7 +155,7 @@ public class Storage implements IStorage {
 
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException.INodeStorageException {
-        Object data = (Object) iNode;
+        Object data = (Object) iNode.getSerializableVersion();
         try {
             _network.put(iNode.getId(), data);
         } catch (DNFSException.NetworkException | DNFSNetworkPutException e) {
