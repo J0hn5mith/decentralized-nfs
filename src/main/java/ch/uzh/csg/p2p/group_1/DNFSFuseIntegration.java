@@ -6,16 +6,13 @@ package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
-import net.fusejna.DirectoryFiller;
-import net.fusejna.ErrorCodes;
-import net.fusejna.StructFuseFileInfo;
-import net.fusejna.StructStat;
+import net.fusejna.*;
+import net.fusejna.types.TypeGid;
 import net.fusejna.types.TypeMode;
+import net.fusejna.types.TypeUid;
 import net.fusejna.util.FuseFilesystemAdapterAssumeImplemented;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import java.nio.ByteBuffer;
 
 
@@ -43,7 +40,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
 
     @Override
-    public int access(final String path, final int access) {
+    public int access(final String pathString, final int access) {
         return 0;
     }
 
@@ -56,11 +53,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
         try{
             DNFSIiNode iNode = this.pathResolver.getINode(path);
-            this.setAccessRights(mode, iNode);
+            iNode.setMode(mode.mode());
         } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
             dnfsPathNotFound.printStackTrace();
         }
-        LOGGER.debug("chmod() was called");
         return 0;
     }
 
@@ -82,6 +78,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
      */
     @Override
     public int create(String path, TypeMode.ModeWrapper mode, StructFuseFileInfo.FileInfoWrapper info) {
+
         LOGGER.debug(String.format("create() was called.\nPath:%s\n mode: %s'\n info: %s", path, mode.toString(), info.toString()));
         DNFSPath dnfsPath = new DNFSPath(path);
         String fileName = dnfsPath.getComponent(-1);
@@ -98,6 +95,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         if (targetFolder.hasChild(fileName)) {
             return -ErrorCodes.EEXIST();
         }
+
         DNFSFile file = null;
         try {
             file = DNFSFile.createNew(this.pathResolver.getPeer());
@@ -106,7 +104,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -1;
         }
         try {
-            this.setAccessRights(mode, file.getINode());
+            file.getINode().setMode(mode.mode());
             targetFolder.addChild(file, fileName);
         } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
             DNFSNetworkNotInit.printStackTrace();
@@ -132,14 +130,14 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
 
         if (iNode.isDir()) {
-            stat.setMode(TypeMode.NodeType.DIRECTORY);
+            TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.DIRECTORY.getBits());
+            mode.mode( mode.mode() | iNode.getMode());
+            stat.mode(mode.mode());
             return 0;
         } else {
-            DNFSFile file = DNFSFile.getExisting(iNode, this.pathResolver.getPeer());
-            stat.setMode(TypeMode.NodeType.FILE)
-                    .size(file.getINode().getSize())
-//                    .mode(file.getINode().getAccessRights())
-            ;
+            TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.FILE.getBits());
+            mode.mode( mode.mode() | iNode.getMode());
+            stat.mode(mode.mode()).size(iNode.getSize());
             return 0;
         }
     }
@@ -176,14 +174,40 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
      *
      */
     @Override
-    public int open(final String path, final StructFuseFileInfo.FileInfoWrapper info) {
+    public int open(final String pathString, final StructFuseFileInfo.FileInfoWrapper info) {
+        DNFSPath path = new DNFSPath(pathString);
+        DNFSIiNode iNode = null;
+        try {
+            iNode = this.pathResolver.getINode(path);
+        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+            return -ErrorCodes.EEXIST();
+        }
+        if(!this.checkAccessRights(info.openMode(), iNode )){
+            return -ErrorCodes.EACCES();
+        }
         return 0;
     }
 
 
+    @Override
+    public int opendir(String pathString, StructFuseFileInfo.FileInfoWrapper info) {
+        DNFSPath path = new DNFSPath(pathString);
+        DNFSIiNode iNode = null;
+        try {
+            iNode = this.pathResolver.getINode(path);
+        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+            return -ErrorCodes.EEXIST();
+        }
+        if(!this.checkAccessRights(info.openMode(), iNode )){
+            return -ErrorCodes.EACCES();
+        }
+        return 0;
+    }
+
     /**
      *
-     */
+     *
+     * */
     @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
         // Compute substring that we are being asked to read
@@ -326,9 +350,21 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         return 0;
     }
 
+    private boolean checkAccessRights(StructFuseFileInfo.FileInfoWrapper.OpenMode openMode, DNFSIiNode iNode){
 
-    private void setAccessRights(TypeMode.ModeWrapper mode, DNFSIiNode iNode) {
-        iNode.setAccessRights(mode.mode());
-
+        TypeUid uid = getFuseContextUid();
+        TypeGid gid = getFuseContextGid();
+        switch(openMode) {
+            case READONLY:
+                return iNode.getAccessRights().isAllowedToRead(uid, gid);
+            case WRITEONLY:
+                return iNode.getAccessRights().isAllowedToWrite(uid, gid);
+            case READWRITE:
+                return iNode.getAccessRights().isAllowedToWriteAndRead(uid, gid);
+            default:
+                return false;
+        }
     }
+
+
 }

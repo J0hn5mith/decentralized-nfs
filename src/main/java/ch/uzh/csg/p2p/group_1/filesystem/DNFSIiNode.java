@@ -1,6 +1,8 @@
 package ch.uzh.csg.p2p.group_1.filesystem;
 
 import ch.uzh.csg.p2p.group_1.DNFSBlock;
+import net.fusejna.types.TypeGid;
+import net.fusejna.types.TypeUid;
 import net.tomp2p.peers.Number160;
 
 import java.util.Date;
@@ -20,11 +22,13 @@ public interface DNFSIiNode {
 
     public int setSize(int size);
 
-    public int getUseID();
-    public void setUserID(int id);
+    public TypeUid getUid();
+    public void setUid(TypeUid uid);
+    public TypeGid getGid();
+    public void setGid(TypeGid gid);
 
-    public long getAccessRights();
-    public void setAccessRights(long rights);
+    public long getMode();
+    public void setMode(long mode);
 
     public int getGroupID();
 
@@ -39,6 +43,8 @@ public interface DNFSIiNode {
     public void removeBlockID(Number160 id);
     public List<Number160> getBlockIDs();
     public int getNumBlocks();
+
+    public DNFSAccessRights getAccessRights();
 
     public DNFSIiNode getSerializableVersion();
 }

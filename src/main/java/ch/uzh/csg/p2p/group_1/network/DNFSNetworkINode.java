@@ -1,7 +1,10 @@
 package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.*;
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSAccessRights;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import net.fusejna.types.TypeGid;
+import net.fusejna.types.TypeUid;
 import net.tomp2p.peers.Number160;
 import org.apache.log4j.Logger;
 
@@ -51,25 +54,37 @@ public class DNFSNetworkINode implements DNFSIiNode {
     }
 
     @Override
-    public int getUseID() {
-        return this.iNode.getUseID();
+    public TypeUid getUid() {
+        return this.iNode.getUid();
     }
 
     @Override
-    public void setUserID(int id) {
-        this.setUserID(id);
+    public void setUid(TypeUid uid) {
+        this.setUid(uid);
+        this.update();
+    }
+
+    @Override
+    public TypeGid getGid() {
+        return this.iNode.getGid();
+    }
+
+    @Override
+    public void setGid(TypeGid gid) {
+        this.iNode.setGid(gid);
+        this.update();
 
     }
 
     @Override
-    public long getAccessRights() {
-        return this.iNode.getAccessRights();
+    public long getMode() {
+        return this.iNode.getMode();
     }
 
     @Override
-    public void setAccessRights(long rights) {
-        this.iNode.setAccessRights(rights);
-
+    public void setMode(long rights) {
+        this.iNode.setMode(rights);
+        this.update();
     }
 
     @Override
@@ -128,6 +143,11 @@ public class DNFSNetworkINode implements DNFSIiNode {
     @Override
     public int getNumBlocks() {
         return this.iNode.getNumBlocks();
+    }
+
+    @Override
+    public DNFSAccessRights getAccessRights() {
+        return this.iNode.getAccessRights();
     }
 
     @Override

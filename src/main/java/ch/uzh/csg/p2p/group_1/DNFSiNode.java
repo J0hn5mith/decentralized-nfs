@@ -1,6 +1,9 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.filesystem.DNFSAccessRights;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import net.fusejna.types.TypeGid;
+import net.fusejna.types.TypeUid;
 import net.tomp2p.peers.Number160;
 
 import java.io.Serializable;
@@ -19,8 +22,9 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     Number160 id;
     List<Number160> blockIds;
     int size = 10;
-    int userID = -1;
-    long accessRights = 16895;
+    TypeUid uid;
+    TypeGid gid;
+    long mode = 16895;
 
 
     public DNFSiNode(Number160 id) {
@@ -50,25 +54,33 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     }
 
 
-    public int getUseID() {
-        return 10;
+    public TypeUid getUid() {
+        return null;
     }
 
     @Override
-    public void setUserID(int id) {
-        this.userID = id;
+    public void setUid(TypeUid uid) {
+        this.uid = uid;
+    }
+
+    @Override
+    public TypeGid getGid() {
+        return null;
+    }
+
+    @Override
+    public void setGid(TypeGid gid) {
 
     }
 
     @Override
-    public long getAccessRights() {
-        return this.accessRights;
+    public long getMode() {
+        return this.mode;
     }
 
     @Override
-    public void setAccessRights(long rights) {
-        this.accessRights = rights;
-
+    public void setMode(long mode) {
+        this.mode = mode;
     }
 
     public int getGroupID() {
@@ -116,6 +128,11 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
 
     public int getNumBlocks() {
         return this.blockIds.size();
+    }
+
+    @Override
+    public DNFSAccessRights getAccessRights() {
+        return new DNFSAccessRights(this.getMode(), this.getUid(), this.getGid());
     }
 
     @Override
