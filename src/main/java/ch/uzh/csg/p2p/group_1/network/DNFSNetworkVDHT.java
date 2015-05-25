@@ -3,10 +3,10 @@
  */
 package ch.uzh.csg.p2p.group_1.network;
 
-import ch.uzh.csg.p2p.group_1.DNFSException;
-import ch.uzh.csg.p2p.group_1.DNFSNetwork;
-import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
-import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
+import ch.uzh.csg.p2p.group_1.network.interfaces.DNFSINetwork;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
+import ch.uzh.csg.p2p.group_1.tomp2p_extensions.DNFSStorageLayer;
+import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
 import net.tomp2p.dht.*;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;

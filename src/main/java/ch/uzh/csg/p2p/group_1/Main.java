@@ -3,8 +3,7 @@ package ch.uzh.csg.p2p.group_1;
  * Created by janmeier on 23.03.15.
  */
 
-import ch.uzh.csg.p2p.group_1.utlis.DNFSCommandLineOptionsFactory;
-import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import org.apache.commons.cli.*;
 
 public class Main {

@@ -1,13 +1,7 @@
 package ch.uzh.csg.p2p.group_1;
 
-import net.tomp2p.dht.FutureGet;
-import net.tomp2p.dht.PeerDHT;
-import net.tomp2p.storage.Data;
-import org.junit.Assert;
+import ch.uzh.csg.p2p.group_1.storage.Storage;
 import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
 
 /**
  * Created by janmeier on 02.04.15.
@@ -15,7 +9,7 @@ import java.io.IOException;
 public class TestDNFPeer {
     private final String fileName = "test.txt";
     private final String fileContent = "Hello World";
-    private DNFSPeer peer;
+    private Storage peer;
 
     @Before
     public void setUp(){

@@ -3,7 +3,7 @@
  */
 package ch.uzh.csg.p2p.group_1.test_bed;
 
-import ch.uzh.csg.p2p.group_1.DNFSException;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.DWARFS;
 
 import java.io.File;
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import ch.uzh.csg.p2p.group_1.utlis.DNFSCommandLineOptionsFactory;
-import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.DNFSCommandLineOptionsFactory;
+import ch.uzh.csg.p2p.group_1.DNFSSettings;
 
 import org.apache.commons.cli.*;
 

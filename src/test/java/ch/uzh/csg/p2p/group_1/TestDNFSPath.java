@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.file_system.DNFSPath;
 import org.junit.Before;
 import org.junit.Test;
 

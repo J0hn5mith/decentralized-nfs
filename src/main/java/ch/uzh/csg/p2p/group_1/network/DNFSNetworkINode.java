@@ -1,8 +1,10 @@
 package ch.uzh.csg.p2p.group_1.network;
 
-import ch.uzh.csg.p2p.group_1.*;
-import ch.uzh.csg.p2p.group_1.filesystem.DNFSAccessRights;
-import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
+import ch.uzh.csg.p2p.group_1.file_system.DNFSAccessRights;
+import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
+import ch.uzh.csg.p2p.group_1.storage.DNFSBlock;
+import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNodeStorage;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.fusejna.types.TypeGid;
 import net.fusejna.types.TypeUid;
 import net.tomp2p.peers.Number160;

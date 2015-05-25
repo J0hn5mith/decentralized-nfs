@@ -1,8 +1,5 @@
 package ch.uzh.csg.p2p.group_1.utils;
 
-import ch.uzh.csg.p2p.group_1.DNFSNetwork;
-import net.tomp2p.dht.PeerDHT;
-
 /**
  * Created by janmeier on 12.05.15.
  */

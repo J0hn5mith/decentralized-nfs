@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 
 public class TestDecentralizedNetFileSystem {
 
-    private DecentralizedNetFileSystem decentralizedNetFileSystem;
+    private DWARFS decentralizedNetFileSystem;
     @Before
     public void setUp() throws Exception {
-        this.decentralizedNetFileSystem = new DecentralizedNetFileSystem();
+        this.decentralizedNetFileSystem = new DWARFS();
 
     }
 

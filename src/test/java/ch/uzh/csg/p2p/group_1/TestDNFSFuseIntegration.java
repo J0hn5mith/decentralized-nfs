@@ -1,12 +1,9 @@
 package ch.uzh.csg.p2p.group_1;
 
-import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,11 +12,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestDNFSFuseIntegration {
 
-    private DecentralizedNetFileSystem dnfs;
+    private DWARFS dnfs;
 
     @Before
     public void setUp(){
-        this.dnfs = new DecentralizedNetFileSystem();
+        this.dnfs = new DWARFS();
 
         DNFSSettings settings = null;
         try {

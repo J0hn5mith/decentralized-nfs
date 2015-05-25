@@ -9,11 +9,21 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
-import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkSetupException;
-import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
+import ch.uzh.csg.p2p.group_1.file_system.PathResolver;
+import ch.uzh.csg.p2p.group_1.fuse_integration.FuseIntegration;
+import ch.uzh.csg.p2p.group_1.interfaces.IDNFS;
+import ch.uzh.csg.p2p.group_1.network.DNFSNetwork;
+import ch.uzh.csg.p2p.group_1.network.key_value_storage.FileBasedKeyValueStorage;
+import ch.uzh.csg.p2p.group_1.storage.LocalStorage;
+import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
+import ch.uzh.csg.p2p.group_1.storage.Storage;
+import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSetupException;
+import ch.uzh.csg.p2p.group_1.file_system.Directory;
+import ch.uzh.csg.p2p.group_1.network.interfaces.DNFSINetwork;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
-import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 import net.fusejna.FuseException;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMapChangeListener;
@@ -90,7 +100,7 @@ public class DWARFS implements IDNFS {
                 LOGGER.error("Could not set up the file-based key-value storage.", e);
                 System.exit(-1);
             }
-            this.storage = new DNFSPeer(this.network, this.keyValueStorage);
+            this.storage = new Storage(this.network, this.keyValueStorage);
         }
 
         try {
