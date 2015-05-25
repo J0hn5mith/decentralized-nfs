@@ -11,13 +11,13 @@ public abstract class DNFSFileSystemEntry {
 
     private final DNFSBlockComposition blockComposition;
     private DNFSIiNode iNode;
-    private DNFSIPeer peer;
+    private IStorage storage;
     
 
-    public DNFSFileSystemEntry(DNFSIiNode iNode, DNFSIPeer peer) {
+    public DNFSFileSystemEntry(DNFSIiNode iNode, IStorage storage) {
         this.iNode = iNode;
-        this.peer = peer;
-        this.blockComposition = new DNFSBlockComposition(iNode, peer);
+        this.storage = storage;
+        this.blockComposition = new DNFSBlockComposition(iNode, storage);
     }
 
 
@@ -26,8 +26,8 @@ public abstract class DNFSFileSystemEntry {
     }
 
     
-    public DNFSIPeer getPeer() {
-        return peer;
+    public IStorage getStorage() {
+        return storage;
     }
 
     

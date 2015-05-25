@@ -145,7 +145,7 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
      * Utilities
      */
 
-    public DNFSBlock addBlock(DNFSIPeer peer) {
+    public DNFSBlock addBlock(IStorage peer) {
         try {
             DNFSBlock block = peer.createBlock();
             return this.addBlock(block);

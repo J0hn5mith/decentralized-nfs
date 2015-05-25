@@ -21,9 +21,9 @@ public class DNFSBlockComposition implements DNFSIBlock {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlockComposition .class.getName());
 
     DNFSIiNode iNode;
-    DNFSIPeer peer;
+    IStorage peer;
 
-    public DNFSIPeer getPeer() {
+    public IStorage getPeer() {
         return peer;
     }
 
@@ -31,7 +31,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         return iNode;
     }
 
-    public DNFSBlockComposition(DNFSIiNode iNode, DNFSIPeer peer) {
+    public DNFSBlockComposition(DNFSIiNode iNode, IStorage peer) {
         this.iNode = iNode;
         this.peer = peer;
         LOGGER.setLevel(Level.DEBUG);
@@ -60,7 +60,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
 
         long additionalCapacity = this.getSize() + bufferSize - this.getCapacity();
         if (additionalCapacity > 0){
-            int numAdditionalBlocks = (int)Math.ceil((double)additionalCapacity/(DNFSBlock.getCapacity()));
+            int numAdditionalBlocks = (int)Math.ceil((double) additionalCapacity / (DNFSBlock.getCapacity()));
             for (int i = 0; i < numAdditionalBlocks; i++) {
                 this.addNewBlockToINode();
             }

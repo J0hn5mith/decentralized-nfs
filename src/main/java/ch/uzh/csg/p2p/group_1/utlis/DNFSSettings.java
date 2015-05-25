@@ -89,7 +89,7 @@ public class DNFSSettings {
 
 
     public boolean useVDHT(){
-        return true;
+        return this.useVDHT;
     }
 
 
@@ -154,8 +154,8 @@ public class DNFSSettings {
 
 
     private void setUsevDHT(){
-        if (cmd.hasOption("m")) {
-            this.useVDHT = true;
+        if (cmd.hasOption("v")) {
+            this.useVDHT = Boolean.parseBoolean(cmd.getOptionValue("v"));
         } else {
             this.useVDHT = Boolean.parseBoolean(this.config.getString("UseVDHT"));
         }

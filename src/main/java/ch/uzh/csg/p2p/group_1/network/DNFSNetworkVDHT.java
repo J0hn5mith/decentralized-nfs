@@ -5,8 +5,10 @@ package ch.uzh.csg.p2p.group_1.network;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
 import ch.uzh.csg.p2p.group_1.DNFSNetwork;
+import ch.uzh.csg.p2p.group_1.DNFSStorageLayer;
 import ch.uzh.csg.p2p.group_1.IKeyValueStorage;
 import net.tomp2p.dht.*;
+import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.Number640;
 import net.tomp2p.peers.PeerAddress;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 
+import net.tomp2p.storage.Storage;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -28,7 +31,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     
 
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
-        this.network = new DNFSNetwork(port, keyValueStorage);
+        this.network = new DNFSNetwork(this.createPeer(port, keyValueStorage));
         this._initialized = true;
         LOGGER.setLevel(Level.INFO);
     }
@@ -320,5 +323,21 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     public void setConnectionTimeout(int connectionTimeOut) {
         this.network.setConnectionTimeout(connectionTimeOut);
+    }
+
+
+    private PeerDHT createPeer(int port, IKeyValueStorage keyValueStorage) throws
+            DNFSException.DNFSNetworkSetupException {
+        try {
+            Random _random = new Random(System.currentTimeMillis());
+            Number160 key = Number160.createHash(_random.nextLong());
+            PeerBuilder builder = new PeerBuilder(key).ports(port);
+            PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
+            Storage storage = new StorageMemory();
+            StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
+            return builderDHT.storageLayer(storageLayer).start();
+        } catch (IOException e) {
+            throw new DNFSException.DNFSNetworkSetupException("IOException: " + e.getMessage());
+        }
     }
 }

@@ -14,7 +14,7 @@ import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 /**
  * Created by janmeier on 16.04.15.
  */
-public class DNFSDummyPeer implements DNFSIPeer {
+public class DNFSDummyPeer implements IStorage {
 
     private Map<Number160, DNFSBlock> blocks;
     private Map<Number160, DNFSIiNode> iNodes;
@@ -109,18 +109,18 @@ public class DNFSDummyPeer implements DNFSIPeer {
         DNFSFolder rootFolder = DNFSFolder.createNew(this);
         this.rootINode = rootFolder.getINode();
         
-        DNFSFile testFile = DNFSFile.createNew(this);
-        rootFolder.addChild(testFile, "Test_File_1.txt");
+        /*DNFSFile testFile = DNFSFile.createNew(this);
+        rootFolder.addChild(testFile.getINode(), "Test_File_1.txt");
 
         testFile = DNFSFile.createNew(this);
-        rootFolder.addChild(testFile, "Test_File_2.txt");
+        rootFolder.addChild(testFile.getINode(), "Test_File_2.txt");
 
         DNFSFolder testFolder = DNFSFolder.createNew(this);
-        rootFolder.addChild(testFolder, "test_folder");
+        rootFolder.addChild(testFolder.getINode(), "test_folder");*/
     }
     
-    public void shutdown() throws DNFSNetworkNotInit
-    {
+    
+    public void shutdown() throws DNFSNetworkNotInit {
         
     }
     

@@ -14,17 +14,17 @@ public class DNFSFile extends DNFSFileSystemEntry {
      * 
      * @param iNode
      */
-    DNFSFile(DNFSIiNode iNode, DNFSIPeer peer){
+    DNFSFile(DNFSIiNode iNode, IStorage peer){
         super(iNode, peer);
     }
 
     
-    public static DNFSFile createNew(DNFSIPeer peer) throws DNFSException {
+    public static DNFSFile createNew(IStorage peer) throws DNFSException {
         return new DNFSFile(peer.createINode(), peer);
     }
     
     
-    public static DNFSFile getExisting(DNFSIiNode iNode, DNFSIPeer peer){
+    public static DNFSFile getExisting(DNFSIiNode iNode, IStorage peer){
         DNFSFile file = new DNFSFile(iNode, peer);
         return file;
     }

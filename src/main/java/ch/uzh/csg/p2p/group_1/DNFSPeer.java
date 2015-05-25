@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import ch.uzh.csg.p2p.group_1.network.DNFSINetwork;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
-import net.tomp2p.peers.PeerMapChangeListener;
-import net.tomp2p.peers.PeerStatistic;
 import net.tomp2p.rpc.ObjectDataReply;
 
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkGetException;
@@ -19,7 +17,7 @@ import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
 import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 
-public class DNFSPeer implements DNFSIPeer {
+public class DNFSPeer implements IStorage {
 
     
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);

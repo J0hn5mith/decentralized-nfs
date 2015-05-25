@@ -33,7 +33,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     private DNFSSettings settings;
     private IKeyValueStorage keyValueStorage;
     private DNFSINetwork network;
-    private DNFSIPeer peer;
+    private IStorage peer;
     private int connectionTimeOut;
     private int checkConnectionFrequency;
     private int checkConnectionInterval;
@@ -53,19 +53,13 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      */
     public void setUp(DNFSSettings settings) {
         
-        System.out.println("Setting up DWARFS file system...");
-        
+        LOGGER.info("Setting up DWARFS file system...");
         this.fuseIntegration = new DNFSFuseIntegration();
-
         this.settings = settings;
-
         this.setConnectionTimeout();
-
         this.setUpPeer();
-
         this.pathResolver = new DNFSPathResolver(this.peer);
         this.fuseIntegration.setPathResolver(this.pathResolver);
-
         if(this.settings.getStartNewServer()) {
             this.createRootFolder();
         }
@@ -81,22 +75,10 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             this.peer = new DNFSDummyPeer();
 
         } else {
-
             try {
-                if(this.settings.getUseCustomStorageDirectory()) {
-                    this.keyValueStorage = new FileBasedKeyValueStorage(this.settings.getCustomStorageDirectory());
-                } else {
-                    this.keyValueStorage = new FileBasedKeyValueStorage();
-                }
-                this.keyValueStorage.startUp();
-                
-                if(this.settings.useVDHT()){
-                    this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
-                } else {
-                    this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
-                }
-
-//                this.setPeerChangeListener();
+                this.setKeyValueStorage();
+                this.setNetwork();
+                this.setPeerChangeListener();
 
                 if(!this.settings.getStartNewServer()) {
                     this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
@@ -108,7 +90,6 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
             } catch (DNFSException.DNFSKeyValueStorageException e) {
                 LOGGER.error("Could not set up the file-based key-value storage.", e);
                 System.exit(-1);
-                e.printStackTrace();
             }
             this.peer = new DNFSPeer(this.network, this.keyValueStorage);
         }
@@ -236,8 +217,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
 
     }
-    
-    
+
     private void startConnectionChecking() {
     	final DecentralizedNetFileSystem dnfs = this;
         new Thread() {
@@ -282,8 +262,27 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
         }
     }
 
+    private void setNetwork() throws DNFSNetworkSetupException {
+        if(this.settings.useVDHT()){
+            this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
+            LOGGER.info("Network WITH vDHT is used.");
+        } else {
+            this.network = new DNFSNetwork(this.settings.getPort(), this.keyValueStorage);
+            LOGGER.info("Network without vDHT is used.");
+        }
+    }
 
-    public DNFSIPeer getPeer() {
+    private void setKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
+        if(this.settings.getUseCustomStorageDirectory()) {
+            this.keyValueStorage = new FileBasedKeyValueStorage(this.settings.getCustomStorageDirectory());
+        } else {
+            this.keyValueStorage = new FileBasedKeyValueStorage();
+        }
+        this.keyValueStorage.startUp();
+    }
+
+
+    public IStorage getPeer() {
         return peer;
     }
 

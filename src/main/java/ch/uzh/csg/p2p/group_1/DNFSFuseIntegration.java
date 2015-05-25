@@ -81,38 +81,36 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
      */
     @Override
     public int create(String path, TypeMode.ModeWrapper mode, StructFuseFileInfo.FileInfoWrapper info) {
-
-        LOGGER.debug(String.format("create() was called.\nPath:%s\n mode: %s'\n info: %s", path, mode.toString(), info.toString()));
-        DNFSPath dnfsPath = new DNFSPath(path);
-        String fileName = dnfsPath.getComponent(-1);
-        DNFSPath subPath = dnfsPath.getSubPath(0, -1);
-
-        DNFSFolder targetFolder = null;
+      
         try {
-            targetFolder = this.pathResolver.getFolder(subPath);
-        } catch (DNFSException e) {
-            LOGGER.error(e.toString());
+            
+            DNFSPath dnfsPath = new DNFSPath(path);
+            String fileName = dnfsPath.getComponent(-1);
+            DNFSPath subPath = dnfsPath.getSubPath(0, -1);
+            
+            DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
+            if(targetFolder.hasChild(fileName)) {
+                return -ErrorCodes.EEXIST();
+            }
+            
+            DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
+            
+            DNFSIiNode fileINode = file.getINode();
+            
+            fileINode.setMode(mode.mode());
+            fileINode.setUid(this.getFuseContextUid());
+            fileINode.setGid(this.getFuseContextGid());
+            
+            targetFolder.addChild(fileINode, fileName);
+            
+        } catch (DNFSException.DNFSNetworkNotInit e) {
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
-        }
-
-        if (targetFolder.hasChild(fileName)) {
-            return -ErrorCodes.EEXIST();
-        }
-
-        DNFSFile file = null;
-        try {
-            file = DNFSFile.createNew(this.pathResolver.getPeer());
+            
         } catch (DNFSException e) {
             LOGGER.error("Could not create new file", e);
-            return -1;
-        }
-        try {
-            file.getINode().setMode(mode.mode());
-            file.getINode().setUid(this.getFuseContextUid());
-            file.getINode().setGid(this.getFuseContextGid());
-            targetFolder.addChild(file, fileName);
-        } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
-            DNFSNetworkNotInit.printStackTrace();
+            return -ErrorCodes.ENOENT();
+            
         }
         return 0;
     }
@@ -150,43 +148,43 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int mkdir(String path, TypeMode.ModeWrapper mode) {
-        DNFSPath dnfsPath = new DNFSPath(path);
-        String folderName = dnfsPath.getComponent(-1);
-        DNFSPath subPath = dnfsPath.getSubPath(0, -1);
-        DNFSFolder targetFolder = null;
-        try {
-            targetFolder = this.pathResolver.getFolder(subPath);
-        } catch (DNFSException e) {
-            LOGGER.error(e.toString());
-            return -ErrorCodes.ENOENT();
-        }
-
-        if (targetFolder.hasChild(folderName)) {
-            return -ErrorCodes.EEXIST();
-        }
 
         try {
+            
+            DNFSPath dnfsPath = new DNFSPath(path);
+            String folderName = dnfsPath.getComponent(-1);
+            DNFSPath subPath = dnfsPath.getSubPath(0, -1);
+            
+            DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
+            if(targetFolder.hasChild(folderName)) {
+                return -ErrorCodes.EEXIST();
+            }
+            
             DNFSFolder newFolder = DNFSFolder.createNew(this.pathResolver.getPeer());
-            newFolder.getINode().setGid(this.getFuseContextGid());
-            newFolder.getINode().setUid(this.getFuseContextUid());
-            targetFolder.addChild(newFolder, folderName);
+            
+            DNFSIiNode folderINode = newFolder.getINode();
+            folderINode.setGid(this.getFuseContextGid());
+            folderINode.setUid(this.getFuseContextUid());
+            
+            targetFolder.addChild(folderINode, folderName);
+            
         } catch (DNFSException.DNFSNetworkNotInit e) {
             e.printStackTrace();
-            return -1;
+            return -ErrorCodes.ENOENT();
+            
         } catch (DNFSBlockStorageException e) {
             e.printStackTrace();
-            return -1;
+            return -ErrorCodes.ENOENT();
+            
         } catch (DNFSException e) {
             e.printStackTrace();
-            return -1;
+            return -ErrorCodes.ENOENT();
         }
 
         return 0;
     }
 
-    /**
-     *
-     */
+
     @Override
     public int open(final String pathString, final StructFuseFileInfo.FileInfoWrapper info) {
         DNFSPath path = new DNFSPath(pathString);

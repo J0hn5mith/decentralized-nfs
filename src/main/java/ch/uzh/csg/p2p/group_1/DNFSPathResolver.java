@@ -9,13 +9,13 @@ import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
-public class DNFSPathResolver implements DNFSIPathResolver {
+public class DNFSPathResolver implements IPathResolver {
     final private static Logger LOGGER = Logger.getLogger(DNFSFolder.class.getName());
-    private DNFSIPeer peer;
+    private IStorage peer;
 
     /**
      */
-    public DNFSPathResolver(DNFSIPeer peer) {
+    public DNFSPathResolver(IStorage peer) {
         LOGGER.setLevel(Level.WARN);
         this.setPeer(peer);
     }
@@ -28,11 +28,11 @@ public class DNFSPathResolver implements DNFSIPathResolver {
         LOGGER.info("Successfully set up connection");
     }
 
-    public DNFSIPeer getPeer() {
+    public IStorage getPeer() {
         return peer;
     }
 
-    public void setPeer(DNFSIPeer peer) {
+    public void setPeer(IStorage peer) {
         this.peer = peer;
     }
 

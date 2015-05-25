@@ -17,7 +17,7 @@ public class DNFSCommandLineOptionsFactory {
         options.addOption("d", "dummy-peer", false, "use a dummy peer that requires no network connection");
         options.addOption("m", "mount-point", true, "specify a custom mount point");
         options.addOption("s", "storage-directory", true, "specify a custom directory for the temporary storage");
-        options.addOption("v", "vdht", false, "specify if vDHT should be used.");
+        options.addOption("v", "vdht", true, "specify if vDHT should be used.");
 
         return options;
     }
