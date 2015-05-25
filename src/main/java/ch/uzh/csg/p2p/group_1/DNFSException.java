@@ -98,12 +98,16 @@ public class DNFSException extends Throwable {
     }
 
     static public class DNFSKeyValueStorageException extends DNFSException{
+        private static final long serialVersionUID = -5687156715217687765L;
+
         public DNFSKeyValueStorageException(String message) {
             super(message);
         }
     }
 
     static public class DNFSSettingsException extends DNFSException {
+        private static final long serialVersionUID = 5006111210087209771L;
+
         public DNFSSettingsException(String message) {
             super(message);
         }
