@@ -175,7 +175,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             return -1;
         } catch (DNFSBlockStorageException e) {
             e.printStackTrace();
-            return -1;            e.printStackTrace();
+            return -1;
         } catch (DNFSException e) {
             e.printStackTrace();
             return -1;
