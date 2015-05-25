@@ -55,7 +55,7 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
 
 
     public TypeUid getUid() {
-        return null;
+        return this.uid;
     }
 
     @Override
@@ -65,11 +65,12 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
 
     @Override
     public TypeGid getGid() {
-        return null;
+        return this.gid;
     }
 
     @Override
     public void setGid(TypeGid gid) {
+        this.gid = gid;
 
     }
 

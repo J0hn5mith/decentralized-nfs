@@ -105,6 +105,8 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
         try {
             file.getINode().setMode(mode.mode());
+            file.getINode().setUid(this.getFuseContextUid());
+            file.getINode().setGid(this.getFuseContextGid());
             targetFolder.addChild(file, fileName);
         } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
             DNFSNetworkNotInit.printStackTrace();
@@ -315,17 +317,32 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     }
 
     @Override
-    public int write(String path, ByteBuffer buf, long bufSize, long writeOffset, StructFuseFileInfo.FileInfoWrapper info) {
+    public int write(
+            String path,
+            ByteBuffer buf,
+            long bufSize,
+            long writeOffset,
+            StructFuseFileInfo.FileInfoWrapper info
+    ) {
         try {
             DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
-            int bytesWritten = file.write(buf, bufSize, writeOffset);
-            LOGGER.warn("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
-            return bytesWritten;
+            if(!this.checkAccessRights(info.openMode(), file.getINode())){
+                return -ErrorCodes.EACCES();
+            };
+
+            return _write(file, buf, bufSize, writeOffset);
 
         } catch (DNFSException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
         }
+    }
+
+    public int _write(DNFSFile file, ByteBuffer buf, long bufSize, long writeOffset) throws DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
+        int bytesWritten = file.write(buf, bufSize, writeOffset);
+        LOGGER.debug("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
+        return bytesWritten;
+
     }
 
     @Override

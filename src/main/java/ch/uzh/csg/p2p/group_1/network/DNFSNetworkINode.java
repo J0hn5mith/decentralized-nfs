@@ -60,7 +60,7 @@ public class DNFSNetworkINode implements DNFSIiNode {
 
     @Override
     public void setUid(TypeUid uid) {
-        this.setUid(uid);
+        this.iNode.setUid(uid);
         this.update();
     }
 
@@ -73,7 +73,6 @@ public class DNFSNetworkINode implements DNFSIiNode {
     public void setGid(TypeGid gid) {
         this.iNode.setGid(gid);
         this.update();
-
     }
 
     @Override
