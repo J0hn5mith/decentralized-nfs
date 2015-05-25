@@ -32,15 +32,7 @@ public class DNFSFile extends DNFSFileSystemEntry {
         return file;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public InputStream getInputStream() {
-        return this.getFirstBlock().getInputStream();
-    }
 
-    
     public int write(final ByteBuffer buffer, final long bufSize, final long writeOffset) throws
             DNFSException.DNFSBlockStorageException,
             DNFSException.DNFSNetworkNotInit
@@ -63,17 +55,8 @@ public class DNFSFile extends DNFSFileSystemEntry {
         return 0;
     }
 
-    public long truncate(long offset){
-        return this.getFirstBlock().truncate(offset);
+    public long truncate(long offset) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
+        return this.getBlockComposition().truncate(offset);
     }
 
-    private DNFSBlock getFirstBlock() {
-        try {
-            return this.getPeer().getBlock(this.getINode().getBlockIDs().get(0));
-        } catch(DNFSException e) {
-            // TODO: DEAL WITH THIS
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
 }

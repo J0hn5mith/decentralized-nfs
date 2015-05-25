@@ -71,7 +71,6 @@ public class DNFSiNode implements Serializable, DNFSIiNode {
     @Override
     public void setGid(TypeGid gid) {
         this.gid = gid;
-
     }
 
     @Override

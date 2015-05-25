@@ -163,7 +163,10 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
 
         try {
-            targetFolder.addChild(DNFSFolder.createNew(this.pathResolver.getPeer()), folderName);
+            DNFSFolder newFolder = DNFSFolder.createNew(this.pathResolver.getPeer());
+            newFolder.getINode().setGid(this.getFuseContextGid());
+            newFolder.getINode().setUid(this.getFuseContextUid());
+            targetFolder.addChild(newFolder, folderName);
         } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
             DNFSNetworkNotInit.printStackTrace();
             return -1;
