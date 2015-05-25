@@ -1,9 +1,6 @@
 package ch.uzh.csg.p2p.group_1;
 
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
-import net.tomp2p.peers.Number160;
-
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
