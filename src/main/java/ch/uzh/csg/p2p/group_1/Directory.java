@@ -293,13 +293,22 @@ public class Directory extends FileSystemEntry {
 
     
     private void addINodeMapEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
-        String entryAsString = LINE_SEPARATOR + iNode.getId() + SEPARATOR + name;
-        if(this.childEntries.size() < 1){
-             entryAsString = iNode.getId() + SEPARATOR + name;
-        }
-        ByteBuffer entry = ByteBuffer.wrap(entryAsString.getBytes());
+        
         try {
-            this.getBlockComposition().append(entry, entryAsString.getBytes().length);
+            
+            String entryAsString = iNode.getId() + SEPARATOR + name;
+            if(this.childEntries.size() > 0) {
+                 entryAsString = LINE_SEPARATOR + entryAsString;
+            }
+            
+            System.out.println("+++++++++++++ADDED ENTRY: " + entryAsString); // TODO
+            
+            byte[] entryAsByteArray = entryAsString.getBytes();
+            int entryLength = entryAsByteArray.length;
+            ByteBuffer entry = ByteBuffer.wrap(entryAsByteArray);
+            
+            this.getBlockComposition().append(entry, entryLength);
+            
         } catch (DNFSException.DNFSBlockStorageException e) {
             e.printStackTrace();
         }
