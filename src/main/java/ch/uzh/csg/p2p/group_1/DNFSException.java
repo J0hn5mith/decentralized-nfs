@@ -13,12 +13,12 @@ public class DNFSException extends Throwable {
     }
 
     
-    static public class NoSuchFileOrFolder extends DNFSException{
+    static public class NoSuchFileOrDirectory extends DNFSException{
         private static final long serialVersionUID = 1229382105660628170L;
     }
 
 
-    static public class DNFSNotFolderException extends NoSuchFileOrFolder  {
+    static public class DNFSNotDirectoryException extends NoSuchFileOrDirectory  {
         private static final long serialVersionUID = -5132810907932619010L;
     }
 

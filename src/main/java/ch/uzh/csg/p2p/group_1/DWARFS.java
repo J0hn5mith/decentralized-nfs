@@ -27,8 +27,8 @@ public class DWARFS implements IDNFS {
 
     final private static Logger LOGGER = Logger.getLogger(DWARFS.class);
 
-    private DNFSFuseIntegration fuseIntegration;
-    private DNFSPathResolver pathResolver;
+    private FuseIntegration fuseIntegration;
+    private PathResolver pathResolver;
     private DNFSSettings settings;
     private IKeyValueStorage keyValueStorage;
     private DNFSINetwork network;
@@ -53,14 +53,14 @@ public class DWARFS implements IDNFS {
     public void setUp(DNFSSettings settings) {
         
         LOGGER.info("Setting up DWARFS File System...");
-        this.fuseIntegration = new DNFSFuseIntegration();
+        this.fuseIntegration = new FuseIntegration();
         this.settings = settings;
         this.setConnectionTimeout();
         this.setUpStorage();
-        this.pathResolver = new DNFSPathResolver(this.storage);
+        this.pathResolver = new PathResolver(this.storage);
         this.fuseIntegration.setPathResolver(this.pathResolver);
         if(this.settings.getStartNewServer()) {
-            this.createRootFolder();
+            this.createRootDirectory();
         }
     }
 
@@ -96,7 +96,7 @@ public class DWARFS implements IDNFS {
         try {
             this.storage.setUp(this.settings);
         } catch (DNFSException e) {
-            LOGGER.error("Could not set up peer.", e);
+            LOGGER.error("Could not set up storage.", e);
             System.exit(-1);
         }
         
@@ -148,7 +148,7 @@ public class DWARFS implements IDNFS {
                     } else {
                         System.out.println("Unknown command: " + command);
                         System.out.println("Valid command:");
-                        System.out.println("\tshutdown : Unmount and shut down DWARFS file system");
+                        System.out.println("\tshutdown : Unmount and shut down DWARFS File System");
                     }
                 }
             }
@@ -167,7 +167,7 @@ public class DWARFS implements IDNFS {
             File newDirectory = new File(mountPoint);
             newDirectory.mkdirs();
         }
-        final DNFSFuseIntegration fuseIntegration = this.fuseIntegration;
+        final FuseIntegration fuseIntegration = this.fuseIntegration;
 
         Thread thread = new Thread() {
             public void run() {
@@ -183,7 +183,7 @@ public class DWARFS implements IDNFS {
         
         startInputScanner();
         
-        System.out.println("DWARFS file system started.");
+        System.out.println("DWARFS File System started.");
     }
 
 
@@ -195,11 +195,11 @@ public class DWARFS implements IDNFS {
             this.keyValueStorage.shutDown();
             this.storage.shutdown();
         } catch (DNFSException.DNFSKeyValueStorageException e) {
-            LOGGER.error("Could not remove temporary folder of the file-based key-value storage.", e);
+            LOGGER.error("Could not remove temporary directory of the file-based key-value storage.", e);
         } catch (DNFSNetworkNotInit e) {
-            LOGGER.error("Peer not initialized", e);
+            LOGGER.error("Network not initialized", e);
         }
-        System.out.println("DWARFS file system shut down.");
+        System.out.println("DWARFS File System shut down.");
         System.exit(0);
     }
 
@@ -207,11 +207,11 @@ public class DWARFS implements IDNFS {
     /**
      *
      */
-    private void createRootFolder() {
+    private void createRootDirectory() {
         try {
-            DNFSFolder.createRoot(storage);
+            Directory.createRoot(storage);
         } catch (DNFSException e) {
-            LOGGER.error("Could not create root folder.", e);
+            LOGGER.error("Could not create root directory.", e);
             return;
         }
 

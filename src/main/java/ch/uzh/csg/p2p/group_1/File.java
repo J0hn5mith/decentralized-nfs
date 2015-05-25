@@ -8,32 +8,31 @@ import java.nio.ByteBuffer;
  */
 
 
-public class DNFSFile extends DNFSFileSystemEntry {
+public class File extends FileSystemEntry {
 
     /**
      * 
      * @param iNode
      */
-    DNFSFile(DNFSIiNode iNode, IStorage peer){
-        super(iNode, peer);
+    File(DNFSIiNode iNode, IStorage storage) {
+        super(iNode, storage);
     }
 
     
-    public static DNFSFile createNew(IStorage peer) throws DNFSException {
-        return new DNFSFile(peer.createINode(), peer);
+    public static File createNew(IStorage storage) throws DNFSException {
+        return new File(storage.createINode(), storage);
     }
     
     
-    public static DNFSFile getExisting(DNFSIiNode iNode, IStorage peer){
-        DNFSFile file = new DNFSFile(iNode, peer);
+    public static File getExisting(DNFSIiNode iNode, IStorage storage) {
+        File file = new File(iNode, storage);
         return file;
     }
 
 
     public int write(final ByteBuffer buffer, final long bufSize, final long writeOffset) throws
             DNFSException.DNFSBlockStorageException,
-            DNFSException.DNFSNetworkNotInit
-    {
+            DNFSException.DNFSNetworkNotInit {
         int bytesWritten = (int) this.getBlockComposition().write(buffer, bufSize, writeOffset);
 
         this.getINode().setSize((int) this.getBlockComposition().getSize());
@@ -47,11 +46,12 @@ public class DNFSFile extends DNFSFileSystemEntry {
 
     }
 
+    
     @Override
-    public int delete() {
-        return 0;
+    public void delete() {
     }
 
+    
     public long truncate(long offset) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
         return this.getBlockComposition().truncate(offset);
     }

@@ -19,16 +19,16 @@ import org.apache.log4j.Logger;
 import java.nio.ByteBuffer;
 
 
-public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
+public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
-    final private static Logger LOGGER = Logger.getLogger(DNFSFuseIntegration.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(FuseIntegration.class.getName());
 
-    private DNFSPathResolver pathResolver;
+    private PathResolver pathResolver;
 
     /**
      *
      */
-    public DNFSFuseIntegration() {
+    public FuseIntegration() {
         super();
         this.log(false);
         LOGGER.setLevel(Level.WARN);
@@ -37,7 +37,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
     /**
      * @param pathResolver
      */
-    public void setPathResolver(DNFSPathResolver pathResolver) {
+    public void setPathResolver(PathResolver pathResolver) {
         this.pathResolver = pathResolver;
     }
 
@@ -88,12 +88,12 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             String fileName = dnfsPath.getComponent(-1);
             DNFSPath subPath = dnfsPath.getSubPath(0, -1);
             
-            DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
-            if(targetFolder.hasChild(fileName)) {
+            Directory targetDir = this.pathResolver.getDirectory(subPath);
+            if(targetDir.hasChild(fileName)) {
                 return -ErrorCodes.EEXIST();
             }
             
-            DNFSFile file = DNFSFile.createNew(this.pathResolver.getPeer());
+            File file = File.createNew(this.pathResolver.getStorage());
             
             DNFSIiNode fileINode = file.getINode();
             
@@ -101,7 +101,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             fileINode.setUid(this.getFuseContextUid());
             fileINode.setGid(this.getFuseContextGid());
             
-            targetFolder.addChild(fileINode, fileName);
+            targetDir.addChild(fileINode, fileName);
             
         } catch (DNFSException.DNFSNetworkNotInit e) {
             e.printStackTrace();
@@ -152,21 +152,21 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         try {
             
             DNFSPath dnfsPath = new DNFSPath(path);
-            String folderName = dnfsPath.getComponent(-1);
+            String dirName = dnfsPath.getComponent(-1);
             DNFSPath subPath = dnfsPath.getSubPath(0, -1);
             
-            DNFSFolder targetFolder = this.pathResolver.getFolder(subPath);
-            if(targetFolder.hasChild(folderName)) {
+            Directory targetDir = this.pathResolver.getDirectory(subPath);
+            if(targetDir.hasChild(dirName)) {
                 return -ErrorCodes.EEXIST();
             }
             
-            DNFSFolder newFolder = DNFSFolder.createNew(this.pathResolver.getPeer());
+            Directory directory = Directory.createNew(this.pathResolver.getStorage());
             
-            DNFSIiNode folderINode = newFolder.getINode();
-            folderINode.setGid(this.getFuseContextGid());
-            folderINode.setUid(this.getFuseContextUid());
+            DNFSIiNode dirINode = directory.getINode();
+            dirINode.setGid(this.getFuseContextGid());
+            dirINode.setUid(this.getFuseContextUid());
             
-            targetFolder.addChild(folderINode, folderName);
+            targetDir.addChild(dirINode, dirName);
             
         } catch (DNFSException.DNFSNetworkNotInit e) {
             e.printStackTrace();
@@ -225,7 +225,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         // Compute substring that we are being asked to read
         DNFSPath dnfsPath = new DNFSPath(path);
         try {
-            DNFSFile file = this.pathResolver.getFile(dnfsPath);
+            File file = this.pathResolver.getFile(dnfsPath);
             int bytesRead = file.read(buffer, size, offset);
             LOGGER.warn(String.format("%d bytes requested and %d bytes read.", size, bytesRead));
             return bytesRead;
@@ -247,20 +247,20 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
-        DNFSFolder folder = null;
+        Directory directory = null;
         try {
-            folder = pathResolver.getFolder(new DNFSPath(path));
+            directory = pathResolver.getDirectory(new DNFSPath(path));
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
-        } catch (DNFSException.DNFSNotFolderException e) {
+        } catch (DNFSException.DNFSNotDirectoryException e) {
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSNetworkNotInit e) {
             LOGGER.error(e.toString());
         }
-        for (DNFSFolderEntry o : folder.getChildEntries()) {
-            filler.add(o.getName());
+        for (DirectoryINodeMapEntry iNodeMapEntry : directory.getINodeMap()) {
+            filler.add(iNodeMapEntry.getName());
         }
 
         return 0;
@@ -277,24 +277,22 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             
             DNFSIiNode iNode = this.pathResolver.getINode(oldPath);
             
-            DNFSFolder oldParentDir = this.pathResolver.getFolder(oldPath.getParent());
-            DNFSFolder newParentDir = this.pathResolver.getFolder(newPath.getParent());
+            Directory oldParentDir = this.pathResolver.getDirectory(oldPath.getParent());
+            Directory newParentDir = this.pathResolver.getDirectory(newPath.getParent());
             
             newParentDir.addChild(iNode, newPath.getFileName());
             oldParentDir.removeChild(oldPath.getFileName());
             
         } catch (DNFSException.DNFSPathNotFound e) {
-            LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOENT();
-        } catch (DNFSException.DNFSNotFolderException e) {
-            LOGGER.warn("Rename failed.", e);
+        } catch (DNFSException.DNFSNotDirectoryException e) {
             return -ErrorCodes.ENOTDIR();
-        } catch (DNFSException.NoSuchFileOrFolder e) {
-            LOGGER.warn("Rename failed.", e);
+        } catch (DNFSException.NoSuchFileOrDirectory e) {
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNotInit e) {
-            LOGGER.warn("Rename failed.", e);
-            return -1;
+            return -ErrorCodes.ENOENT();
+        } catch (DNFSException e) {
+            return -ErrorCodes.ENOENT();
         }
 
         return 0;
@@ -302,11 +300,11 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
     @Override
     public int rmdir(String pathString) {
-        DNFSFolder parentFolder;
+        Directory parentFolder;
         DNFSPath path;
         try {
             path = new DNFSPath(pathString);
-            parentFolder = this.pathResolver.getFolder(path.getParent());
+            parentFolder = this.pathResolver.getDirectory(path.getParent());
             parentFolder.removeChild(path.getComponent(-1));
         } catch (DNFSException e) {
             return -ErrorCodes.ENOENT();
@@ -319,7 +317,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         DNFSPath path;
         try {
             path = new DNFSPath(pathString);
-            DNFSFile file = this.pathResolver.getFile(path);
+            File file = this.pathResolver.getFile(path);
             file.truncate(offset);
 
         } catch (DNFSException e) {
@@ -338,7 +336,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             StructFuseFileInfo.FileInfoWrapper info
     ) {
         try {
-            DNFSFile file = this.pathResolver.getFile(new DNFSPath(path));
+            File file = this.pathResolver.getFile(new DNFSPath(path));
             if(!this.checkAccessRights(info.openMode(), file.getINode())){
                 return -ErrorCodes.EACCES();
             };
@@ -351,7 +349,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
         }
     }
 
-    public int _write(DNFSFile file, ByteBuffer buf, long bufSize, long writeOffset) throws DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
+    public int _write(File file, ByteBuffer buf, long bufSize, long writeOffset) throws DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
         int bytesWritten = file.write(buf, bufSize, writeOffset);
         LOGGER.debug("File path has been written and has now " + file.getINode().getBlockIDs().size() + " blocks");
         return bytesWritten;
@@ -368,7 +366,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
             DNFSPath entryPath = new DNFSPath(path);
             DNFSPath parentPath = entryPath.getParent();
-            DNFSFolder parentFolder = this.pathResolver.getFolder(parentPath);
+            Directory parentFolder = this.pathResolver.getDirectory(parentPath);
 
             parentFolder.removeChild(entryPath.getFileName());
 

@@ -106,7 +106,7 @@ public class LocalStorage implements IStorage {
 
 
     public void setUp(DNFSSettings settings) throws DNFSException {
-        DNFSFolder rootFolder = DNFSFolder.createNew(this);
+        Directory rootFolder = Directory.createNew(this);
         this.rootINode = rootFolder.getINode();
         
         /*DNFSFile testFile = DNFSFile.createNew(this);

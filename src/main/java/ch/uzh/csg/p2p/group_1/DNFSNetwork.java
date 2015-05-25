@@ -59,16 +59,15 @@ public class DNFSNetwork implements DNFSINetwork{
         _nextLock = 0;
         this._peer = createPeer(port, keyValueStorage);
         this._initialized = true;
-        PeerDHT peer = createPeer(port, keyValueStorage);
     }
 
+    
     public DNFSNetwork(PeerDHT peer){
         _random = new Random(System.currentTimeMillis());
         _locks = new HashMap<Integer, Boolean>();
         _nextLock = 0;
         this._peer = peer;
         this._initialized = true;
-        //new IndirectReplication(_peer).start();
     }
     
     

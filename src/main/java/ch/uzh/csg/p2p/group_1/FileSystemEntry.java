@@ -6,7 +6,7 @@ import ch.uzh.csg.p2p.group_1.network.DNFSBlockComposition;
 /**
  * Created by janmeier on 02.05.15.
  */
-public abstract class DNFSFileSystemEntry {
+public abstract class FileSystemEntry {
 
 
     private final DNFSBlockComposition blockComposition;
@@ -14,7 +14,7 @@ public abstract class DNFSFileSystemEntry {
     private IStorage storage;
     
 
-    public DNFSFileSystemEntry(DNFSIiNode iNode, IStorage storage) {
+    public FileSystemEntry(DNFSIiNode iNode, IStorage storage) {
         this.iNode = iNode;
         this.storage = storage;
         this.blockComposition = new DNFSBlockComposition(iNode, storage);
@@ -36,6 +36,6 @@ public abstract class DNFSFileSystemEntry {
     }
 
     
-    abstract public int delete();
+    abstract public void delete() throws DNFSException;
 
 }

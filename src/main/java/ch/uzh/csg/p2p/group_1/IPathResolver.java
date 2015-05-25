@@ -6,8 +6,8 @@ import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 
 public interface IPathResolver {
 
-    public DNFSFolder getFolder(DNFSPath path) throws DNFSException;
-    public DNFSFile getFile(DNFSPath path) throws DNFSException;
+    public Directory getDirectory(DNFSPath path) throws DNFSException;
+    public File getFile(DNFSPath path) throws DNFSException;
     public DNFSIiNode getINode(DNFSPath path) throws DNFSException;
 
 }
