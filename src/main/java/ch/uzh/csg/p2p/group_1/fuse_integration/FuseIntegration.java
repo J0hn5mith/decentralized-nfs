@@ -242,9 +242,11 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         try {
             iNode = this.pathResolver.getINode(path);
         } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+            dnfsPathNotFound.printStackTrace();
             return -ErrorCodes.EEXIST();
         }
         if (!this.checkAccessRights(info.openMode(), iNode)) {
+
             return -ErrorCodes.EACCES();
         }
         return 0;
@@ -266,15 +268,19 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
         } catch (DNFSException.DNFSNotFileException e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.EISDIR();
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSBlockStorageException e) {
+            e.printStackTrace();
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNotInit e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -1;
         }
     }
@@ -285,12 +291,16 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         try {
             directory = pathResolver.getDirectory(new DNFSPath(path));
         } catch (DNFSException.DNFSPathNotFound e) {
-            LOGGER.error(e.toString());
+            LOGGER.error(e);
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
-            LOGGER.error(e.toString());
+            LOGGER.error(e);
+            e.printStackTrace();
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSBlockStorageException e) {
+            LOGGER.error(e);
+            e.printStackTrace();
             return -1;
         }
         for (DirectoryINodeMapEntry iNodeMapEntry : directory.getINodeMap()) {

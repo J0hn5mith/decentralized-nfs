@@ -111,7 +111,7 @@ public class DWARFS implements IDNFS {
         }
         
         this.storage.setConnectionTimeout(connectionTimeOut);
-        startConnectionChecking();
+//        startConnectionChecking();
     }
 
 

@@ -45,9 +45,10 @@ public class Storage implements IStorage {
             DNFSBlock block = new DNFSBlock(id, this);
             updateBlock(block);
             return block;
-        } catch (DNFSException.NetworkException e) {
-            throw new DNFSException.DNFSBlockStorageException("", e);
+        } catch (DNFSException.NetworkException e1) {
+            e1.printStackTrace();
         }
+        return  null;
     }
 
 
@@ -90,10 +91,8 @@ public class Storage implements IStorage {
             _network.put(id, (Object) notification);
 
         } catch(DNFSNetworkPutException e) {
-            e.printStackTrace();
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkPutException: ", e);
         } catch(NoSuchAlgorithmException | DNFSException.NetworkException e) {
-            e.printStackTrace();
             throw new DNFSException.DNFSBlockStorageException("NoSuchAlgorithmException: ", e);
         }
     }
@@ -157,17 +156,13 @@ public class Storage implements IStorage {
 
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException.INodeStorageException {
+//        _network.delete(iNode.getId()); // TODO: change this once we have vDHT
 
+        Object data = (Object) iNode.getSerializableVersion();
         try {
-//            _network.delete(iNode.getId()); // TODO: change this once we have vDHT
-            Object data = (Object) iNode.getSerializableVersion();
             _network.put(iNode.getId(), data);
         } catch (DNFSException.NetworkException | DNFSNetworkPutException e) {
-            e.printStackTrace();
             throw new DNFSException.INodeStorageException("", e);
-//        } catch (DNFSException.DNFSNetworkDeleteException e) {
-//            e.printStackTrace();
-//            throw new DNFSException.INodeStorageException("", e);
         }
     }
 
@@ -185,10 +180,8 @@ public class Storage implements IStorage {
         try {
             _network.put(ROOT_INODE_KEY, data);
         } catch (DNFSException.NetworkException e) {
-            e.printStackTrace();
             throw new DNFSException.INodeStorageException("", e);
         } catch (DNFSNetworkPutException e) {
-            e.printStackTrace();
             throw new DNFSException.INodeStorageException("", e);
         }
         return new DNFSNetworkINode(iNode, this);
@@ -196,8 +189,13 @@ public class Storage implements IStorage {
 
 
     @Override
+<<<<<<< HEAD
+    public void setUp(DNFSSettings settings) throws DNFSException {
+
+=======
     public void setUp(Settings settings) throws DNFSException {
         
+>>>>>>> ad264f53538456514ae6bd12ed3f98c984b9993b
         _network.registerObjectDataReply(new ObjectDataReply() {
 
             @Override
