@@ -213,8 +213,11 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
     public void shutDown() {
         try {
             this.keyValueStorage.shutDown();
+            this.peer.shutdown();
         } catch (DNFSException.DNFSKeyValueStorageException e) {
             LOGGER.error("Could not remove temporary folder of the file-based key-value storage.", e);
+        } catch (DNFSNetworkNotInit e) {
+            LOGGER.error("Peer not initialized", e);
         }
         System.out.println("DWARFS file system shut down.");
         System.exit(0);
