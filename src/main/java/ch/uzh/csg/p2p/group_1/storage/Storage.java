@@ -14,7 +14,7 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
-
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkDeleteException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkGetException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkPutException;
@@ -156,12 +156,13 @@ public class Storage implements IStorage {
 
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException.INodeStorageException {
-//        _network.delete(iNode.getId()); // TODO: change this once we have vDHT
+        
 
         Object data = (Object) iNode.getSerializableVersion();
         try {
+            _network.delete(iNode.getId()); // TODO: change this once we have vDHT
             _network.put(iNode.getId(), data);
-        } catch (DNFSException.NetworkException | DNFSNetworkPutException e) {
+        } catch (DNFSException.NetworkException | DNFSNetworkPutException | DNFSNetworkDeleteException e) {
             throw new DNFSException.INodeStorageException("", e);
         }
     }

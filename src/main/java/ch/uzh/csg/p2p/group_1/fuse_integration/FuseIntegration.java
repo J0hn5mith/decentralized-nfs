@@ -22,7 +22,6 @@ import net.fusejna.util.FuseFilesystemAdapterAssumeImplemented;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.varia.ExternallyRolledFileAppender;
 
 import java.nio.ByteBuffer;
 
@@ -84,10 +83,11 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
      */
     @Override
     public int chown(String pathAsString, long uid, long gid) {
+        System.out.println("::::::::::::::::: FUSE ::::::: chown " + pathAsString); // TODO
         try {
             return _chown(pathAsString, uid, gid);
-        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
-            dnfsPathNotFound.printStackTrace();
+        } catch (DNFSException.DNFSPathNotFound e) {
+            e.printStackTrace();
         }
         return 0;
     }
@@ -113,6 +113,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
      */
     @Override
     public int create(String path, TypeMode.ModeWrapper mode, StructFuseFileInfo.FileInfoWrapper info) {
+        System.out.println("::::::::::::::::: FUSE ::::::: create " + path); // TODO
 
         try {
 
@@ -138,6 +139,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
+            e.printStackTrace();
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSException.INodeStorageException e) {
             e.printStackTrace();
@@ -156,6 +158,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
      */
     @Override
     public int getattr(final String path, final StructStat.StatWrapper stat) {
+        System.out.println("::::::::::::::::: FUSE ::::::: getattr " + path); // TODO
 
         DNFSIiNode iNode = null;
         try {
@@ -182,6 +185,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int mkdir(String path, TypeMode.ModeWrapper mode) {
+        System.out.println("::::::::::::::::: FUSE ::::::: mkdir " + path); // TODO
 
         try {
 
@@ -221,11 +225,14 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int open(final String pathString, final StructFuseFileInfo.FileInfoWrapper info) {
+        System.out.println("::::::::::::::::: FUSE ::::::: open " + pathString); // TODO
+        
         DNFSPath path = new DNFSPath(pathString);
         DNFSIiNode iNode = null;
         try {
             iNode = this.pathResolver.getINode(path);
-        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+        } catch (DNFSException.DNFSPathNotFound e) {
+            e.printStackTrace();
             return -ErrorCodes.EEXIST();
         }
         if (!this.checkAccessRights(info.openMode(), iNode)) {
@@ -237,11 +244,14 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int opendir(String pathString, StructFuseFileInfo.FileInfoWrapper info) {
+        System.out.println("::::::::::::::::: FUSE ::::::: opendir " + pathString); // TODO
+        
         DNFSPath path = new DNFSPath(pathString);
         DNFSIiNode iNode = null;
         try {
             iNode = this.pathResolver.getINode(path);
-        } catch (DNFSException.DNFSPathNotFound dnfsPathNotFound) {
+        } catch (DNFSException.DNFSPathNotFound e) {
+            e.printStackTrace();
             return -ErrorCodes.EEXIST();
         }
         if (!this.checkAccessRights(info.openMode(), iNode)) {
@@ -256,6 +266,8 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
      * */
     @Override
     public int read(String path, final ByteBuffer buffer, final long size, long offset, StructFuseFileInfo.FileInfoWrapper info) {
+        System.out.println("::::::::::::::::: FUSE ::::::: read " + path); // TODO
+        
         // Compute substring that we are being asked to read
         DNFSPath dnfsPath = new DNFSPath(path);
         try {
@@ -281,14 +293,18 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int readdir(final String path, final DirectoryFiller filler) {
+        System.out.println("::::::::::::::::: FUSE ::::::: readdir " + path); // TODO
+        
         Directory directory = null;
         try {
             directory = pathResolver.getDirectory(new DNFSPath(path));
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSBlockStorageException e) {
             return -1;
@@ -303,6 +319,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int rename(String oldPathString, String newPathString) {
+        System.out.println("::::::::::::::::: FUSE ::::::: rename " + oldPathString); // TODO
 
         try {
 
@@ -320,6 +337,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         } catch (DNFSException.DNFSPathNotFound e) {
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
+            e.printStackTrace();
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSException.NoSuchFileOrDirectory e) {
             return -ErrorCodes.ENOENT();
@@ -334,6 +352,8 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int rmdir(String pathString) {
+        System.out.println("::::::::::::::::: FUSE ::::::: rmdir " + pathString); // TODO
+        
         Directory parentFolder;
         DNFSPath path;
         try {
@@ -348,6 +368,8 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int truncate(final String pathString, final long offset) {
+        System.out.println("::::::::::::::::: FUSE ::::::: truncate " + pathString); // TODO
+        
         DNFSPath path;
         try {
             path = new DNFSPath(pathString);
@@ -369,6 +391,8 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
             long writeOffset,
             StructFuseFileInfo.FileInfoWrapper info
     ) {
+        System.out.println("::::::::::::::::: FUSE ::::::: write " + path); // TODO
+        
         try {
             File file = this.pathResolver.getFile(new DNFSPath(path));
             if (!this.checkAccessRights(info.openMode(), file.getINode())) {
@@ -393,6 +417,8 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
     @Override
     public int unlink(String path) {
+        System.out.println("::::::::::::::::: FUSE ::::::: unlink " + path); // TODO
+        
         try {
 
             if (path.equals("/")) {

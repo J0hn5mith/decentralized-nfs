@@ -7,5 +7,5 @@
         <ConnectionTimeOut>1000</ConnectionTimeOut>
         <CheckConnectionFrequency>4</CheckConnectionFrequency>
         <UseVDHT>True</UseVDHT>
-    <FuseLogging>False</FuseLogging>
+        <FuseLogging>True</FuseLogging>
 </web-app>

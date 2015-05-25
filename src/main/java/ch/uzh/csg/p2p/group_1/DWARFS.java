@@ -148,7 +148,7 @@ public class DWARFS implements IDNFS {
         Thread thread = new Thread() {
             private Scanner scanner;
             public void run() {
-                scanner = new Scanner(System.in);
+                /*scanner = new Scanner(System.in); TODO
                 while(true) {
                     String command = scanner.next();
                     
@@ -160,7 +160,7 @@ public class DWARFS implements IDNFS {
                         System.out.println("Valid command:");
                         System.out.println("\tshutdown : Unmount and shut down DWARFS File System");
                     }
-                }
+                }*/
             }
         };
         thread.start();
