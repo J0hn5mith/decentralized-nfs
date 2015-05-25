@@ -5,7 +5,7 @@ package ch.uzh.csg.p2p.group_1;
 
 import org.apache.commons.cli.*;
 
-public class DNFSCommandLineOptionsFactory {
+public class CommandLineOptionsFactory {
     
     
     public static Options getOptions() {

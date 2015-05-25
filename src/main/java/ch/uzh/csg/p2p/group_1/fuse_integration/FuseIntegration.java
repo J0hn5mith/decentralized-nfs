@@ -313,10 +313,10 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
             Directory oldParentDir = this.pathResolver.getDirectory(oldPath.getParent());
             Directory newParentDir = this.pathResolver.getDirectory(newPath.getParent());
-
-            newParentDir.addChild(iNode, newPath.getFileName());
+            
             oldParentDir.removeChild(oldPath.getFileName());
-
+            newParentDir.addChild(iNode, newPath.getFileName());
+            
         } catch (DNFSException.DNFSPathNotFound e) {
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {

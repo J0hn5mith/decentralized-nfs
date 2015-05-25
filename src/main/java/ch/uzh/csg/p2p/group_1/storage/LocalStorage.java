@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import ch.uzh.csg.p2p.group_1.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.Settings;
 
 /**
  * Created by janmeier on 16.04.15.
@@ -108,7 +108,7 @@ public class LocalStorage implements IStorage {
     }
 
 
-    public void setUp(DNFSSettings settings) throws DNFSException {
+    public void setUp(Settings settings) throws DNFSException {
         Directory rootFolder = Directory.createNew(this);
         this.rootINode = rootFolder.getINode();
         

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import ch.uzh.csg.p2p.group_1.DNFSCommandLineOptionsFactory;
-import ch.uzh.csg.p2p.group_1.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.CommandLineOptionsFactory;
+import ch.uzh.csg.p2p.group_1.Settings;
 
 import org.apache.commons.cli.*;
 
@@ -89,16 +89,16 @@ public class DNFSTestBed {
 
         CommandLine cmd;
         try {
-            cmd = parser.parse(DNFSCommandLineOptionsFactory.getOptions(), args);
+            cmd = parser.parse(CommandLineOptionsFactory.getOptions(), args);
         } catch (ParseException e) {
             e.printStackTrace();
             System.exit(-1);
             return;
         }
 
-        DNFSSettings settings = null;
+        Settings settings = null;
         try {
-            settings = new DNFSSettings("./conf/settings.xml", cmd);
+            settings = new Settings("./conf/settings.xml", cmd);
         } catch (DNFSException.DNFSSettingsException e) {
             System.err.println("Could not set up settings.");
             e.printStackTrace();

@@ -120,16 +120,19 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     }
 
     
-    public long truncate(final long offset) {
+    public long truncate(final long offset) throws DNFSException.DNFSNetworkNotInit {
+        
         if (offset < this.data.capacity()) {
-            // Need to create a new, smaller buffer
-            final ByteBuffer newContents = ByteBuffer.allocate((int) offset);
             final byte[] bytesRead = new byte[(int) offset];
             this.data.get(bytesRead);
-            newContents.put(bytesRead);
-            this.data = newContents;
+            this.data = ByteBuffer.wrap(bytesRead);
         }
-
+        
+        try {
+            this.getBlockStorage().updateBlock(this);
+        } catch (DNFSException.DNFSBlockStorageException e) {
+            LOGGER.error("Serious probelm. Could not update block. Updated is ignored.", e);
+        }
         return (int)offset;
     }
 
