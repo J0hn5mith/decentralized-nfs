@@ -8,11 +8,11 @@ import net.tomp2p.peers.Number160;
  */
 public interface DNFSIiNodeStorage {
 
-    public DNFSIiNode createINode() throws DNFSException;
-    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException;
-    public void deleteINode(Number160 iNodeID) throws DNFSException;
-    public void updateINode(DNFSIiNode iNode) throws DNFSException;
+    public DNFSIiNode createINode() throws DNFSException.INodeStorageException;
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException.INodeStorageException;
+    public void deleteINode(Number160 iNodeID) throws DNFSException.INodeStorageException;
+    public void updateINode(DNFSIiNode iNode) throws DNFSException.INodeStorageException;
 
-    public DNFSIiNode getRootINode() throws DNFSException;
-    public DNFSIiNode createRootINode() throws DNFSException;
+    public DNFSIiNode getRootINode() throws DNFSException.INodeStorageException;
+    public DNFSIiNode createRootINode() throws DNFSException.INodeStorageException;
 }

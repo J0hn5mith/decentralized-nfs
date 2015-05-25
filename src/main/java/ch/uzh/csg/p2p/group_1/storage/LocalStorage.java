@@ -43,10 +43,10 @@ public class LocalStorage implements IStorage {
      * @return
      * @throws ch.uzh.csg.p2p.group_1.exceptions.DNFSException
      */
-    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException {
+    public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException.INodeStorageException {
         DNFSIiNode node = this.iNodes.get(iNodeID);
         if (node == null){
-            throw new DNFSException();
+            throw new DNFSException.INodeStorageException("");
         }
 
         return node;
@@ -67,12 +67,12 @@ public class LocalStorage implements IStorage {
      * @return
      * @throws DNFSException
      */
-    public DNFSIiNode getRootINode() throws DNFSException {
+    public DNFSIiNode getRootINode() throws DNFSException.INodeStorageException {
         return this.rootINode;
     }
 
     @Override
-    public DNFSIiNode createRootINode() throws DNFSException {
+    public DNFSIiNode createRootINode() throws DNFSException.INodeStorageException {
         return this.rootINode;
     }
 
@@ -123,11 +123,11 @@ public class LocalStorage implements IStorage {
     }
     
     
-    public void shutdown() throws DNFSNetworkNotInit {
+    public void shutdown() {
         
     }
     
-    public boolean isConnected() throws DNFSNetworkNotInit {
+    public boolean isConnected() throws DNFSException.NetworkException {
         return true;
     }
     

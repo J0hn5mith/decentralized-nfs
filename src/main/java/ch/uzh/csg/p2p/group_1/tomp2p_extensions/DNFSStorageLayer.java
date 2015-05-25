@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.KeyValueData;
 import ch.uzh.csg.p2p.group_1.network.DNFSBlockPacket;
@@ -255,20 +256,13 @@ public class DNFSStorageLayer extends StorageLayer {
                             }
                         }
                     }
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException | NoSuchAlgorithmException | DNFSException.NetworkException | IOException e) {
                     LOGGER.error("Could execute putConfirm", e);
                 } catch (DNFSNetworkSendException e) {
                     LOGGER.error("Could execute putConfirm", e);
-                    e.printStackTrace();
-                } catch (DNFSNetworkNotInit e) {
-                    LOGGER.error("Could execute putConfirm", e);
-                } catch (NoSuchAlgorithmException e) {
-                    LOGGER.error("Could execute putConfirm", e);
-                } catch (IOException e) {
-                    LOGGER.error("Could execute putConfirm", e);
                 }
-                
-                
+
+
                 if(newData.hasPrepareFlag()) {
                     retVal.put(key, PutStatus.OK_PREPARED);
                 } else {
@@ -919,12 +913,12 @@ public class DNFSStorageLayer extends StorageLayer {
                 } catch (DNFSNetworkSendException e) {
                     LOGGER.error("Could execute putConfirm", e);
                     e.printStackTrace();
-                } catch (DNFSNetworkNotInit e) {
-                    LOGGER.error("Could execute putConfirm", e);
                 } catch (NoSuchAlgorithmException e) {
                     LOGGER.error("Could execute putConfirm", e);
                 } catch (IOException e) {
                     LOGGER.error("Could execute putConfirm", e);
+                } catch (DNFSException.NetworkException e) {
+                    e.printStackTrace();
                 }
                 return PutStatus.OK;
             } else {

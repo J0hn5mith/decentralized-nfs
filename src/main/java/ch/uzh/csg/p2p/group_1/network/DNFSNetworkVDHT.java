@@ -47,19 +47,19 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     }
 
     public boolean keyExists(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit {
+            DNFSException.NetworkException {
         return this.network.keyExists(key);
     }
 
     @Override
     public Number160 getUniqueKey() throws
-            DNFSException.DNFSNetworkNotInit {
+            DNFSException.NetworkException {
         return this.network.getUniqueKey();
 
     }
 
     @Override
-    public void put(Number160 key, Object object) throws DNFSException.DNFSNetworkPutException, DNFSException.DNFSNetworkNotInit {
+    public void put(Number160 key, Object object) throws DNFSException.DNFSNetworkPutException, DNFSException.NetworkException {
         Data data;
 
         try {
@@ -95,28 +95,27 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     @Override
     public Object get(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkGetException {
+            DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
         return this.network.get(key);
     }
 
     @Override
-    public void delete(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkDeleteException {
+    public void delete(Number160 key) throws DNFSException.DNFSNetworkDeleteException, DNFSException.NetworkException {
         this.network.delete(key);
     }
 
     @Override
-    public PeerAddress getFirstResponder(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
+    public PeerAddress getFirstResponder(Number160 key) throws DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
         return this.network.getFirstResponder(key);
     }
 
     @Override
-    public Object sendTo(PeerAddress address, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException {
+    public Object sendTo(PeerAddress address, Object data) throws DNFSException.DNFSNetworkSendException, DNFSException.NetworkException {
         return this.network.sendTo(address, data);
     }
 
     @Override
-    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException {
+    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.DNFSNetworkSendException {
         return sendToAll(addresses, data);
     }
 
@@ -128,7 +127,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
 
     
     @Override
-    public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException {
+    public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkGetException {
         return this.getAllResponders(key);
     }
 
@@ -309,15 +308,15 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         this.network.registerPeerChangeListener(listener);
     }
 
-    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit {
+    public boolean isConnected() throws DNFSException.NetworkException {
         return this.network.isConnected();
     }
 
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit {
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.NetworkException {
         return this.network.isConnected(peerAddress);
     }
 
-    public void disconnect() throws DNFSException.DNFSNetworkNotInit {
+    public void disconnect() throws DNFSException.NetworkException {
         this.network.disconnect();
     }
 

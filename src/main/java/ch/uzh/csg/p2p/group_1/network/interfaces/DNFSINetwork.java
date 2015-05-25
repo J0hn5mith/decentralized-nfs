@@ -18,42 +18,42 @@ public interface DNFSINetwork {
 
     public void connectToNetwork(int port, String masterIpAddress, int masterPort) throws DNFSException.DNFSNetworkSetupException;
 
-    public boolean keyExists(Number160 key) throws DNFSException.DNFSNetworkNotInit;
+    public boolean keyExists(Number160 key) throws DNFSException.NetworkException;
 
-    public Number160 getUniqueKey() throws DNFSException.DNFSNetworkNotInit;
+    public Number160 getUniqueKey() throws DNFSException.NetworkException;
 
     public void put(Number160 key, Object data) throws
-            DNFSException.DNFSNetworkNotInit,
+            DNFSException.NetworkException,
             DNFSException.DNFSNetworkPutException;
 
     public Object get(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
+            DNFSException.NetworkException,
             DNFSException.DNFSNetworkGetException;
 
     public void delete(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
+            DNFSException.NetworkException,
             DNFSException.DNFSNetworkDeleteException;
 
     public PeerAddress getFirstResponder(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
+            DNFSException.NetworkException,
             DNFSException.DNFSNetworkGetException;
 
     public Object sendTo(PeerAddress address, Object data) throws
-            DNFSException.DNFSNetworkNotInit,
+            DNFSException.NetworkException,
             DNFSException.DNFSNetworkSendException;
-    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkSendException;
+    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSException.NetworkException, DNFSException.DNFSNetworkSendException;
 
     public PeerAddress getPeerAddress();
 
-    public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSNetworkGetException;
+    public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.NetworkException, DNFSException.DNFSNetworkGetException;
     
     public void registerPeerChangeListener(PeerMapChangeListener listener);
     
-    public boolean isConnected() throws DNFSException.DNFSNetworkNotInit;
+    public boolean isConnected() throws DNFSException.NetworkException;
     
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.DNFSNetworkNotInit;
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.NetworkException;
     
-    public void disconnect() throws DNFSException.DNFSNetworkNotInit;
+    public void disconnect() throws DNFSException.NetworkException;
 
     public void setConnectionTimeout(int connectionTimeOut);
     

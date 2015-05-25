@@ -122,12 +122,12 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSException.DNFSNetworkGetException
      */
     public boolean keyExists(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit {
+            DNFSException.NetworkException {
         
         initializationBouncer();
         
         try {
-            return get(key) != null;
+            return this.get(key) != null;
         } catch (DNFSException.DNFSNetworkGetException e) {
             return false;
         }
@@ -139,8 +139,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSException.DNFSNetworkGetException
      */
     public Number160 getUniqueKey() throws
-            DNFSException.DNFSNetworkNotInit
-    {
+            DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -158,9 +157,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSException.DNFSNetworkPutException
      */
     public void put(Number160 key, Object data) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkPutException
-    {
+            DNFSException.DNFSNetworkPutException, DNFSException.NetworkException {
 
         initializationBouncer();
         
@@ -184,9 +181,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSException.DNFSNetworkGetException
      */
     public Object get(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkGetException
-    {
+            DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -211,9 +206,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSException.DNFSNetworkDeleteException
      */
     public void delete(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkDeleteException
-    {
+            DNFSException.DNFSNetworkDeleteException, DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -231,9 +224,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @return
      */
     public PeerAddress getFirstResponder(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkGetException
-    {
+            DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -262,9 +253,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @return
      */
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws
-            DNFSException.DNFSNetworkNotInit,
-            DNFSException.DNFSNetworkGetException
-    {
+            DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -287,7 +276,7 @@ public class DNFSNetwork implements DNFSINetwork{
     }
     
     
-    public Object sendTo(PeerAddress address, Object data) throws DNFSNetworkNotInit, DNFSNetworkSendException {
+    public Object sendTo(PeerAddress address, Object data) throws DNFSNetworkSendException, DNFSException.NetworkException {
         
         initializationBouncer();
        
@@ -351,7 +340,7 @@ public class DNFSNetwork implements DNFSINetwork{
      * @throws DNFSNetworkNotInit
      * @throws DNFSNetworkSendException
      */
-    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSNetworkNotInit, DNFSNetworkSendException {
+    public ArrayList<Object> sendToAll(ArrayList<PeerAddress> addresses, Object data) throws DNFSNetworkSendException, DNFSException.NetworkException {
         
         initializationBouncer();
         
@@ -399,9 +388,9 @@ public class DNFSNetwork implements DNFSINetwork{
      *
      * @throws DNFSException.DNFSNetworkNotInit
      */
-    private void initializationBouncer() throws DNFSException.DNFSNetworkNotInit {
+    private void initializationBouncer() throws DNFSException.NetworkException {
         if (!this._initialized) {
-            throw new DNFSException.DNFSNetworkNotInit();
+            throw new DNFSException.NetworkException("Network is not initialized.");
         }
     }
 
@@ -441,8 +430,7 @@ public class DNFSNetwork implements DNFSINetwork{
         _peer.peerBean().peerMap().addPeerMapChangeListener(listener);
     }
     
-    public boolean isConnected() throws DNFSNetworkNotInit
-    {
+    public boolean isConnected() throws DNFSException.NetworkException {
         initializationBouncer();
         
         Iterator<PeerAddress> iterator = _peer.peerBean().peerMap().all().iterator();
@@ -456,8 +444,7 @@ public class DNFSNetwork implements DNFSINetwork{
         return false;
     }
     
-    public boolean isConnected(PeerAddress peerAddress) throws DNFSNetworkNotInit
-    {
+    public boolean isConnected(PeerAddress peerAddress) throws DNFSException.NetworkException {
         initializationBouncer();
         
         FutureChannelCreator fcc = _peer.peer().connectionBean().reservation().create(1, 1);
@@ -474,7 +461,7 @@ public class DNFSNetwork implements DNFSINetwork{
         return false;
     }
     
-    public void disconnect() throws DNFSNetworkNotInit {    
+    public void disconnect() throws DNFSException.NetworkException {
         initializationBouncer();
         
         _peer.peer().announceShutdown().start().awaitUninterruptibly();

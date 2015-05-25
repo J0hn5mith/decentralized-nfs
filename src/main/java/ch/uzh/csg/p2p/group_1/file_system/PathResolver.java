@@ -44,7 +44,7 @@ public class PathResolver implements IPathResolver {
      * @param path
      * @return
      */
-    public Directory getDirectory(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotDirectoryException, DNFSException.DNFSNetworkNotInit {
+    public Directory getDirectory(DNFSPath path) throws DNFSException.DNFSPathNotFound, DNFSException.DNFSNotDirectoryException, DNFSException.DNFSBlockStorageException {
         DNFSIiNode iNode = this.resolve(path);
         if (!iNode.isDir()) {
             throw new DNFSException.DNFSNotDirectoryException();
