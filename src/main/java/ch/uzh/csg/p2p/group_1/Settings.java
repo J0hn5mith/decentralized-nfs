@@ -9,7 +9,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 import java.net.InetSocketAddress;
 
-public class DNFSSettings {
+public class Settings {
 
 
     private XMLConfiguration config;
@@ -25,7 +25,7 @@ public class DNFSSettings {
     private boolean useVDHT = true;
 
 
-    public DNFSSettings(String configFile, CommandLine cmd) throws DNFSException.DNFSSettingsException {
+    public Settings(String configFile, CommandLine cmd) throws DNFSException.DNFSSettingsException {
 
         this.config = new XMLConfiguration();
         this.config.setFileName(configFile);

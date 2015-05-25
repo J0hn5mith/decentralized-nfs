@@ -12,9 +12,9 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, ParseException {
 
         CommandLine cmd = parseCommandLineArguments(args);
-        DNFSSettings settings = null;
+        Settings settings = null;
         try {
-            settings = new DNFSSettings("./conf/settings.xml", cmd);
+            settings = new Settings("./conf/settings.xml", cmd);
         } catch (DNFSException.DNFSSettingsException e) {
             System.err.println("Could not set up settings.");
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class Main {
      */
     private static CommandLine parseCommandLineArguments(String[] args) throws ParseException {
         GnuParser parser = new GnuParser();
-        return parser.parse(DNFSCommandLineOptionsFactory.getOptions(), args);
+        return parser.parse(CommandLineOptionsFactory.getOptions(), args);
     }
     
 }

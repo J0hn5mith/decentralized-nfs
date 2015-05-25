@@ -21,7 +21,7 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSendException;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
-import ch.uzh.csg.p2p.group_1.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.Settings;
 
 public class Storage implements IStorage {
 
@@ -156,7 +156,7 @@ public class Storage implements IStorage {
 
     
     @Override
-    public void setUp(DNFSSettings settings) throws DNFSException {
+    public void setUp(Settings settings) throws DNFSException {
         
         _network.registerObjectDataReply(new ObjectDataReply() {
 

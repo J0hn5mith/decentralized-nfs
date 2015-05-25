@@ -39,7 +39,7 @@ public class DWARFS implements IDNFS {
 
     private FuseIntegration fuseIntegration;
     private PathResolver pathResolver;
-    private DNFSSettings settings;
+    private Settings settings;
     private IKeyValueStorage keyValueStorage;
     private DNFSINetwork network;
     private IStorage storage;
@@ -60,7 +60,7 @@ public class DWARFS implements IDNFS {
     /**
      *
      */
-    public void setUp(DNFSSettings settings) {
+    public void setUp(Settings settings) {
         
         LOGGER.info("Setting up DWARFS File System...");
         this.fuseIntegration = new FuseIntegration();
