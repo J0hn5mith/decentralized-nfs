@@ -4,7 +4,7 @@
 package ch.uzh.csg.p2p.group_1.test_bed;
 
 import ch.uzh.csg.p2p.group_1.DNFSException;
-import ch.uzh.csg.p2p.group_1.DecentralizedNetFileSystem;
+import ch.uzh.csg.p2p.group_1.DWARFS;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,7 +105,7 @@ public class DNFSTestBed {
             System.exit(-1);
         }
 
-        DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
+        DWARFS dnfs = new DWARFS();
         dnfs.setUp(settings);
         
         dnfsInstances.add(new DNFSRunnable(dnfs));
@@ -146,9 +146,9 @@ public class DNFSTestBed {
 
     static class DNFSRunnable implements Runnable {
         private Thread t;
-        private DecentralizedNetFileSystem dnfs;
+        private DWARFS dnfs;
 
-        DNFSRunnable(DecentralizedNetFileSystem dnfs) {
+        DNFSRunnable(DWARFS dnfs) {
             this.dnfs = dnfs;
         }
 

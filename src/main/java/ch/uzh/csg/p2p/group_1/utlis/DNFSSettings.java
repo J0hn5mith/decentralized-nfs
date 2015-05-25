@@ -18,7 +18,7 @@ public class DNFSSettings {
     private String mountPoint;
     private int port;
     private boolean startNewServer = false;
-    private boolean useDummyPeer = false;
+    private boolean useLocalStorage = false;
     private InetSocketAddress masterIP;
     private boolean useCustomStorageDirectory;
     private String customStorageDirectory;
@@ -41,7 +41,7 @@ public class DNFSSettings {
         this.setMountPoint();
         this.setCustomStorageDirectory();
         this.setPort();
-        this.setUseDummyPeer();
+        this.setUseLocalStorage();
         this.setStartNewServer();
         this.setMasterIP();
         this.setUsevDHT();
@@ -73,8 +73,8 @@ public class DNFSSettings {
     }
 
     
-    public boolean getUseDummyPeer() {
-        return this.useDummyPeer;
+    public boolean getUseLocalStorage() {
+        return this.useLocalStorage;
     }
 
     
@@ -93,15 +93,15 @@ public class DNFSSettings {
     }
 
 
-    private void setUseDummyPeer() {
-        if (cmd.hasOption("d")) {
-            this.useDummyPeer = true;
+    private void setUseLocalStorage() {
+        if(cmd.hasOption("l")) {
+            this.useLocalStorage = true;
         }
     }
 
     
     private void setStartNewServer() {
-        if (cmd.hasOption("n")) {
+        if(cmd.hasOption("n")) {
             this.startNewServer = true;
         }
 
@@ -109,14 +109,14 @@ public class DNFSSettings {
 
     
     private void setPort() {
-        if (cmd.hasOption("p")) {
+        if(cmd.hasOption("p")) {
             this.port = Integer.parseInt(cmd.getOptionValue('p'));
         }
     }
 
     
     private void setMountPoint() {
-        if (cmd.hasOption("m")) {
+        if(cmd.hasOption("m")) {
             this.mountPoint = cmd.getOptionValue("m");
         } else {
             this.mountPoint = this.config.getString("MountPoint");

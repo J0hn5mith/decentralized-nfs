@@ -14,14 +14,14 @@ import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 /**
  * Created by janmeier on 16.04.15.
  */
-public class DNFSDummyPeer implements IStorage {
+public class LocalStorage implements IStorage {
 
     private Map<Number160, DNFSBlock> blocks;
     private Map<Number160, DNFSIiNode> iNodes;
     private DNFSIiNode rootINode;
     private Random random;
 
-    public DNFSDummyPeer() {
+    public LocalStorage() {
         this.blocks = new HashMap<Number160, DNFSBlock>();
         this.iNodes = new HashMap<Number160, DNFSIiNode>();
 

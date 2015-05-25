@@ -22,9 +22,9 @@ public class Main {
             System.exit(-1);
         }
 
-        DecentralizedNetFileSystem dnfs = new DecentralizedNetFileSystem();
-        dnfs.setUp(settings);
-        dnfs.start();
+        DWARFS dwarfs = new DWARFS();
+        dwarfs.setUp(settings);
+        dwarfs.start();
     }
 
     

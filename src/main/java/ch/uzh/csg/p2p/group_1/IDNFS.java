@@ -5,7 +5,7 @@ import ch.uzh.csg.p2p.group_1.utlis.DNFSSettings;
 /**
  * Created by janmeier on 28.03.15.
  */
-public interface IDecentralizedNetFileSystem {
+public interface IDNFS {
 
     public void setUp(DNFSSettings settings);
     public void start();
