@@ -17,8 +17,7 @@ import org.apache.log4j.Logger;
 public class DNFSBlock implements Serializable, DNFSIBlock {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
-//    public static int BLOCK_SIZE = 65536;
-    public static int BLOCK_SIZE = 10000;
+    public static int BLOCK_SIZE = 65536;
 
     Number160 id;
     DNFSIBlockStorage blockStorage;
@@ -38,7 +37,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.blockStorage = blockStorage;
     }
 
-    static public long getMaxCapacity(){
+    static public long getCapacity(){
         return BLOCK_SIZE;
     }
     
@@ -86,7 +85,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset) throws DNFSException.DNFSNetworkNotInit {
-        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getMaxCapacity() - offset));
+        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
         LOGGER.debug(String.format("Block is abel to write %d bytes.", numBytesPossibleToWrite));
 
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];

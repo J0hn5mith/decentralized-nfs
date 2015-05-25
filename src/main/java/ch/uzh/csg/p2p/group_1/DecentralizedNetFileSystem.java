@@ -229,8 +229,7 @@ public class DecentralizedNetFileSystem implements IDecentralizedNetFileSystem {
      */
     private void createRootFolder() {
         try {
-            DNFSIiNode rootINode = this.getPeer().createRootINode();
-            DNFSFolder.createNew(rootINode, this.getPeer());
+            DNFSFolder.createRoot(this.getPeer());
         } catch (DNFSException e) {
             LOGGER.error("Could not create root folder.", e);
             return;

@@ -13,7 +13,6 @@ public class DNFSAccessRights {
     private TypeUid uid;
     private TypeGid gid;
 
-    final private static Logger LOGGER = Logger.getLogger(DNFSAccessRights.class.getName());
 
     public DNFSAccessRights(long mode, TypeUid uid, TypeGid gid) {
         this.mode = mode;

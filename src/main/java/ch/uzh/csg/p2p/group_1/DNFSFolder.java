@@ -32,54 +32,40 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         super(iNode, peer);
         this.updateFolderEntries();
     }
-
-
+    
+    
     /**
-     * Factory method for creating new folders with a given iNode.
+     * Factory method for creating the folder of the root directory
      */
-    public static DNFSFolder createNew(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException {
-        DNFSFolder folder = new DNFSFolder(iNode, peer);
+    public static DNFSFolder createRoot(DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException, DNFSException {
+        DNFSIiNode iNode = peer.createRootINode();
         iNode.setDir(true);
-        return folder;
+        return new DNFSFolder(iNode, peer);
     }
 
 
     /**
-     * Factory method for creating new folders with a new iNode.
+     * Factory method for creating new folders.
      */
-    public static DNFSFolder createNew(DNFSIPeer peer) {
-        try {
-            return createNew(peer.createINode(), peer);
-        } catch (DNFSException e) {
-            // TODO: DEAL WITH THIS
-            System.out.println(e.getMessage());
-        }
-        return null;
+    public static DNFSFolder createNew(DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit, DNFSException.DNFSBlockStorageException, DNFSException {
+        DNFSIiNode iNode = peer.createINode();
+        iNode.setDir(true);
+        return new DNFSFolder(iNode, peer);
     }
 
 
-    /**
-     * @param iNode
-     * @param peer
-     * @return
-     */
     public static DNFSFolder getExisting(DNFSIiNode iNode, DNFSIPeer peer) throws DNFSException.DNFSNetworkNotInit {
-        DNFSFolder folder = new DNFSFolder(iNode, peer);
-        return folder;
+        return new DNFSFolder(iNode, peer);
     }
 
 
-    /**
-     * @return
-     */
     public List<DNFSFolderEntry> getChildEntries() {
         List<DNFSFolderEntry> result = new ArrayList<DNFSFolderEntry>(this.childEntries.values());
 
-        if (this.selfEntry != null) {
+        if(this.selfEntry != null) {
             result.add(0, this.selfEntry);
-
         }
-        if (this.parentEntry != null) {
+        if(this.parentEntry != null) {
             result.add(1, this.parentEntry);
         }
 
@@ -299,14 +285,19 @@ public class DNFSFolder extends DNFSFileSystemEntry {
                 String[] lineComponents = line.split(SEPARATOR);
                 if (lineComponents.length == 2) {
                     name = lineComponents[1];
-                    inodeId = new Number160(lineComponents[0]);
-
-                    if (name.equals(".")) {
-                        this.selfEntry = new DNFSFolderEntry(inodeId, name);
-                    } else if (name.equals("..")) {
-                        this.parentEntry = new DNFSFolderEntry(inodeId, name);
-                    } else {
-                        list.put(name, new DNFSFolderEntry(inodeId, name));
+                    try {
+                        inodeId = new Number160(lineComponents[0]);
+                        if (name.equals(".")) {
+                            this.selfEntry = new DNFSFolderEntry(inodeId, name);
+                        } else if (name.equals("..")) {
+                            this.parentEntry = new DNFSFolderEntry(inodeId, name);
+                        } else {
+                            list.put(name, new DNFSFolderEntry(inodeId, name));
+                        }
+                        
+                    } catch(IllegalArgumentException e) {
+                        System.out.println("ILLEGAL LINE COMPONENTS : \"" + lineComponents[0] + "\", \"" + lineComponents[1] + "\""); // TODO
+                        e.printStackTrace(); // TODO
                     }
                 } else {
                     LOGGER.warn("Format failure in folder data.");
@@ -356,6 +347,7 @@ public class DNFSFolder extends DNFSFileSystemEntry {
         return 0;
     }
 
+    
     private void addNewFolderEntry(DNFSIiNode iNode, String name) throws DNFSException.DNFSNetworkNotInit {
         String entryAsString = LINE_SEPARATOR + iNode.getId() + SEPARATOR + name;
         if(this.childEntries.size() < 1){

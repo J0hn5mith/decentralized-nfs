@@ -109,7 +109,7 @@ public class DNFSPath {
         return this.getSubPath(0, -1);
     }
 
-    public String getFilerName(){
+    public String getFileName(){
         return this.getComponent(-1).toString();
     }
 

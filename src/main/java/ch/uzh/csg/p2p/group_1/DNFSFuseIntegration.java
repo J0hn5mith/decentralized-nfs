@@ -4,6 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1;
 
+import ch.uzh.csg.p2p.group_1.DNFSException.DNFSBlockStorageException;
 import ch.uzh.csg.p2p.group_1.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.filesystem.DNFSIiNode;
 import net.fusejna.*;
@@ -11,8 +12,10 @@ import net.fusejna.types.TypeGid;
 import net.fusejna.types.TypeMode;
 import net.fusejna.types.TypeUid;
 import net.fusejna.util.FuseFilesystemAdapterAssumeImplemented;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 import java.nio.ByteBuffer;
 
 
@@ -167,8 +170,14 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             newFolder.getINode().setGid(this.getFuseContextGid());
             newFolder.getINode().setUid(this.getFuseContextUid());
             targetFolder.addChild(newFolder, folderName);
-        } catch (DNFSException.DNFSNetworkNotInit DNFSNetworkNotInit) {
-            DNFSNetworkNotInit.printStackTrace();
+        } catch (DNFSException.DNFSNetworkNotInit e) {
+            e.printStackTrace();
+            return -1;
+        } catch (DNFSBlockStorageException e) {
+            e.printStackTrace();
+            return -1;            e.printStackTrace();
+        } catch (DNFSException e) {
+            e.printStackTrace();
             return -1;
         }
 
@@ -261,18 +270,21 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
 
 
     @Override
-    public int rename(String path, String newName) {
-        DNFSIiNode iNode;
-        DNFSFolder newParentFolder;
-        DNFSFolder oldParentFolder;
+    public int rename(String oldPathString, String newPathString) {
 
-        //TODO: Clean up, there path is created multiple times
         try {
-            iNode = this.pathResolver.getINode(new DNFSPath(path));
-            oldParentFolder = this.pathResolver.getFolder(new DNFSPath(path).getParent());
-            newParentFolder = this.pathResolver.getFolder(new DNFSPath(newName).getParent());
-            newParentFolder.addChild(iNode, new DNFSPath(newName).getFilerName());
-            oldParentFolder.removeChild(new DNFSPath(path).getFilerName().toString());
+            
+            DNFSPath oldPath = new DNFSPath(oldPathString);
+            DNFSPath newPath = new DNFSPath(newPathString);
+            
+            DNFSIiNode iNode = this.pathResolver.getINode(oldPath);
+            
+            DNFSFolder oldParentDir = this.pathResolver.getFolder(oldPath.getParent());
+            DNFSFolder newParentDir = this.pathResolver.getFolder(newPath.getParent());
+            
+            newParentDir.addChild(iNode, newPath.getFileName());
+            oldParentDir.removeChild(oldPath.getFileName());
+            
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.warn("Rename failed.", e);
             return -ErrorCodes.ENOENT();
@@ -360,7 +372,7 @@ public class DNFSFuseIntegration extends FuseFilesystemAdapterAssumeImplemented 
             DNFSPath parentPath = entryPath.getParent();
             DNFSFolder parentFolder = this.pathResolver.getFolder(parentPath);
 
-            parentFolder.removeChild(entryPath.getFilerName());
+            parentFolder.removeChild(entryPath.getFileName());
 
         } catch (DNFSException e) {
             LOGGER.warn("Faild to remove file");
