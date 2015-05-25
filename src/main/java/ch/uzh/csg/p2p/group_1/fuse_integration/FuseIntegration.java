@@ -278,15 +278,19 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
         } catch (DNFSException.DNFSNotFileException e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.EISDIR();
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSBlockStorageException e) {
+            e.printStackTrace();
             LOGGER.error(e.toString());
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNotInit e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
             return -1;
         }
     }

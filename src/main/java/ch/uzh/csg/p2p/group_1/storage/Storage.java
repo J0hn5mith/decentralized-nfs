@@ -45,10 +45,9 @@ public class Storage implements IStorage {
             DNFSBlock block = new DNFSBlock(id, this);
             updateBlock(block);
             return block;
-        } catch (DNFSException.NetworkException e1) {
-            e1.printStackTrace();
+        } catch (DNFSException.NetworkException e) {
+            throw new DNFSException.DNFSBlockStorageException("", e);
         }
-        return  null;
     }
 
 
@@ -156,13 +155,10 @@ public class Storage implements IStorage {
 
     @Override
     public void updateINode(DNFSIiNode iNode) throws DNFSException.INodeStorageException {
-        
-
-        Object data = (Object) iNode.getSerializableVersion();
+        Object data = (Object) iNode;
         try {
-            _network.delete(iNode.getId()); // TODO: change this once we have vDHT
             _network.put(iNode.getId(), data);
-        } catch (DNFSException.NetworkException | DNFSNetworkPutException | DNFSNetworkDeleteException e) {
+        } catch (DNFSException.NetworkException | DNFSNetworkPutException e) {
             throw new DNFSException.INodeStorageException("", e);
         }
     }

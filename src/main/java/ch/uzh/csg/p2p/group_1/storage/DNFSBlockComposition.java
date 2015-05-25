@@ -188,7 +188,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         try {
             this.getPeer().updateINode(this.getINode());
         } catch (DNFSException e) {
-            e.printStackTrace();
+            throw new DNFSException.DNFSBlockStorageException("", e);
         }
         return newBlock;
 

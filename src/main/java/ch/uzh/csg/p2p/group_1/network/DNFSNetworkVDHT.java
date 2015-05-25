@@ -33,7 +33,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         this.network = new DNFSNetwork(this.createPeer(port, keyValueStorage));
         this._initialized = true;
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.DEBUG);
     }
 
     public void registerObjectDataReply(ObjectDataReply reply) {
@@ -69,6 +69,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         }
 
         if (!this.keyExists(key)) {
+            LOGGER.debug("First put.");
             this.putFirstTime(key, data);
             return;
         }
@@ -96,7 +97,18 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     @Override
     public Object get(Number160 key) throws
             DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
-        return this.network.get(key);
+
+        FutureGet fg = this.network.getPeer().get(key).contentKey(Number160.ZERO).getLatest().start()
+                .awaitUninterruptibly();
+        try {
+            return fg.data().object();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
+        }
     }
 
     @Override
@@ -149,11 +161,8 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         for (FutureGetRawData fgData : latestData) {
             if (last != null) {
                 if (!last.equals(fgData)) {
-
                     LOGGER.info("Found different file versions.");
-
                     return null;
-
                 }
             }
             last = fgData;
