@@ -4,6 +4,7 @@ import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -119,17 +120,37 @@ public class Directory extends FileSystemEntry {
             
             String line;
             DirectoryINodeMapEntry entry;
-            while ((line = br.readLine()) != null) {
+            boolean firstLine = true;
+            while((line = br.readLine()) != null) {
+                
                 String[] lineComponents = line.split(SEPARATOR);
-
-                if (!lineComponents[1].equals(name)) {
+                if(lineComponents.length == 2 && !lineComponents[1].equals(name)) {
                     entry = new DirectoryINodeMapEntry(new Number160(lineComponents[0]), lineComponents[1]);
-                    newContent = newContent + entry.toString() + "\n";
+                    if(firstLine) {
+                        firstLine = false;
+                    } else {
+                        newContent += "\n";
+                    }
+                    newContent = newContent + entry.toString();
                 }
             }
+            
+            byte[] newContentByteArray = newContent.getBytes();
+            int newContentLength = newContentByteArray.length;
+            ByteBuffer newContentBuffer = ByteBuffer.wrap(newContentByteArray);
 
-            int bytesWritten = (int) this.getBlockComposition().write(ByteBuffer.wrap(newContent.getBytes()), newContent.getBytes().length, 0);
-            this.getBlockComposition().truncate(bytesWritten);
+            this.getBlockComposition().truncate(0);
+            this.getBlockComposition().write(newContentBuffer, newContentLength, 0);
+            
+            br = new BufferedReader(new InputStreamReader(this.getINodeMapDataStream())); // TODO
+            System.out.println("---------WE JUST DELETED: " + name);
+            try {
+                while ((line = br.readLine()) != null) { // TODO
+                    System.out.println("--> LINE: " + line); // TODO
+                }
+            } catch (IOException e) { // TODO
+                e.printStackTrace(); // TODO
+            } // TODO
             
             this.updateINodeMap();
         
@@ -310,6 +331,16 @@ public class Directory extends FileSystemEntry {
             ByteBuffer entry = ByteBuffer.wrap(entryAsByteArray);
             
             this.getBlockComposition().append(entry, entryLength);
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(this.getINodeMapDataStream())); // TODO
+            String line; // TODO
+            try {
+                while ((line = br.readLine()) != null) { // TODO
+                    System.out.println("--> LINE: " + line); // TODO
+                }
+            } catch (IOException e) { // TODO
+                e.printStackTrace(); // TODO
+            } // TODO
             
         } catch (DNFSException.DNFSBlockStorageException e) {
             e.printStackTrace();
