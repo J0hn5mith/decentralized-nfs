@@ -4,7 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1.fuse_integration;
 
-import ch.uzh.csg.p2p.group_1.DNFSSettings;
+import ch.uzh.csg.p2p.group_1.Settings;
 import ch.uzh.csg.p2p.group_1.file_system.PathResolver;
 import ch.uzh.csg.p2p.group_1.file_system.DNFSPath;
 import ch.uzh.csg.p2p.group_1.file_system.File;
@@ -41,7 +41,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         LOGGER.setLevel(Level.WARN);
     }
 
-    public FuseIntegration setUp(DNFSSettings settings) {
+    public FuseIntegration setUp(Settings settings) {
         this.log(settings.getConfig().getBoolean("FuseLogging"));
         return this;
     }

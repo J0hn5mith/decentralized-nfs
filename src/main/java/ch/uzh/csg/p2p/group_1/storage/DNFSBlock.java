@@ -120,7 +120,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     }
 
     
-    public long truncate(final long offset) throws DNFSException.DNFSNetworkNotInit {
+    public long truncate(final long offset) {
         
         if (offset < this.data.capacity()) {
             final byte[] bytesRead = new byte[(int) offset];

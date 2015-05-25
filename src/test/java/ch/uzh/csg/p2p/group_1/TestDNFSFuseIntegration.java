@@ -18,9 +18,9 @@ public class TestDNFSFuseIntegration {
     public void setUp(){
         this.dnfs = new DWARFS();
 
-        DNFSSettings settings = null;
+        Settings settings = null;
         try {
-            settings = new DNFSSettings("./conf/settings.xml", null);
+            settings = new Settings("./conf/settings.xml", null);
         } catch (DNFSException.DNFSSettingsException e) {
             e.printStackTrace();
         }
