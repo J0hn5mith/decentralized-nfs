@@ -444,7 +444,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
     }
 
     private boolean checkModeChangeRights(DNFSIiNode iNode) {
-        return iNode.getUid() == getFuseContextUid();
+        return iNode.getUid().equals(getFuseContextUid());
     }
 
     private boolean checkAccessRights(StructFuseFileInfo.FileInfoWrapper.OpenMode openMode, DNFSIiNode iNode) {
