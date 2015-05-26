@@ -130,6 +130,9 @@ public class DNFSException extends Exception {
         public DNFSSettingsException(String message) {
             super(message);
         }
+        public DNFSSettingsException(String message, Exception e) {
+            super(message, e);
+        }
     }
 
     static public class NetworkException extends DNFSException {

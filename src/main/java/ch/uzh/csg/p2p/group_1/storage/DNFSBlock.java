@@ -23,7 +23,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
     Number160 id;
     DNFSIBlockStorage blockStorage;
-    private ByteBuffer data;
+    protected ByteBuffer data;
 
     public DNFSBlock(Number160 id, DNFSIBlockStorage blockStorage) {
         this.id = id;
@@ -73,7 +73,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     public byte[] getByteArray() {
         return this.data.array();
     }
-    
+
 
     public long append(ByteBuffer buffer, final long bufferSize){
         int writeOffset = this.data.array().length;

@@ -29,6 +29,8 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
         } catch(IOException e) {
             throw new DNFSException.DNFSKeyValueStorageException("Unable to create file-based key-value storage temporary folder.");
         }
+
+        LOGGER.info(String.format("Created key value based storage. Storage directory is: %s", this.directory.toString()));
     }
     
 
