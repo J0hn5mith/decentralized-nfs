@@ -293,30 +293,25 @@ public class DNFSNetwork implements DNFSINetwork{
             @Override
             public void exceptionCaught(Throwable exception) throws Exception {
                 exceptions.add(exception);
-                System.out.println("????????????????????????????? UNLOCKING WITH EXCEPTION: " + lockIndex); // TODO
                 _locks.put(lockIndex, false);
             }
 
             @Override
             public void operationComplete(FutureDirect response) throws Exception {
                 responses.add(response.object());
-                System.out.println("????????????????????????????? UNLOCKING: " + lockIndex); // TODO
                 _locks.put(lockIndex, false);
             }
             
         });
         
         try {
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!WAITING FOR LOCK" + lockIndex); //TODO
             while(_locks.get(lockIndex).equals(true)) {
-                System.out.println("   !!!!!!!!!!!!!!!!!!!!!!! STILL WAITING FOR LOCK" + lockIndex); //TODO
-                Thread.sleep(100); // TODO
+                Thread.sleep(3);
             }
         } catch (InterruptedException e) {
             throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());
         }
         
-        System.out.println("   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx REMOVED LOCK: " + lockIndex); //TODO
         _locks.remove(lockIndex);
         
         if(!direct.isSuccess()) {
