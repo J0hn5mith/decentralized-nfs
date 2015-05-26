@@ -103,10 +103,8 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         try {
             return fg.data().object();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
             throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
         }
     }
