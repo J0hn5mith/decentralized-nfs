@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+    <!--Don't set it to ./ . This will 'erase' you project folder. After reboot the folder is back to normal.-->
+        <MountPoint>./testfs</MountPoint>
+        <Port>2020</Port>
+        <ConnectionTimeOut>1000</ConnectionTimeOut>
+        <CheckConnectionFrequency>4</CheckConnectionFrequency>
+        <UseVDHT>True</UseVDHT>
+        <FuseLogging>false</FuseLogging>
+</web-app>

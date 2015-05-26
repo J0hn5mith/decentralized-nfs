@@ -256,7 +256,13 @@ public class DNFSStorageLayer extends StorageLayer {
                             }
                         }
                     }
-                } catch (ClassNotFoundException | NoSuchAlgorithmException | DNFSException.NetworkException | IOException e) {
+                } catch (ClassNotFoundException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (NoSuchAlgorithmException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (DNFSException.NetworkException e) {
+                    LOGGER.error("Could execute putConfirm", e);
+                } catch (IOException e) {
                     LOGGER.error("Could execute putConfirm", e);
                 } catch (DNFSNetworkSendException e) {
                     LOGGER.error("Could execute putConfirm", e);

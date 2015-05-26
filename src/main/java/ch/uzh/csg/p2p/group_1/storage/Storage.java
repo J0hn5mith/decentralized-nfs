@@ -61,7 +61,9 @@ public class Storage implements IStorage {
             return this.blockFactory.getBlock(id, data, this);
         } catch(DNFSNetworkGetException e) {
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: ", e);
-        } catch (DNFSNetworkSendException | DNFSException.NetworkException e) {
+        } catch (DNFSNetworkSendException e) {
+            throw new DNFSException.DNFSBlockStorageException("DNFSNetworkSendException: ", e);
+        } catch (DNFSException.NetworkException e) {
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkSendException: ", e);
         }
     }
@@ -89,7 +91,9 @@ public class Storage implements IStorage {
 
         } catch(DNFSNetworkPutException e) {
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkPutException: ", e);
-        } catch(NoSuchAlgorithmException | DNFSException.NetworkException e) {
+        } catch(NoSuchAlgorithmException e) {
+            throw new DNFSException.DNFSBlockStorageException("NoSuchAlgorithmException: ", e);
+        } catch(DNFSException.NetworkException e) {
             throw new DNFSException.DNFSBlockStorageException("NoSuchAlgorithmException: ", e);
         }
     }
@@ -101,7 +105,9 @@ public class Storage implements IStorage {
             ArrayList<PeerAddress> responders = _network.getAllResponders(id);
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.DELETE, id);
             _network.sendToAll(responders, (Object) packet);
-        } catch(DNFSNetworkGetException | DNFSNetworkSendException e) {
+        } catch(DNFSNetworkGetException e) {
+            throw new DNFSException.DNFSBlockStorageException("Could delete block because network was not available.", e);
+        } catch(DNFSNetworkSendException e) {
             throw new DNFSException.DNFSBlockStorageException("Could delete block because network was not available.", e);
         } catch (DNFSException.NetworkException e) {
             throw new DNFSException.DNFSBlockStorageException("Could delete block because network was not available.", e);
@@ -151,7 +157,9 @@ public class Storage implements IStorage {
     public void deleteINode(Number160 iNodeID) throws DNFSException.INodeStorageException {
         try {
             _network.delete(iNodeID);
-        } catch (DNFSException.NetworkException | DNFSException.DNFSNetworkDeleteException e) {
+        } catch (DNFSException.NetworkException e) {
+            throw new DNFSException.INodeStorageException("", e);
+        } catch (DNFSException.DNFSNetworkDeleteException e) {
             throw new DNFSException.INodeStorageException("", e);
         }
     }
@@ -162,7 +170,9 @@ public class Storage implements IStorage {
         Object data = (Object) iNode.getSerializableVersion();
         try {
             _network.put(iNode.getId(), data);
-        } catch (DNFSException.NetworkException | DNFSNetworkPutException e) {
+        } catch (DNFSException.NetworkException e) {
+            throw new DNFSException.INodeStorageException("", e);
+        } catch (DNFSNetworkPutException e) {
             throw new DNFSException.INodeStorageException("", e);
         }
     }

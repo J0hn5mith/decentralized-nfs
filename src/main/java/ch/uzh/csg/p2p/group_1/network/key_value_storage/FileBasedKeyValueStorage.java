@@ -103,7 +103,13 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
             Files.write(path, value.getData());
             LOGGER.info("Wrote file");
             return true;
-        } catch(IOException | OutOfMemoryError | SecurityException e) {
+        } catch(IOException e) {
+            LOGGER.error("Could not set data.");
+            return false;
+        } catch(OutOfMemoryError e) {
+            LOGGER.error("Could not set data.");
+            return false;
+        } catch(SecurityException e) {
             LOGGER.error("Could not set data.");
             return false;
         }

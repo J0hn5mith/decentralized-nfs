@@ -6,6 +6,10 @@ package ch.uzh.csg.p2p.group_1;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import org.apache.commons.cli.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+
 public class Main {
 
     
@@ -14,7 +18,7 @@ public class Main {
         CommandLine cmd = parseCommandLineArguments(args);
         Settings settings = null;
         try {
-            settings = new Settings("./conf/settings.xml", cmd);
+            settings = new Settings("./settings.xml", cmd);
         } catch (DNFSException.DNFSSettingsException e) {
             System.err.println("Could not set up settings.");
             e.printStackTrace();
@@ -38,5 +42,5 @@ public class Main {
         GnuParser parser = new GnuParser();
         return parser.parse(CommandLineOptionsFactory.getOptions(), args);
     }
-    
+
 }
