@@ -8,5 +8,5 @@
         <CheckConnectionFrequency>4</CheckConnectionFrequency>
         <UseVDHT>True</UseVDHT>
         <FuseLogging>false</FuseLogging>
-        <BlockEncryptionKey>jjjlP6ajsdjfalsa</BlockEncryptionKey>
+        <!--<BlockEncryptionKey>jjjlP6ajsdjfalsa</BlockEncryptionKey>-->
 </web-app>

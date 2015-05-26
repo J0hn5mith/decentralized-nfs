@@ -62,7 +62,7 @@ public class DWARFS implements IDNFS {
      */
     public void setUp(Settings settings) {
         
-        LOGGER.info("Setting up DWARFS File System...");
+        LOGGER.error("Setting up DWARFS File System...");
         this.settings = settings;
         this.fuseIntegration = new FuseIntegration().setUp(settings);
         this.setConnectionTimeout();
@@ -193,7 +193,7 @@ public class DWARFS implements IDNFS {
         
         startInputScanner();
         
-        System.out.println("DWARFS File System started.");
+        LOGGER.info("DWARFS File System started.");
     }
 
 

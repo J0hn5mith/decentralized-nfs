@@ -171,6 +171,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         List<Number160> blockIDs = this.getINode().getBlockIDs();
 
         if(blockIndex >= blockIDs.size()) {
+            LOGGER.warn(String.format("Offset is too largs for this block composition. blockIndex: %d; numBlocks: %d", blockIndex, blockIDs.size()));
             return null;
         }
 

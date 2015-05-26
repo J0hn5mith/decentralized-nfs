@@ -25,6 +25,13 @@ public class DNFSException extends Exception {
     
     static public class DNFSPathNotFound extends DNFSException {
         private static final long serialVersionUID = -7866969856858819069L;
+        public DNFSPathNotFound(String message) {
+            super(message);
+        }
+
+        public DNFSPathNotFound(String message, Exception e) {
+
+        }
     }
 
     static public class DNFSBlockStorageException extends DNFSException {
@@ -135,7 +142,7 @@ public class DNFSException extends Exception {
         }
     }
 
-    static public class NetworkException extends DNFSException {
+    static public class NetworkException extends DNFSException.DNFSBlockStorageException {
         public NetworkException(String message) {
             super(message);
         }

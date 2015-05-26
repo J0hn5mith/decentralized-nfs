@@ -89,17 +89,28 @@ public class PathResolver implements IPathResolver {
 
             return currentDirectory.getChildINode(path.getComponent(-1));
 
-        } catch (DNFSException e) {
-            LOGGER.debug("Reason for path resolver failing: ", e);
-            throw new DNFSException.DNFSPathNotFound();
+
+        } catch (DNFSException.NoSuchFileOrDirectory e) {
+            throw new DNFSException.DNFSPathNotFound("Path resolver could not find file or directory", e);
+        } catch (DNFSException.DNFSBlockStorageException e) {
+            LOGGER.error("Netwokr unavailable. Handle that!!!!!!!!!");
+            throw new DNFSException.DNFSPathNotFound("Path resolver could not find file or directory", e);
+        } catch (DNFSException.DNFSNetworkNotInit e) {
+            LOGGER.error("Netwokr unavailable. Handle that!!!!!!!!!");
+            e.printStackTrace();
+            throw new DNFSException.DNFSPathNotFound("Path resolver could not find file or directory", e);
+        } catch (DNFSException.INodeStorageException e) {
+            e.printStackTrace();
+            throw new DNFSException.DNFSPathNotFound("Path resolver could not find file or directory", e);
         }
     }
 
 
-    /**
-     * @throws IOException
-     */
-    private Directory getRootDirectory() throws DNFSException {
+        /**
+         * @throws IOException
+         */
+
+    private Directory getRootDirectory() throws DNFSException.INodeStorageException, DNFSException.DNFSBlockStorageException {
         return Directory.getExisting(storage.getRootINode(), this.getStorage());
     }
 

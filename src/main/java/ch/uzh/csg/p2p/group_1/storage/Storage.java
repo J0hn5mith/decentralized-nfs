@@ -131,11 +131,17 @@ public class Storage implements IStorage {
     @Override
     public DNFSIiNode getINode(Number160 iNodeID) throws DNFSException.INodeStorageException {
         Object data = null;
+
         try {
             data = _network.get(iNodeID);
-        } catch (DNFSException.NetworkException | DNFSNetworkGetException e) {
-            throw new DNFSException.INodeStorageException("", e);
+        } catch (DNFSException.NetworkException e) {
+            e.printStackTrace();
+            throw new DNFSException.INodeStorageException("Unable to getINode data.", e);
+        } catch (DNFSNetworkGetException e) {
+            e.printStackTrace();
+            throw new DNFSException.INodeStorageException("Unable to getINode data.", e);
         }
+
         DNFSIiNode iNode = (DNFSIiNode) data;
         return new DNFSNetworkINode(iNode, this);
     }

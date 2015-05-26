@@ -25,15 +25,17 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class DNFSNetworkVDHT implements DNFSINetwork {
+    final private static int MAX_GET_ATTEMPTS = 5;
+    final private static int GET_RETRY_DELAY = 100;
     final private static Logger LOGGER = Logger.getLogger(DNFSNetworkVDHT.class.getName());
     private boolean _initialized = false;
     private DNFSNetwork network;
-    
+
 
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         this.network = new DNFSNetwork(this.createPeer(port, keyValueStorage));
         this._initialized = true;
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Level.INFO);
     }
 
     public void registerObjectDataReply(ObjectDataReply reply) {
@@ -98,10 +100,21 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     public Object get(Number160 key) throws
             DNFSException.DNFSNetworkGetException, DNFSException.NetworkException {
 
-        FutureGet fg = this.network.getPeer().get(key).contentKey(Number160.ZERO).getLatest().start()
-                .awaitUninterruptibly();
         try {
-            return fg.data().object();
+            int countDown = MAX_GET_ATTEMPTS;
+
+            while (countDown != 0) {
+
+                FutureGet futureGet = this.network.getPeer().get(key).contentKey(Number160.ZERO).getLatest().start()
+                        .awaitUninterruptibly();
+
+                if (futureGet.isSuccess() && !futureGet.isEmpty()) {
+                    return futureGet.data().object();
+                }
+                countDown -= 1;
+            }
+
+            throw new DNFSException.DNFSNetworkGetException("IOException:");
         } catch (ClassNotFoundException e) {
             throw new DNFSException.DNFSNetworkGetException("IOException: " + e.getMessage());
         } catch (IOException e) {
@@ -129,19 +142,19 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return sendToAll(addresses, data);
     }
 
-    
+
     @Override
     public PeerAddress getPeerAddress() {
         return this.network.getPeerAddress();
     }
 
-    
+
     @Override
     public ArrayList<PeerAddress> getAllResponders(Number160 key) throws DNFSException.DNFSNetworkGetException {
         return this.getAllResponders(key);
     }
 
-    
+
     /**
      * Returns the VersionKey for the specified object in the dht of the latest version if they are all the same.
      * null is returned, if there are different versions.
@@ -168,11 +181,9 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return last.getVersionKey();
     }
 
-    
+
     private boolean setPrepare(Number160 key, Data data, VersionKey versionKey) {
 
-        System.out.println("setPrepared()" + key); // TODO
-        
         data.prepareFlag();
         FuturePut fp = this.network.getPeer()
                 .put(key)
@@ -181,7 +192,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
                         data,
                         versionKey.getVersionKey()
                 ).start().awaitUninterruptibly();
-        LOGGER.info("Set prepared " + fp.failedReason());
+        LOGGER.debug("Set prepared " + fp.failedReason());
 
 
         FutureGetRawData last = null;
@@ -199,12 +210,12 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
         return true;
     }
 
-    
+
     private void confirm(Number160 key, VersionKey versionKey) {
         FuturePut fp = this.network.getPeer().put(key)
                 .versionKey(versionKey.getVersionKey()).putConfirm()
                 .data(new Data()).start().awaitUninterruptibly();
-        LOGGER.info("Confirmed put in dht" + fp.failedReason());
+        LOGGER.debug("Confirmed put in dht" + fp.failedReason());
     }
 
 
@@ -338,7 +349,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
             Random _random = new Random(System.currentTimeMillis());
             Number160 key = Number160.createHash(_random.nextLong());
             PeerBuilder builder = new PeerBuilder(key).ports(port);
-            PeerBuilderDHT builderDHT =  new PeerBuilderDHT(builder.start());
+            PeerBuilderDHT builderDHT = new PeerBuilderDHT(builder.start());
             Storage storage = new StorageMemory();
             StorageLayer storageLayer = new DNFSStorageLayer(storage, this, keyValueStorage);
             return builderDHT.storageLayer(storageLayer).start();
