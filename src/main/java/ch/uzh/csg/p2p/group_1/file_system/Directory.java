@@ -221,7 +221,7 @@ public class Directory extends FileSystemEntry {
             String name;
             Number160 inodeId;
             while ((line = br.readLine()) != null) {
-                System.out.println("THIS IS A DIRECTORY BLOCK LINE: " + line);
+                LOGGER.debug(String.format("Pars line from directory data: \"%s'\"", line));
                 String[] lineComponents = line.split(SEPARATOR);
                 if (lineComponents.length == 2) {
                     name = lineComponents[1];
@@ -236,11 +236,10 @@ public class Directory extends FileSystemEntry {
                         }
 
                     } catch (IllegalArgumentException e) {
-                        System.out.println("ILLEGAL LINE COMPONENTS : \"" + lineComponents[0] + "\", \"" + lineComponents[1] + "\""); // TODO
-                        e.printStackTrace(); // TODO
+                        LOGGER.warn(String.format("Faild to parse block line \"%s'\" because of components 1: \"%s\" 2: \"%s\"\n Line is ignored.", line, lineComponents[0], lineComponents[1]));
                     }
                 } else {
-                    LOGGER.warn("Format failure in directory data.");
+                    LOGGER.warn("Format failure in directory data. Line is to sposed to have two values separated by an tab.");
                 }
             }
         } catch (IOException e) {

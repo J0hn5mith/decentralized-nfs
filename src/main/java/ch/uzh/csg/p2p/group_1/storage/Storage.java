@@ -14,9 +14,7 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
-import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkDeleteException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkGetException;
-import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSendException;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
@@ -30,6 +28,7 @@ public class Storage implements IStorage {
 
     private DNFSINetwork _network;
     private IKeyValueStorage _keyValueStorage;
+    private BlockFactory blockFactory;
 
     public Storage(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
@@ -42,7 +41,7 @@ public class Storage implements IStorage {
         Number160 id = null;
         try {
             id = _network.getUniqueKey();
-            DNFSBlock block = new DNFSBlock(id, this);
+            DNFSBlock block = this.blockFactory.getBlock(id, this);
             updateBlock(block);
             return block;
         } catch (DNFSException.NetworkException e) {
@@ -59,8 +58,7 @@ public class Storage implements IStorage {
             DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, id);
             Object answer = _network.sendTo(responder, packet);
             byte[] data = ((DNFSBlockPacket) answer).getData();
-            return new DNFSBlock(id, data, this);
-
+            return this.blockFactory.getBlock(id, data, this);
         } catch(DNFSNetworkGetException e) {
             throw new DNFSException.DNFSBlockStorageException("DNFSNetworkGetException: ", e);
         } catch (DNFSNetworkSendException | DNFSException.NetworkException e) {
@@ -187,7 +185,8 @@ public class Storage implements IStorage {
 
     @Override
     public void setUp(Settings settings) throws DNFSException {
-        
+        this.blockFactory = new BlockFactory(settings);
+
         _network.registerObjectDataReply(new ObjectDataReply() {
 
             @Override

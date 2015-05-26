@@ -29,7 +29,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.id = id;
         this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Level.WARN);
     }
     
     

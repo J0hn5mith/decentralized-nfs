@@ -12,6 +12,10 @@ import java.net.InetSocketAddress;
 
 public class Settings {
 
+    static private class ConfigFilesKeys{
+        static public String BLOCK_ENCRYPTION_KEY = "BlockEncryptionKey";
+    }
+
 
     private XMLConfiguration config;
     private CommandLine cmd;
@@ -24,6 +28,7 @@ public class Settings {
     private boolean useCustomStorageDirectory;
     private String customStorageDirectory;
     private boolean useVDHT = true;
+    private String blockEncryptionKey = null;
 
 
     public Settings(String configFile, CommandLine cmd) throws DNFSException.DNFSSettingsException {
@@ -46,6 +51,7 @@ public class Settings {
         this.setStartNewServer();
         this.setMasterIP();
         this.setUsevDHT();
+        this.setBlockEncryptionKey();
     }
 
     public Configuration getConfig(){
@@ -89,7 +95,16 @@ public class Settings {
 
 
     public String getCustomStorageDirectory() {
+
         return customStorageDirectory;
+    }
+
+    public boolean useBlockEncryption(){
+        return this.blockEncryptionKey != null;
+    }
+
+    public String getBlockEncryptionKey(){
+        return this.blockEncryptionKey;
     }
 
 
@@ -165,6 +180,12 @@ public class Settings {
             this.useVDHT = Boolean.parseBoolean(this.config.getString("UseVDHT"));
         }
 
+    }
+
+    private void setBlockEncryptionKey(){
+        if(this.config.containsKey(ConfigFilesKeys.BLOCK_ENCRYPTION_KEY)){
+            this.blockEncryptionKey = this.config.getString(ConfigFilesKeys.BLOCK_ENCRYPTION_KEY);
+        }
     }
 
     
