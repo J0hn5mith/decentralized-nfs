@@ -1,4 +1,4 @@
-package ch.uzh.csg.p2p.group_1.file_system;
+package ch.uzh.csg.p2p.group_1.storage;
 
 import ch.uzh.csg.p2p.group_1.Settings;
 import ch.uzh.csg.p2p.group_1.storage.DNFSBlock;
@@ -12,7 +12,7 @@ public class BlockFactory {
 
     Settings setings;
 
-    BlockFactory(Settings settings){
+    public BlockFactory(Settings settings){
         this.setings = settings;
     }
 
