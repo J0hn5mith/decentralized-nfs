@@ -18,6 +18,7 @@ public class CommandLineOptionsFactory {
         options.addOption("m", "mount-point", true, "specify a custom mount point");
         options.addOption("s", "storage-directory", true, "specify a custom directory for the temporary storage");
         options.addOption("v", "vdht", true, "specify if vDHT should be used.");
+        options.addOption("t", "terminal-commands", false, "allow terminal commands.");
 
         return options;
     }
