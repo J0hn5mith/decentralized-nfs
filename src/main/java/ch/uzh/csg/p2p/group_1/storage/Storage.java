@@ -126,13 +126,13 @@ public class Storage implements IStorage {
             iNodeID = _network.getUniqueKey();
             DNFSIiNode iNode = new DNFSiNode(iNodeID);
             Object data = (Object) iNode;
+            iNode.addBlock(this.createBlock());
             _network.put(iNodeID, data);
             return new DNFSNetworkINode(iNode, this);
         } catch (DNFSException.NetworkException e) {
             throw new DNFSException.INodeStorageException("Could not get unique key from for new iNode.", e);
-        } catch (DNFSNetworkPutException e) {
+        } catch (DNFSNetworkPutException | DNFSException.DNFSBlockStorageException e) {
             throw new DNFSException.INodeStorageException("Could not put new iNode.", e);
-
         }
     }
 
