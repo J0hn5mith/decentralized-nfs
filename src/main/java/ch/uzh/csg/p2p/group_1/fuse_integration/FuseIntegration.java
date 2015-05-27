@@ -169,17 +169,25 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         if (iNode.isDir()) {
             TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.DIRECTORY.getBits());
             mode.mode(mode.mode() | iNode.getMode());
-            stat.mode(mode.mode())
-                    .uid(iNode.getUid().longValue())
-                    .gid(iNode.getGid().longValue());
+            stat.mode(mode.mode());
+            if (iNode.getUid() != null) {
+                stat.uid(iNode.getUid().longValue());
+            }
+            if (iNode.getGid() != null) {
+                stat.gid(iNode.getGid().longValue());
+            }
             return 0;
         } else {
             TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.FILE.getBits());
             mode.mode(mode.mode() | iNode.getMode());
             stat.mode(mode.mode())
-                    .size(iNode.getSize())
-                    .uid(iNode.getUid().longValue())
-                    .gid(iNode.getGid().longValue());
+                    .size(iNode.getSize());
+            if (iNode.getUid() != null) {
+                stat.uid(iNode.getUid().longValue());
+            }
+            if (iNode.getGid() != null) {
+                stat.gid(iNode.getGid().longValue());
+            }
             return 0;
         }
     }
