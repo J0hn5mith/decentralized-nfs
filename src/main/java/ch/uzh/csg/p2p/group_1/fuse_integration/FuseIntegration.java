@@ -169,12 +169,17 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         if (iNode.isDir()) {
             TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.DIRECTORY.getBits());
             mode.mode(mode.mode() | iNode.getMode());
-            stat.mode(mode.mode());
+            stat.mode(mode.mode())
+                    .uid(iNode.getUid().longValue())
+                    .gid(iNode.getGid().longValue());
             return 0;
         } else {
             TypeMode.ModeWrapper mode = new TypeMode.ModeWrapper(TypeMode.NodeType.FILE.getBits());
             mode.mode(mode.mode() | iNode.getMode());
-            stat.mode(mode.mode()).size(iNode.getSize());
+            stat.mode(mode.mode())
+                    .size(iNode.getSize())
+                    .uid(iNode.getUid().longValue())
+                    .gid(iNode.getGid().longValue());
             return 0;
         }
     }
@@ -322,10 +327,10 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
 
             Directory oldParentDir = this.pathResolver.getDirectory(oldPath.getParent());
             Directory newParentDir = this.pathResolver.getDirectory(newPath.getParent());
-            
+
             oldParentDir.removeChild(oldPath.getFileName());
             newParentDir.addChild(iNode, newPath.getFileName());
-            
+
         } catch (DNFSException.DNFSPathNotFound e) {
             LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOENT();

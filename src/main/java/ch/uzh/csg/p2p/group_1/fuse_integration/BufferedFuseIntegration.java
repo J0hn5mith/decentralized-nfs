@@ -49,8 +49,13 @@ public class BufferedFuseIntegration extends FuseIntegration{
     @Override
     public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
         ByteBuffer buffer = this.writeBuffers.get(path);
-        buffer.position(0);
-        super.write(path, buffer, buffer.array().length, 0, info);
+        if(buffer){
+            buffer.rewind();
+            super.write(path, buffer, buffer.array().length, 0, info);
+        }
+        else{
+            System.out.print("File has been flushed that does not exist." + path);
+        }
         return 0;
     }
 }
