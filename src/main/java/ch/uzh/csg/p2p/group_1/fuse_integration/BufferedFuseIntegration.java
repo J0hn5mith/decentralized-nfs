@@ -49,7 +49,7 @@ public class BufferedFuseIntegration extends FuseIntegration{
     @Override
     public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
         ByteBuffer buffer = this.writeBuffers.get(path);
-        if(buffer){
+        if(buffer != null){
             buffer.rewind();
             super.write(path, buffer, buffer.array().length, 0, info);
         }
