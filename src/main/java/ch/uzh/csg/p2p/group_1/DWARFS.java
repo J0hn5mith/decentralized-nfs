@@ -25,17 +25,19 @@ import ch.uzh.csg.p2p.group_1.file_system.Directory;
 import ch.uzh.csg.p2p.group_1.network.interfaces.DNFSINetwork;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkVDHT;
 import net.fusejna.FuseException;
+
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMapChangeListener;
 import net.tomp2p.peers.PeerStatistic;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 
 public class DWARFS implements IDNFS {
 
-    final private static Logger LOGGER = Logger.getLogger(DWARFS.class);
+    final private static Logger LOGGER = LogManager.getLogger(DWARFS.class);
 
     private FuseIntegration fuseIntegration;
     private PathResolver pathResolver;

@@ -2,7 +2,7 @@
 
 <web-app>
     <!--Don't set it to ./ . This will 'erase' you project folder. After reboot the folder is back to normal.-->
-        <MountPoint>./testfs</MountPoint>
+        <MountPoint>./DWARFS</MountPoint>
         <Port>2020</Port>
         <ConnectionTimeOut>1000</ConnectionTimeOut>
         <CheckConnectionFrequency>4</CheckConnectionFrequency>

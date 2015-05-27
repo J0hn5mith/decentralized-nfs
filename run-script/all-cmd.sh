@@ -19,10 +19,11 @@ PRIVATE_KEY="odroid.priv"
 
 #first argument is the command
 CMD=$1
+GROUP_FOLDER="~/group_1/"
 
 for i in $IPS;
 do
   echo "Execute $CMD on $i..."
-  ssh -o "StrictHostKeyChecking no" -i "$PRIVATE_KEY" "root@$i" "$CMD"
+  ssh -o "StrictHostKeyChecking no" -i "$PRIVATE_KEY" "root@$i" "cd $GROUP_FOLDER;$CMD"
 done
 
