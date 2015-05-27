@@ -40,6 +40,7 @@ public class Settings {
     private SecretKey blockEncryptionKey = null;
     private Cipher encryptCipher = null;
     private Cipher decryptCipher = null;
+    private boolean allowTerminalCommands = false;
 
 
     public Settings(String configFile, CommandLine cmd) throws DNFSException.DNFSSettingsException {
@@ -63,6 +64,7 @@ public class Settings {
         this.setMasterIP();
         this.setUsevDHT();
         this.setBlockEncryptionKey();
+        this.setAllowTerminalCommands();
     }
 
     public Configuration getConfig() {
@@ -106,22 +108,30 @@ public class Settings {
 
 
     public String getCustomStorageDirectory() {
-
         return customStorageDirectory;
     }
+    
+    
+    public boolean getAllowTerminalCommands() {
+        return allowTerminalCommands;
+    }
 
+    
     public boolean useBlockEncryption() {
         return this.blockEncryptionKey != null;
     }
 
+    
     public SecretKey getBlockEncryptionKey() {
         return this.blockEncryptionKey;
     }
 
+    
     public Cipher getEncryptionCypher(){
         return this.encryptCipher;
     }
 
+    
     public Cipher getDecryptCipherCypher(){
         return this.decryptCipher;
     }
@@ -224,6 +234,16 @@ public class Settings {
                 throw new DNFSException.DNFSSettingsException("Could not find algorithem for encryption.", e);
             }
         }
+    }
+    
+    
+    private void setAllowTerminalCommands() {
+        if (cmd.hasOption("t")) {
+            this.allowTerminalCommands = true;
+        } else {
+            this.allowTerminalCommands = false;
+        }
+
     }
 
 

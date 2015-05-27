@@ -51,17 +51,11 @@ public class DWARFS implements IDNFS {
     private boolean _connectedToOtherPeers = false;    
 
 
-    /**
-     *
-     */
     public DWARFS() {
         LOGGER.setLevel(Level.DEBUG);
     }
 
 
-    /**
-     *
-     */
     public void setUp(Settings settings) {
         
         LOGGER.error("Setting up DWARFS File System...");
@@ -77,9 +71,6 @@ public class DWARFS implements IDNFS {
     }
 
 
-    /**
-     *
-     */
     private void setUpStorage() {
 
         if(this.settings.getUseLocalStorage()) {
@@ -142,36 +133,32 @@ public class DWARFS implements IDNFS {
     }
     
     
-    /**
-     * 
-     */
     private void startInputScanner() {
-        final DWARFS dwarfs = this;
-        Thread thread = new Thread() {
-            private Scanner scanner;
-            public void run() {
-                /*scanner = new Scanner(System.in); TODO
-                while(true) {
-                    String command = scanner.next();
-                    
-                    if(command.equals("shutdown")) {
-                        dwarfs.shutDown();
+        if(this.settings.getAllowTerminalCommands()) {
+            final DWARFS dwarfs = this;
+            Thread thread = new Thread() {
+                private Scanner scanner;
+                public void run() {
+                    scanner = new Scanner(System.in);
+                    while(true) {
+                        String command = scanner.next();
                         
-                    } else {
-                        System.out.println("Unknown command: " + command);
-                        System.out.println("Valid command:");
-                        System.out.println("\tshutdown : Unmount and shut down DWARFS File System");
+                        if(command.equals("shutdown")) {
+                            dwarfs.shutDown();
+                            
+                        } else {
+                            System.out.println("Unknown command: " + command);
+                            System.out.println("Valid command:");
+                            System.out.println("\tshutdown : Unmount and shut down DWARFS File System");
+                        }
                     }
-                }*/
-            }
-        };
-        thread.start();
+                }
+            };
+            thread.start();
+        }
     }
 
 
-    /**
-     *
-     */
     public void start() {
         
         final String mountPoint = this.settings.getMountPoint();
@@ -199,9 +186,6 @@ public class DWARFS implements IDNFS {
     }
 
 
-    /**
-     *
-     */
     public void shutDown() {
         try {
             this.keyValueStorage.shutDown();
@@ -216,9 +200,6 @@ public class DWARFS implements IDNFS {
     }
 
 
-    /**
-     *
-     */
     private void createRootDirectory() {
         try {
             Directory.createRoot(storage);
@@ -229,6 +210,7 @@ public class DWARFS implements IDNFS {
 
     }
 
+    
     private void startConnectionChecking() {
     	final DWARFS dwarfs = this;
         new Thread() {
@@ -273,6 +255,7 @@ public class DWARFS implements IDNFS {
         }
     }
 
+    
     private void setNetwork() throws DNFSNetworkSetupException {
         if(this.settings.useVDHT()){
             this.network = new DNFSNetworkVDHT(this.settings.getPort(), this.keyValueStorage);
@@ -283,6 +266,7 @@ public class DWARFS implements IDNFS {
         }
     }
 
+    
     private void setKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
         if(this.settings.getUseCustomStorageDirectory()) {
             this.keyValueStorage = new FileBasedKeyValueStorage(this.settings.getCustomStorageDirectory());
