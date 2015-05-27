@@ -29,9 +29,9 @@ cp zfile-5mb.txt ../zfile-5mb-copy.txt
 cd ..
 cat ../xfile-1kb.txt >> group/yfile-1mb-copy.txt
 echo "expected: 0b82c7d1b6a136dd14cf2018a1a2af1b57563853 group/yfile-1mb-copy.txt"
-echo "actual  :" `sha1sum group/yfile-1mb-copy.txt`
-echo "expected: 9045932103582a1fec559a42dbb5d823973cadfa zfile-5mb-copy.txt"
-echo "actual  :" `sha1sum zfile-5mb-copy.txt`
+#echo "actual  :" `sha1sum group/yfile-1mb-copy.txt`
+#echo "expected: 9045932103582a1fec559a42dbb5d823973cadfa zfile-5mb-copy.txt"
+#echo "actual  :" `sha1sum zfile-5mb-copy.txt`
 cd ..
 sleep 2
 
@@ -41,11 +41,13 @@ rm csg/group/yfile-1mb-copy.txt  csg/group/zfile-5mb.txt
 rmdir csg/group
 rm csg/zfile-5mb-copy.txt csg/yfile-1mb.txt
 rm delete.me
+
 BEFORE=`ls -1 | wc -l`
 rmdir csg
 AFTER1=`ls -1 | wc -l`
 rm xfile-1kb.txt
 AFTER2=`ls -1 | wc -l`
+
 echo "expected: 5, 4, 3"
 echo "actual  : $BEFORE, $AFTER1, $AFTER2"
 

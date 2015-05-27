@@ -21,8 +21,11 @@ import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
 import ch.uzh.csg.p2p.group_1.Settings;
 
-public class Storage implements IStorage {
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
+public class Storage implements IStorage {
+    final private static Logger LOGGER = Logger.getLogger(Storage.class.getName());
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
 
@@ -78,7 +81,7 @@ public class Storage implements IStorage {
             byte[] data = block.getByteArray();
 
             _keyValueStorage.set(id, new KeyValueData(data));
-            System.out.println("SAVED: " + id); // TODO
+            LOGGER.debug("SAVED: " + id); // TODO
 
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] hash = md.digest(data);
@@ -86,7 +89,7 @@ public class Storage implements IStorage {
             PeerAddress localAddress = _network.getPeerAddress();
 
             DNFSBlockUpdateNotification notification = new DNFSBlockUpdateNotification(id, localAddress, hash);
-            System.out.println("NOW PUTTING: " + id); // TODO
+            LOGGER.debug("NOW PUTTING: " + id); // TODO
             _network.put(id, (Object) notification);
 
         } catch(DNFSNetworkPutException e) {
@@ -215,10 +218,10 @@ public class Storage implements IStorage {
                     if(requestPacket.is(DNFSBlockPacket.Type.REQUEST)) {
                         KeyValueData keyValue = _keyValueStorage.get(requestPacket.getId());
                         if(keyValue == null) {
-//                            System.out.println("DIDNT FIND: " + requestPacket.getId()); // TODO
+//                            LOGGER.debug("DIDNT FIND: " + requestPacket.getId()); // TODO
                             throw new Exception();
                         }
-//                        System.out.println("DEVLIVERING: " + requestPacket.getId()); //TODO
+//                        LOGGER.debug("DEVLIVERING: " + requestPacket.getId()); //TODO
                         return new DNFSBlockPacket(DNFSBlockPacket.Type.DELIVER, requestPacket.getId(), keyValue.getData());
 
                     } else if(requestPacket.is(DNFSBlockPacket.Type.DELETE)) {

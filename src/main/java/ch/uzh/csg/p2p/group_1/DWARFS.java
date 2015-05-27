@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 import ch.uzh.csg.p2p.group_1.file_system.PathResolver;
+import ch.uzh.csg.p2p.group_1.fuse_integration.BufferedFuseIntegration;
 import ch.uzh.csg.p2p.group_1.fuse_integration.FuseIntegration;
 import ch.uzh.csg.p2p.group_1.interfaces.IDNFS;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetwork;
@@ -19,7 +20,6 @@ import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStor
 import ch.uzh.csg.p2p.group_1.storage.Storage;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
-import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSetupException;
 import ch.uzh.csg.p2p.group_1.file_system.Directory;
 import ch.uzh.csg.p2p.group_1.network.interfaces.DNFSINetwork;
@@ -66,7 +66,7 @@ public class DWARFS implements IDNFS {
         
         LOGGER.error("Setting up DWARFS File System...");
         this.settings = settings;
-        this.fuseIntegration = new FuseIntegration().setUp(settings);
+        this.fuseIntegration = new BufferedFuseIntegration().setUp(settings);
         this.setConnectionTimeout();
         this.setUpStorage();
         this.pathResolver = new PathResolver(this.storage);

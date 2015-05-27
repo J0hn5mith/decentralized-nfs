@@ -23,7 +23,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
 
 
     public FileBasedKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Level.WARN);
         try {
             this.directory = this.createTempDirectory().getAbsolutePath();
         } catch(IOException e) {

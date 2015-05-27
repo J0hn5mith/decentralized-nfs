@@ -9,3 +9,4 @@ testfs/*
 storage/*
 dnfs_2/*
 dnfs_3/*
+mount_points/

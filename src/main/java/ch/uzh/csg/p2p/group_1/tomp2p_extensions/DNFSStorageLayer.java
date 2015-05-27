@@ -39,8 +39,9 @@ import net.tomp2p.storage.Storage;
 import net.tomp2p.utils.Pair;
 import net.tomp2p.utils.Utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSendException;
@@ -48,8 +49,7 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSendException;
 public class DNFSStorageLayer extends StorageLayer {
 
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(StorageLayer.class);
-
+    private static final Logger LOGGER = LogManager.getLogger(StorageLayer.class);
 
     // Hash of public key is always preferred
     private ProtectionMode protectionDomainMode = ProtectionMode.MASTER_PUBLIC_KEY;
@@ -81,6 +81,7 @@ public class DNFSStorageLayer extends StorageLayer {
         this.backend = backend;
         this._network = network;
         this._keyValueStorage = keyValueStorage;
+        LOGGER.setLevel(Level.WARN);
     }
 
     public void protection(ProtectionEnable protectionDomainEnable, ProtectionMode protectionDomainMode,
@@ -227,27 +228,27 @@ public class DNFSStorageLayer extends StorageLayer {
                     Object received = newData.object();
                     if (received instanceof DNFSBlockUpdateNotification) {
                         
-                        System.out.println("PUT (NORMAL) OF TYPE BLOCK UPDATE NOTE."); // TODO
+                        LOGGER.debug("PUT (NORMAL) OF TYPE BLOCK UPDATE NOTE."); // TODO
                         
                         DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
                         DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
                         
-                        System.out.println("RECEIVED PUT (NORMAL): " + notification.getId()); // TODO
+                        LOGGER.debug("RECEIVED PUT (NORMAL): " + notification.getId()); // TODO
                         
                         if(!_keyValueStorage.exists(notification.getId())) {
                             
-                            System.out.println("DOESN'T HAVE KEY In PUT (NORMAL): " + notification.getId()); // TODO
+                            LOGGER.debug("DOESN'T HAVE KEY In PUT (NORMAL): " + notification.getId()); // TODO
                             
                             boolean success = false;
                             while (!success) {
-                                System.out.println("SENDING REQUEST FOR: " + notification.getNewHash()); //TODO
+                                LOGGER.debug("SENDING REQUEST FOR: " + notification.getNewHash()); //TODO
                                 Object answer = _network.sendTo(notification.getUpdateProvider(), packet);
 
                                 byte[] blockData = ((DNFSBlockPacket) answer).getData();
                                 MessageDigest md = MessageDigest.getInstance("MD5");
                                 byte[] hash = md.digest(blockData);
                                 
-                                System.out.println("GOT DATA WITH HASH: " + hash + " / CHECK: " + notification.getNewHash()); //TODO
+                                LOGGER.debug("GOT DATA WITH HASH: " + hash + " / CHECK: " + notification.getNewHash()); //TODO
 
                                 if (Arrays.equals(hash, notification.getNewHash())) {
                                     _keyValueStorage.set(notification.getId(), new KeyValueData(blockData));
@@ -634,12 +635,12 @@ public class DNFSStorageLayer extends StorageLayer {
         boolean domainProtectedByOthers = backend.isDomainProtectedByOthers(key, publicKey);
         // I dont want to claim the domain
         if (!domainProtection) {
-            LOGGER.debug("no domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
+//            LOGGER.debug("no domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
             // returns true if the domain is not protceted by others, otherwise
             // false if the domain is protected
             return !domainProtectedByOthers;
         } else {
-            LOGGER.debug("domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
+//            LOGGER.debug("domain protection requested {} for domain {}", Utils.hash(newPublicKey), key);
             if (canClaimDomain(key, publicKey)) {
                 if (canProtectDomain(key.domainKey(), publicKey)) {
                     LOGGER.debug("set domain protection");
@@ -856,7 +857,7 @@ public class DNFSStorageLayer extends StorageLayer {
 
     public Enum<?> putConfirm(PublicKey publicKey, Number640 key, Data newData) {
         
-        System.out.println("PUT_CONFIRM"); // TODO
+        LOGGER.debug("The DWARFS are try to send PUT_CONFIRM.");
         RangeLock<Number640>.Range lock = lock(key);
         try {
             if (!securityEntryCheck(key.locationAndDomainAndContentKey(), publicKey, newData.publicKey(),
@@ -881,12 +882,11 @@ public class DNFSStorageLayer extends StorageLayer {
                     Object received = data.object();
                     if (received instanceof DNFSBlockUpdateNotification) {
                         
-                        System.out.println("PUT_CONFIRM OF TYPE BLOCK UPDATE NOTE."); // TODO
-                        
+
                         DNFSBlockUpdateNotification notification = (DNFSBlockUpdateNotification) received;
                         DNFSBlockPacket packet = new DNFSBlockPacket(DNFSBlockPacket.Type.REQUEST, notification.getId());
                         
-                        System.out.println("RECEIVED PUT: " + notification.getId()); // TODO
+                        LOGGER.debug(String.format("The DWARFS received a PUT_CONFIRM of type BLOCK UPDATE NOTE. The ID is %s", notification.getId().toString()));
 
                         MessageDigest md = MessageDigest.getInstance("MD5");
                         

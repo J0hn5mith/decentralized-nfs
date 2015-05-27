@@ -5,6 +5,7 @@ import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.tomp2p.peers.Number160;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -34,6 +35,7 @@ public class Directory extends FileSystemEntry {
     private Directory(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSBlockStorageException {
         super(iNode, storage);
         this.updateINodeMap();
+        LOGGER.setLevel(Level.WARN);
     }
 
 
@@ -143,10 +145,10 @@ public class Directory extends FileSystemEntry {
             this.getBlockComposition().write(newContentBuffer, newContentLength, 0);
             
             br = new BufferedReader(new InputStreamReader(this.getINodeMapDataStream())); // TODO
-            System.out.println("---------WE JUST DELETED: " + name);
+            LOGGER.debug("---------WE JUST DELETED: " + name);
             try {
                 while ((line = br.readLine()) != null) { // TODO
-                    System.out.println("--> LINE: " + line); // TODO
+                    LOGGER.debug("--> LINE: " + line); // TODO
                 }
             } catch (IOException e) { // TODO
                 e.printStackTrace(); // TODO
@@ -319,7 +321,7 @@ public class Directory extends FileSystemEntry {
                 entryAsString = LINE_SEPARATOR + entryAsString;
             }
 
-            System.out.println("+++++++++++++ADDED ENTRY: " + entryAsString); // TODO
+            LOGGER.debug("+++++++++++++ADDED ENTRY: " + entryAsString); // TODO
 
             byte[] entryAsByteArray = entryAsString.getBytes();
             int entryLength = entryAsByteArray.length;
@@ -331,7 +333,7 @@ public class Directory extends FileSystemEntry {
             String line; // TODO
             try {
                 while ((line = br.readLine()) != null) { // TODO
-                    System.out.println("--> LINE: " + line); // TODO
+                    LOGGER.debug("--> LINE: " + line); // TODO
                 }
             } catch (IOException e) { // TODO
                 e.printStackTrace(); // TODO

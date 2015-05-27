@@ -227,7 +227,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         try {
             iNode = this.pathResolver.getINode(path);
         } catch (DNFSException.DNFSPathNotFound e) {
-            e.printStackTrace();
+            LOGGER.debug("Could not open file", e);
             return -ErrorCodes.EEXIST();
         }
         if (!this.checkAccessRights(info.openMode(), iNode)) {
@@ -245,7 +245,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         try {
             iNode = this.pathResolver.getINode(path);
         } catch (DNFSException.DNFSPathNotFound e) {
-            e.printStackTrace();
+            LOGGER.debug("Could not open dir.", e);
             return -ErrorCodes.EEXIST();
         }
         if (!this.checkAccessRights(info.openMode(), iNode)) {
@@ -270,20 +270,17 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
             return bytesRead;
 
         } catch (DNFSException.DNFSNotFileException e) {
-            LOGGER.error(e.toString());
+            LOGGER.error("Could not read file.", e);
             e.printStackTrace();
             return -ErrorCodes.EISDIR();
         } catch (DNFSException.DNFSPathNotFound e) {
-            LOGGER.error(e.toString());
-            e.printStackTrace();
+            LOGGER.debug("Could not read file.", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSBlockStorageException e) {
-            e.printStackTrace();
-            LOGGER.error(e.toString());
+            LOGGER.debug("Could not read file.", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNotInit e) {
-            LOGGER.error(e.toString());
-            e.printStackTrace();
+            LOGGER.debug("Could not read file.", e);
             return -1;
         }
     }
@@ -295,14 +292,14 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
         try {
             directory = pathResolver.getDirectory(new DNFSPath(path));
         } catch (DNFSException.DNFSPathNotFound e) {
-            LOGGER.error(e.toString());
+            LOGGER.debug("Could not read dir.", e);
             e.printStackTrace();
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
-            LOGGER.error(e.toString());
-            e.printStackTrace();
+            LOGGER.debug("Could not read dir.", e);
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSBlockStorageException e) {
+            LOGGER.debug("Could not read dir.", e);
             return -1;
         }
         for (DirectoryINodeMapEntry iNodeMapEntry : directory.getINodeMap()) {
@@ -330,15 +327,19 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
             newParentDir.addChild(iNode, newPath.getFileName());
             
         } catch (DNFSException.DNFSPathNotFound e) {
+            LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNotDirectoryException e) {
-            e.printStackTrace();
+            LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOTDIR();
         } catch (DNFSException.NoSuchFileOrDirectory e) {
+            LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException.DNFSNetworkNotInit e) {
+            LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOENT();
         } catch (DNFSException e) {
+            LOGGER.debug("The DWARFS were unable to rename the file or directory", e);
             return -ErrorCodes.ENOENT();
         }
 
@@ -370,6 +371,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
             file.truncate(offset);
 
         } catch (DNFSException e) {
+            LOGGER.debug("The DWARFS were unable to truncate the file.", e);
             return -ErrorCodes.ENOENT();
         }
 
@@ -408,6 +410,12 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
     }
 
     @Override
+    public int flush(String path, StructFuseFileInfo.FileInfoWrapper info) {
+        LOGGER.error("Flush has been called.");
+        return super.flush(path, info);
+    }
+
+    @Override
     public int unlink(String path) {
 
         try {
@@ -423,8 +431,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
             parentFolder.removeChild(entryPath.getFileName());
 
         } catch (DNFSException e) {
-            LOGGER.warn("Faild to remove file");
-            LOGGER.error(e.toString());
+            LOGGER.debug("Could not unlink file.", e);
             return -ErrorCodes.ENOENT();
         }
         return 0;
