@@ -112,7 +112,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         DNFSBlockCompositionOffset offset = seek(offsetInBytes);
         DNFSBlock block = offset.getBlock();
         long numBytesRemaining = bufferSize;
-
+        byteBuffer.rewind();
         numBytesRemaining -= block.write(byteBuffer, bufferSize, offset.getOffset());
 
         while (numBytesRemaining != 0) {
@@ -171,6 +171,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
         }
 
         DNFSBlock currentBlock = blockOffset.getBlock();
+        byteBuffer.rewind();
         long bytesReadTotal = currentBlock.read(byteBuffer, bytesToRead, blockOffset.getOffset());
 
         while (bytesReadTotal != bytesToRead) {
