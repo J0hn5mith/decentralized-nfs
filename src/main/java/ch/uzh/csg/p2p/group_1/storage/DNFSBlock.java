@@ -36,7 +36,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     
     public DNFSBlock(Number160 id, byte[] byteArray, DNFSIBlockStorage blockStorage) {
         this.id = id;
-        System.out.println("BUFFER LENGTH WRAPPED: " + byteArray.length); // TODO
+        //System.out.println("BUFFER LENGTH WRAPPED: " + byteArray.length); // TODO
         this.data = ByteBuffer.wrap(byteArray);
         this.blockStorage = blockStorage;
     }
@@ -115,9 +115,9 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
-        System.out.println("BYTESTOREAD: " + bytesToRead + "; data.capacity: " + this.data.capacity()); //TODO
+        //System.out.println("BYTESTOREAD: " + bytesToRead + "; data.capacity: " + this.data.capacity()); //TODO
         int maxBytesReadable = (int) Math.min(this.data.capacity() - offset, bytesToRead);
-        System.out.println("MAXBYTESREADABLE:" + maxBytesReadable); // TODO
+        //System.out.println("MAXBYTESREADABLE:" + maxBytesReadable); // TODO
         byteBuffer.put(this.data.array(), (int) offset, maxBytesReadable);
         LOGGER.debug(String.format("Read %d bytes with with offset %d", maxBytesReadable, offset));
         return maxBytesReadable;
