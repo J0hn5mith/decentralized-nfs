@@ -89,10 +89,8 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset){
-
         int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
         LOGGER.debug(String.format("Block is able to write %d bytes.", numBytesPossibleToWrite));
-
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
         if (numBytesPossibleToWrite + offset > data.capacity()) {
