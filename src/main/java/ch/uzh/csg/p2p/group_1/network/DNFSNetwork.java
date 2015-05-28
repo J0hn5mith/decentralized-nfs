@@ -306,10 +306,12 @@ public class DNFSNetwork implements DNFSINetwork{
         });
         
         try {
-            while(_locks == null || lockIndex == null ||
+            int counter = 0;
+            while(counter < 150 && (_locks == null || lockIndex == null ||
                     !_locks.containsKey(lockIndex) || _locks.get(lockIndex) == null ||
-                    _locks.get(lockIndex).equals(true)) {
+                    _locks.get(lockIndex).equals(true))) {
                 Thread.sleep(3);
+                counter++;
             }
         } catch (InterruptedException e) {
             throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());

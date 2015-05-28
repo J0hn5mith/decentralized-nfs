@@ -116,6 +116,9 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         int maxBytesReadable = (int) Math.min(this.data.array().length - offset, bytesToRead);
+        if(maxBytesReadable < 0) {
+            return 0;
+        }
         byteBuffer.put(this.data.array(), (int) offset, maxBytesReadable);
         LOGGER.debug(String.format("Read %d bytes with with offset %d", maxBytesReadable, offset));
         return maxBytesReadable;
