@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 public class DNFSBlock implements Serializable, DNFSIBlock {
     final private static Logger LOGGER = Logger.getLogger(DNFSBlock.class);
     private static final long serialVersionUID = 2098774660703813030L;
-    public static int BLOCK_SIZE = 4 * 65536;
+    public static int BLOCK_SIZE = 16 * 65536;
 
     Number160 id;
     DNFSIBlockStorage blockStorage;

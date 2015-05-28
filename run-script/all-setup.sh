@@ -4,22 +4,22 @@
 
 MASTER="192.168.1.112"
 
-IPS="192.168.1.112
-192.168.1.108
-192.168.1.105
-192.168.1.101"
-
 #IPS="192.168.1.112
 #192.168.1.108
-#192.168.1.113
-#192.168.1.100
-#192.168.1.107
-#192.168.1.119
-#192.168.1.110
-#192.168.1.115
 #192.168.1.105
-#192.168.1.114
 #192.168.1.101"
+
+IPS="192.168.1.112
+192.168.1.108
+192.168.1.113
+192.168.1.100
+192.168.1.107
+192.168.1.119
+192.168.1.110
+192.168.1.115
+192.168.1.105
+192.168.1.114
+192.168.1.101"
 
 PRIVATE_KEY="odroid.priv"
 
@@ -40,6 +40,8 @@ do
   scp -o "StrictHostKeyChecking no" -i "$PRIVATE_KEY" "DWARFS.jar" "root@$i:/root/group1/DWARFS.jar"
   echo "... Uploading settings.xml"
   scp -o "StrictHostKeyChecking no" -i "$PRIVATE_KEY" "settings.xml" "root@$i:/root/group1/settings.xml"
+  echo "... Uploading testrunner"
+  scp -o "StrictHostKeyChecking no" -i "$PRIVATE_KEY" "p2pct.sh" "root@$i:/root/group1/p2pct.sh"
   if [ "$i" = "$MASTER" ]
     then
       echo "... Uploading run_master.sh"
