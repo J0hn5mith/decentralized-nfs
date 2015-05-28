@@ -1,8 +1,10 @@
 package ch.uzh.csg.p2p.group_1.storage;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.Settings;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIBlockStorage;
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -15,7 +17,7 @@ public class BlockFactory {
     Settings settings;
 
     protected BlockFactory(Settings settings){
-        this.LOGGER.setLevel(Level.DEBUG);
+        this.LOGGER.setLevel(Main.LOGGER_LEVEL);
         this.settings = settings;
     }
 

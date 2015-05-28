@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1.storage;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIBlockStorage;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIBlock;
@@ -29,12 +30,13 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.id = id;
         this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
     
     
     public DNFSBlock(Number160 id, byte[] byteArray, DNFSIBlockStorage blockStorage) {
         this.id = id;
+        //System.out.println("BUFFER LENGTH WRAPPED: " + byteArray.length); // TODO
         this.data = ByteBuffer.wrap(byteArray);
         this.blockStorage = blockStorage;
     }
@@ -87,7 +89,12 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset){
+<<<<<<< HEAD
         LOGGER.debug(String.format("Block is abel to write %d bytes.", numBytesPossibleToWrite));
+=======
+        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
+        LOGGER.debug(String.format("Block is able to write %d bytes.", numBytesPossibleToWrite));
+>>>>>>> c1cde226d5b4eff4df9883ffe4868affa809c786
 
         int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
@@ -106,14 +113,16 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         try {
             this.getBlockStorage().updateBlock(this);
         } catch (DNFSException.DNFSBlockStorageException e) {
-            LOGGER.error("Serious probelm. Could not update block. Updated is ignored.", e);
+            LOGGER.error("Serious problem. Could not update block. Updated is ignored.", e);
         }
         return (int) numBytesPossibleToWrite;
     }
 
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
+        //System.out.println("BYTESTOREAD: " + bytesToRead + "; data.capacity: " + this.data.capacity()); //TODO
         int maxBytesReadable = (int) Math.min(this.data.capacity() - offset, bytesToRead);
+        //System.out.println("MAXBYTESREADABLE:" + maxBytesReadable); // TODO
         byteBuffer.put(this.data.array(), (int) offset, maxBytesReadable);
         LOGGER.debug(String.format("Read %d bytes with with offset %d", maxBytesReadable, offset));
         return maxBytesReadable;

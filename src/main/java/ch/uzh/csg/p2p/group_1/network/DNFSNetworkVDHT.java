@@ -3,6 +3,7 @@
  */
 package ch.uzh.csg.p2p.group_1.network;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.network.interfaces.DNFSINetwork;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.tomp2p_extensions.DNFSStorageLayer;
@@ -19,8 +20,8 @@ import net.tomp2p.storage.Data;
 import java.io.IOException;
 import java.util.*;
 
-
 import net.tomp2p.storage.Storage;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ public class DNFSNetworkVDHT implements DNFSINetwork {
     public DNFSNetworkVDHT(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         this.network = new DNFSNetwork(this.createPeer(port, keyValueStorage));
         this._initialized = true;
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
     public void registerObjectDataReply(ObjectDataReply reply) {

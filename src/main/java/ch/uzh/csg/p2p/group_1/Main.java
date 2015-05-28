@@ -4,10 +4,15 @@ package ch.uzh.csg.p2p.group_1;
  */
 
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
+
 import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
 
 
 public class Main {
+    
+    
+    public static final Level LOGGER_LEVEL = Level.WARN;
 
     
     public static void main(String[] args) throws InterruptedException, ParseException {

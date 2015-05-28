@@ -4,11 +4,13 @@ package ch.uzh.csg.p2p.group_1.storage;
  * Created by janmeier on 14.05.15.
  */
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIBlock;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -36,7 +38,7 @@ public class DNFSBlockComposition implements DNFSIBlock {
     public DNFSBlockComposition(DNFSIiNode iNode, IStorage peer) {
         this.iNode = iNode;
         this.peer = peer;
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
     @Override
@@ -247,7 +249,6 @@ public class DNFSBlockComposition implements DNFSIBlock {
     private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException {
         DNFSBlock newBlock = this.getPeer().createBlock();
         this.getINode().addBlock(newBlock);
-//        TODO: Why do I have to call this, should be done automatically
         try {
             this.getPeer().updateINode(this.getINode());
         } catch (DNFSException e) {

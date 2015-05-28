@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkNotInit;
@@ -40,6 +43,7 @@ import net.tomp2p.storage.Storage;
 
 
 public class DNFSNetwork implements DNFSINetwork{
+    final private static Logger LOGGER = Logger.getLogger(DNFSNetwork.class);
 
 
     private Random _random;
@@ -59,6 +63,7 @@ public class DNFSNetwork implements DNFSINetwork{
         _nextLock = 0;
         this._peer = createPeer(port, keyValueStorage);
         this._initialized = true;
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
     
@@ -307,6 +312,15 @@ public class DNFSNetwork implements DNFSINetwork{
         try {
             while(_locks.get(lockIndex).equals(true)) {
                 Thread.sleep(3);
+                if(_locks == null) {
+                    LOGGER.warn("Lock Problem in sendTo(): _locks Hashmap is null");
+                } else if(lockIndex == null) {
+                    LOGGER.warn("Lock Problem in sendTo(): lockIndex is null");
+                } else if(!_locks.containsKey(lockIndex)) {
+                    LOGGER.warn("Lock Problem in sendTo(): _locks doesn't contain lockIndex");
+                } else if(_locks.get(lockIndex) == null) {
+                    LOGGER.warn("Lock Problem in sendTo(): _locks at lockIndex is null");
+                }
             }
         } catch (InterruptedException e) {
             throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());

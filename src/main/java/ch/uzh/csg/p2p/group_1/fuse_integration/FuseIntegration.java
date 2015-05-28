@@ -4,6 +4,7 @@
  */
 package ch.uzh.csg.p2p.group_1.fuse_integration;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.Settings;
 import ch.uzh.csg.p2p.group_1.file_system.PathResolver;
 import ch.uzh.csg.p2p.group_1.file_system.DNFSPath;
@@ -37,7 +38,7 @@ public class FuseIntegration extends FuseFilesystemAdapterAssumeImplemented {
      */
     public FuseIntegration() {
         super();
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
     public FuseIntegration setUp(Settings settings) {

@@ -52,13 +52,13 @@ public class DWARFS implements IDNFS {
 
 
     public DWARFS() {
-        LOGGER.setLevel(Level.DEBUG);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
 
     public void setUp(Settings settings) {
         
-        LOGGER.error("Setting up DWARFS File System...");
+        System.out.println("Setting up DWARFS File System...");
         this.settings = settings;
         this.fuseIntegration = new BufferedFuseIntegration().setUp(settings);
         this.setConnectionTimeout();
@@ -83,13 +83,21 @@ public class DWARFS implements IDNFS {
                 this.setPeerChangeListener();
 
                 if(!this.settings.getStartNewServer()) {
-                    this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
+                    try {
+                        this.network.connectToNetwork(0, this.settings.getMasterIP().getHostString(), this.settings.getMasterIP().getPort());
+                    } catch (DNFSNetworkSetupException e) {
+                        System.out.println("Could not connect to following network: " + this.settings.getMasterIP().getHostString() + ":" + this.settings.getMasterIP().getPort());
+                        LOGGER.error("Could not connect to network.", e);
+                        System.exit(-1);
+                    }
                 }
                 
             } catch (DNFSNetworkSetupException e) {
+                System.out.println("Could not set up the network.");
                 LOGGER.error("Could not set up the network.", e);
                 System.exit(-1);
             } catch (DNFSException.DNFSKeyValueStorageException e) {
+                System.out.println("Could not set up the file-based key-value storage.");
                 LOGGER.error("Could not set up the file-based key-value storage.", e);
                 System.exit(-1);
             }
@@ -99,6 +107,7 @@ public class DWARFS implements IDNFS {
         try {
             this.storage.setUp(this.settings);
         } catch (DNFSException e) {
+            System.out.println("Could not set up storage.");
             LOGGER.error("Could not set up storage.", e);
             System.exit(-1);
         }
@@ -173,6 +182,7 @@ public class DWARFS implements IDNFS {
                 try {
                     fuseIntegration.mount(mountPoint);
                 } catch (FuseException e) {
+                    System.out.println("Failed to mount the fuse file system.");
                     LOGGER.error("Failed to mount the fuse file system.");
                     e.printStackTrace();
                 }
@@ -182,7 +192,7 @@ public class DWARFS implements IDNFS {
         
         startInputScanner();
         
-        LOGGER.info("DWARFS File System started.");
+        System.out.println("DWARFS File System started.");
     }
 
 
@@ -191,6 +201,7 @@ public class DWARFS implements IDNFS {
             this.keyValueStorage.shutDown();
             this.storage.shutdown();
         } catch (DNFSException.DNFSKeyValueStorageException e) {
+            System.out.println("Could not remove temporary directory of the file-based key-value storage.");
             LOGGER.error("Could not remove temporary directory of the file-based key-value storage.", e);
         } catch (DNFSException.NetworkException e) {
             e.printStackTrace();
@@ -204,6 +215,7 @@ public class DWARFS implements IDNFS {
         try {
             Directory.createRoot(storage);
         } catch (DNFSException e) {
+            System.out.println("Could not create root directory");
             LOGGER.error("Could not create root directory.", e);
             return;
         }

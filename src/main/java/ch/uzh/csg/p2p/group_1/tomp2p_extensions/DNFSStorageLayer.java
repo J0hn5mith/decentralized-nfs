@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.KeyValueData;
@@ -81,7 +82,7 @@ public class DNFSStorageLayer extends StorageLayer {
         this.backend = backend;
         this._network = network;
         this._keyValueStorage = keyValueStorage;
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
     public void protection(ProtectionEnable protectionDomainEnable, ProtectionMode protectionDomainMode,

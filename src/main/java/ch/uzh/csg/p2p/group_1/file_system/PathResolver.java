@@ -5,10 +5,12 @@ package ch.uzh.csg.p2p.group_1.file_system;
 
 import java.io.IOException;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.file_system.interfaces.IPathResolver;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -19,7 +21,7 @@ public class PathResolver implements IPathResolver {
     /**
      */
     public PathResolver(IStorage storage) {
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
         this.setStorage(storage);
     }
 

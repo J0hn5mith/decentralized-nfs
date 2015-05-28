@@ -19,13 +19,14 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkPutException;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException.DNFSNetworkSendException;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.network.DNFSNetworkINode;
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.Settings;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class Storage implements IStorage {
-    final private static Logger LOGGER = Logger.getLogger(Storage.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(Storage.class);
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
 
@@ -36,6 +37,7 @@ public class Storage implements IStorage {
     public Storage(DNFSINetwork network, IKeyValueStorage keyValueStorage) {
         _network = network;
         _keyValueStorage = keyValueStorage;
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
 
