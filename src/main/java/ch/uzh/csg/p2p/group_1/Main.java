@@ -12,7 +12,7 @@ import org.apache.log4j.Level;
 public class Main {
     
     
-    public static final Level LOGGER_LEVEL = Level.WARN;
+    public static final Level LOGGER_LEVEL = Level.DEBUG;
 
     
     public static void main(String[] args) throws InterruptedException, ParseException {

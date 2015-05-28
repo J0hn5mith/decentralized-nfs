@@ -2,13 +2,8 @@ package ch.uzh.csg.p2p.group_1.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -49,7 +44,7 @@ public class DNFSNetwork implements DNFSINetwork{
     private Random _random;
     private boolean _initialized = false;
     private PeerDHT _peer;
-    private HashMap<Integer, Boolean> _locks;
+    private Map<Integer, Boolean> _locks;
     private int _nextLock;
 
 
@@ -59,7 +54,7 @@ public class DNFSNetwork implements DNFSINetwork{
      */
     public DNFSNetwork(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
-        _locks = new HashMap<Integer, Boolean>();
+        _locks = Collections.synchronizedMap(new HashMap<Integer, Boolean>());
         _nextLock = 0;
         this._peer = createPeer(port, keyValueStorage);
         this._initialized = true;
