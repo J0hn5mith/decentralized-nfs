@@ -310,17 +310,10 @@ public class DNFSNetwork implements DNFSINetwork{
         });
         
         try {
-            while(_locks.get(lockIndex).equals(true)) {
+            while(_locks == null && lockIndex == null &&
+                    !_locks.containsKey(lockIndex) && _locks.get(lockIndex) == null &&
+                    _locks.get(lockIndex).equals(true)) {
                 Thread.sleep(3);
-                if(_locks == null) {
-                    LOGGER.warn("Lock Problem in sendTo(): _locks Hashmap is null");
-                } else if(lockIndex == null) {
-                    LOGGER.warn("Lock Problem in sendTo(): lockIndex is null");
-                } else if(!_locks.containsKey(lockIndex)) {
-                    LOGGER.warn("Lock Problem in sendTo(): _locks doesn't contain lockIndex");
-                } else if(_locks.get(lockIndex) == null) {
-                    LOGGER.warn("Lock Problem in sendTo(): _locks at lockIndex is null");
-                }
             }
         } catch (InterruptedException e) {
             throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());
