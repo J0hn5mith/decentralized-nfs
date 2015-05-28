@@ -249,7 +249,6 @@ public class DNFSBlockComposition implements DNFSIBlock {
     private DNFSBlock addNewBlockToINode() throws DNFSException.DNFSBlockStorageException {
         DNFSBlock newBlock = this.getPeer().createBlock();
         this.getINode().addBlock(newBlock);
-//        TODO: Why do I have to call this, should be done automatically
         try {
             this.getPeer().updateINode(this.getINode());
         } catch (DNFSException e) {

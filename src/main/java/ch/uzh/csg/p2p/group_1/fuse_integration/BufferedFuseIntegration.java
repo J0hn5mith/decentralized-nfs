@@ -32,8 +32,8 @@ public class BufferedFuseIntegration extends FuseIntegration{
 
         if(writeOffset + bufSize > byteBuffer.array().length){
             ByteBuffer newByteBuffer = ByteBuffer.wrap(new byte[(int)(writeOffset + bufSize)]);
-            byteBuffer.position((int)writeOffset);
-
+            byteBuffer.rewind();
+            newByteBuffer.put(byteBuffer);
             newByteBuffer.put(byteBuffer.array(), 0, byteBuffer.array().length);
             byteBuffer = newByteBuffer;
         }

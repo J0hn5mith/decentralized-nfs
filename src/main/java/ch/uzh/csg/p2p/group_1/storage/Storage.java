@@ -26,7 +26,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class Storage implements IStorage {
-    final private static Logger LOGGER = Logger.getLogger(Storage.class.getName());
+    final private static Logger LOGGER = Logger.getLogger(Storage.class);
 
     private static final Number160 ROOT_INODE_KEY = Number160.createHash(0);
 
