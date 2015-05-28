@@ -55,6 +55,7 @@ public class DNFSNetwork implements DNFSINetwork{
     public DNFSNetwork(int port, IKeyValueStorage keyValueStorage) throws DNFSException.DNFSNetworkSetupException {
         _random = new Random(System.currentTimeMillis());
         _locks = Collections.synchronizedMap(new HashMap<Integer, Boolean>());
+//        _locks = new HashMap<Integer, Boolean>();
         _nextLock = 0;
         this._peer = createPeer(port, keyValueStorage);
         this._initialized = true;
