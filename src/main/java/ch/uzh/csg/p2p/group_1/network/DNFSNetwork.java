@@ -307,6 +307,15 @@ public class DNFSNetwork implements DNFSINetwork{
         try {
             while(_locks.get(lockIndex).equals(true)) {
                 Thread.sleep(3);
+                if(_locks == null) {
+                    System.out.println("+++++++++++++++++++++LOCKS = NULL"); //TODO
+                } else if(lockIndex == null) {
+                    System.out.println("+++++++++++++++++++++LOCKINDEX = NULL"); //TODO
+                } else if(!_locks.containsKey(lockIndex)) {
+                    System.out.println("+++++++++++++++++++++LOCKS DOES NOT CONTAIN KEY"); //TODO
+                } else if(_locks.get(lockIndex) == null) {
+                    System.out.println("+++++++++++++++++++++LOCKS AT KEY IS NULL"); //TODO
+                }
             }
         } catch (InterruptedException e) {
             throw new DNFSException.DNFSNetworkSendException("Waiting thread interrupted: " + e.getMessage());

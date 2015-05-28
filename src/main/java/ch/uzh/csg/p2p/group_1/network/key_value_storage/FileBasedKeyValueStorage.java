@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.network.key_value_storage.interfaces.IKeyValueStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -23,7 +25,7 @@ public class FileBasedKeyValueStorage implements IKeyValueStorage {
 
 
     public FileBasedKeyValueStorage() throws DNFSException.DNFSKeyValueStorageException {
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
         try {
             this.directory = this.createTempDirectory().getAbsolutePath();
         } catch(IOException e) {

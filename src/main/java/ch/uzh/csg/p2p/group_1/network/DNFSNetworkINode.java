@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1.network;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.file_system.DNFSAccessRights;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.storage.DNFSBlock;
@@ -8,6 +9,7 @@ import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
 import net.fusejna.types.TypeGid;
 import net.fusejna.types.TypeUid;
 import net.tomp2p.peers.Number160;
+
 import org.apache.log4j.Logger;
 
 import java.util.Date;
@@ -23,6 +25,7 @@ public class DNFSNetworkINode implements DNFSIiNode {
     DNFSIiNodeStorage iNodeStorage;
 
     public DNFSNetworkINode(DNFSIiNode iNode, DNFSIiNodeStorage iNodeStorage) {
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
         this.iNode = iNode;
         this.iNodeStorage = iNodeStorage;
     }

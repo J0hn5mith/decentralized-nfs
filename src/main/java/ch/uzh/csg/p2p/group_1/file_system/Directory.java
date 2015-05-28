@@ -1,5 +1,6 @@
 package ch.uzh.csg.p2p.group_1.file_system;
 
+import ch.uzh.csg.p2p.group_1.Main;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.DNFSIiNode;
 import ch.uzh.csg.p2p.group_1.storage.interfaces.IStorage;
 import ch.uzh.csg.p2p.group_1.exceptions.DNFSException;
@@ -35,7 +36,7 @@ public class Directory extends FileSystemEntry {
     private Directory(DNFSIiNode iNode, IStorage storage) throws DNFSException.DNFSBlockStorageException {
         super(iNode, storage);
         this.updateINodeMap();
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Main.LOGGER_LEVEL);
     }
 
 
