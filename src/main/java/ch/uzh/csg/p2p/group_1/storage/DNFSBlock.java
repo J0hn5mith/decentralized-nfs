@@ -93,7 +93,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         LOGGER.debug(String.format("Block is able to write %d bytes.", numBytesPossibleToWrite));
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
-        if (numBytesPossibleToWrite + offset > data.capacity()) {
+        if (numBytesPossibleToWrite + offset > data.array().length) {
             final ByteBuffer newContents = ByteBuffer.allocate((int) (numBytesPossibleToWrite+offset));
             newContents.put(this.data);
             this.data = newContents;
@@ -115,7 +115,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
     
     public long read(final ByteBuffer byteBuffer, long bytesToRead, final long offset) {
         //System.out.println("BYTESTOREAD: " + bytesToRead + "; data.capacity: " + this.data.capacity()); //TODO
-        int maxBytesReadable = (int) Math.min(this.data.capacity() - offset, bytesToRead);
+        int maxBytesReadable = (int) Math.min(this.data.array().length - offset, bytesToRead);
         //System.out.println("MAXBYTESREADABLE:" + maxBytesReadable); // TODO
         byteBuffer.put(this.data.array(), (int) offset, maxBytesReadable);
         LOGGER.debug(String.format("Read %d bytes with with offset %d", maxBytesReadable, offset));

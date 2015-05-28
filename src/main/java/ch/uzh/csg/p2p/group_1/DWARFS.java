@@ -185,6 +185,7 @@ public class DWARFS implements IDNFS {
                     System.out.println("Failed to mount the fuse file system.");
                     LOGGER.error("Failed to mount the fuse file system.");
                     e.printStackTrace();
+                    System.exit(-1);
                 }
             }
         };
