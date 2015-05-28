@@ -29,7 +29,7 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
         this.id = id;
         this.blockStorage = blockStorage;
         this.data = ByteBuffer.allocate(0);
-        LOGGER.setLevel(Level.WARN);
+        LOGGER.setLevel(Level.DEBUG);
     }
     
     
@@ -87,9 +87,9 @@ public class DNFSBlock implements Serializable, DNFSIBlock {
 
 
     public long write(ByteBuffer buffer, final long bufferSize, final long offset){
-        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
         LOGGER.debug(String.format("Block is abel to write %d bytes.", numBytesPossibleToWrite));
 
+        int numBytesPossibleToWrite = (int) Math.min(bufferSize, (getCapacity() - offset));
         final byte[] bytesToWrite = new byte[(int) numBytesPossibleToWrite];
 
         if (numBytesPossibleToWrite + offset > data.capacity()) {
