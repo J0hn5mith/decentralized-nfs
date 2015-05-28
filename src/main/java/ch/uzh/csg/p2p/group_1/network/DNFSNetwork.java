@@ -310,8 +310,8 @@ public class DNFSNetwork implements DNFSINetwork{
         });
         
         try {
-            while(_locks == null && lockIndex == null &&
-                    !_locks.containsKey(lockIndex) && _locks.get(lockIndex) == null &&
+            while(_locks == null || lockIndex == null ||
+                    !_locks.containsKey(lockIndex) || _locks.get(lockIndex) == null ||
                     _locks.get(lockIndex).equals(true)) {
                 Thread.sleep(3);
             }
